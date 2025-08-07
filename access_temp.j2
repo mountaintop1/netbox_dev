@@ -1,0 +1,882 @@
+!
+no service pad
+no platform punt-keepalive disable-kernel-core
+no ip domain lookup
+no ip finger 
+no ip bootp server
+ip dhcp bootp ignore 
+no service dhcp
+no service config
+no ip http server
+no ip http secure-server
+no service tcp-small-servers
+no ip source-route
+no service udp-small-servers
+no service call-home
+service unsupported-transceiver
+!
+
+service tcp-keepalives-in
+service tcp-keepalives-out
+!
+service timestamps debug datetime msec show-timezone
+service timestamps log datetime msec show-timezone
+!
+service password-encryption
+!
+lldp run
+!
+hostname  {{ hostname }}
+!
+logging discriminator HIDE_LOG severity drops 4 facility drops PLATFORM mnemonics drops ELEMENT_WARNING
+logging count
+logging buffered discriminator HIDE_LOG 1000000
+logging console discriminator HIDE_LOG critical
+logging monitor discriminator HIDE_LOG
+!
+username sunlocal privilege 15 secret 9 $9$ubbUiHAeoXkBc.$YqtDN9PD07ue8lCdZW8XpOvygGb7r3lOYEAQi7Gyka.
+!enable secret 9 $9$KUQ3lTSgrdAc6U$V9.vfvjelox14/zdQxmToY6LAFeVmQ3iq57eGsXeUF6
+!
+aaa new-model
+tacacs server WesternTacacsServers
+   address ipv4 10.146.119.221
+   key 7 044B0E121D71585C581809
+   timeout 30
+tacacs server EasternTacacsServers
+   address ipv4 10.22.128.221
+   key 7 044B0E121D71585C581809
+   timeout 30
+aaa group server tacacs+ SuncorTacacsServers
+   server name WesternTacacsServers
+   server name EasternTacacsServers   
+   ip tacacs source-interface Vlan{{ mgmt_vlan_id }}
+!
+ip domain name network.lan
+!
+{% set vlan_ids = [] %}
+{% for vlan_id, vlan_name in vlans %}  
+    {% set _ = vlan_ids.append(vlan_id) %}
+{% endfor %}
+
+ip dhcp snooping
+no ip dhcp snooping information option
+ip dhcp snooping vlan 1-4094
+!ip dhcp snooping vlan {{ vlan_ids | join(',') }}
+!
+mac address-table notification change
+mac address-table notification mac-move
+!
+vtp mode off
+!
+udld aggressive
+!
+crypto key generate rsa modulus 4096
+!
+!
+spanning-tree mode mst
+spanning-tree mst configuration
+name Suncor_MST
+revision 1
+instance 0 vlan 1-4094
+spanning-tree mst 0 priority 32768
+spanning-tree portfast bpduguard default
+no spanning-tree etherchannel guard misconfig
+spanning-tree portfast default
+spanning-tree extend system-id
+!
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause sfp-config-mismatch
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause port-mode-failure
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause pppoe-ia-rate-limit
+errdisable recovery cause mac-limit
+errdisable recovery cause storm-control
+errdisable recovery cause inline-power
+errdisable recovery cause arp-inspection
+errdisable recovery cause link-monitor-failure
+errdisable recovery cause oam-remote-failure
+errdisable recovery cause loopback
+errdisable recovery cause psp
+!
+
+device-tracking policy trusted_policy
+device-role switch
+trusted-port
+!
+!
+password encryption aes
+!
+redundancy
+mode sso
+!
+## Pass in list of tuple
+{% for vlan_id in vlans %}
+    vlan {{ vlan_id[0] }}
+    name {{ vlan_id[1] }}
+{% endfor %}
+!
+interface vlan{{ mgmt_vlan_id }}
+ip address {{ mgmt_int_ip_add }} {{ mgmt_int_mask }}
+no ip redirects 
+!
+ip default-gateway {{ mgmt_default_gateway }}
+!
+no qos rewrite ip dscp
+qos queue-softmax-multiplier 1200 
+!
+logging history size 50
+logging trap notifications
+logging facility local5
+logging source-interface Vlan{{ mgmt_vlan_id }}
+logging host 10.157.1.196
+logging host 10.159.1.196
+logging host 10.145.88.29
+logging host 10.146.88.29
+logging host 10.22.120.57
+logging host 10.146.78.4
+!
+ip access-list standard acl-snmp-read-only
+permit 10.22.120.57
+permit 10.146.88.29
+permit 10.145.88.29
+permit 10.157.1.192 0.0.0.31
+permit 10.159.1.192 0.0.0.31
+permit 10.8.31.0 0.0.0.127
+permit 10.16.31.0 0.0.0.127
+permit 10.64.31.0 0.0.0.127
+permit 10.22.66.128 0.0.0.127
+deny   any log
+!
+ip access-list extended acl-ssh-access
+permit tcp 10.145.88.29 0.0.0.0 gt 1024 any eq 22
+permit tcp 10.146.88.29 0.0.0.0 gt 1024 any eq 22 
+permit tcp 10.22.120.57 0.0.0.0 gt 1024 any eq 22
+permit tcp 10.8.31.0 0.0.0.127 gt 1024 any eq 22
+permit tcp 10.22.66.128 0.0.0.127 gt 1024 any eq 22
+permit tcp 10.157.1.192 0.0.0.31 gt 1024 any eq 22
+permit tcp 10.159.1.192 0.0.0.31 gt 1024 any eq 22
+permit tcp 10.16.31.0 0.0.0.127 gt 1024 any eq 22
+permit tcp 10.65.139.64 0.0.0.31 gt 1024 any eq 22
+permit tcp 10.146.68.0 0.0.0.255 gt 1024 any eq 22
+deny   ip any any log
+!
+snmp-server community {{ community }} RO acl-snmp-read-only
+snmp-server trap-source Vlan{{ mgmt_vlan_id }}
+snmp-server file-transfer access-group acl-snmp-read-only protocol tftp
+snmp-server contact IFNSSDAT
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps flowmon
+snmp-server enable traps call-home message-send-fail server-fail
+snmp-server enable traps tty
+snmp-server enable traps auth-framework sec-violation
+snmp-server enable traps rep
+snmp-server enable traps vtp
+snmp-server enable traps vlancreate
+snmp-server enable traps vlandelete
+snmp-server enable traps port-security
+snmp-server enable traps cpu threshold
+snmp-server enable traps memory bufferpeak
+snmp-server enable traps envmon fan shutdown supply temperature status
+snmp-server enable traps fru-ctrl
+snmp-server enable traps flash insertion removal
+snmp-server enable traps energywise
+snmp-server enable traps power-ethernet police
+snmp-server enable traps entity
+snmp-server enable traps ike policy add
+snmp-server enable traps ike policy delete
+snmp-server enable traps ike tunnel start
+snmp-server enable traps ike tunnel stop
+snmp-server enable traps ipsec cryptomap add
+snmp-server enable traps ipsec cryptomap delete
+snmp-server enable traps ipsec cryptomap attach
+snmp-server enable traps ipsec cryptomap detach
+snmp-server enable traps ipsec tunnel start
+snmp-server enable traps ipsec tunnel stop
+snmp-server enable traps ipsec too-many-sas
+snmp-server enable traps ipsla
+snmp-server enable traps config-copy
+snmp-server enable traps config
+snmp-server enable traps config-ctid
+snmp-server enable traps event-manager
+snmp-server enable traps vstack
+snmp-server enable traps bridge newroot topologychange
+snmp-server enable traps stpx inconsistency root-inconsistency loop-inconsistency
+snmp-server enable traps syslog
+snmp-server enable traps vlan-membership
+snmp-server enable traps errdisable
+snmp-server enable traps rf
+snmp-server enable traps transceiver all
+snmp-server enable traps bulkstat collection transfer
+snmp-server enable traps mac-notification change move threshold
+snmp-server enable traps vrfmib vrf-up vrf-down vnet-trunk-up vnet-trunk-down
+snmp-server host 10.157.1.196 {{ community }}
+snmp-server host 10.159.1.196 {{ community }}
+snmp-server host 10.145.88.29 {{ community }}
+snmp-server host 10.146.88.29 {{ community }}
+snmp-server host 10.22.120.57 {{ community }}
+snmp-server file-transfer access-group 7 protocol tftp
+snmp ifmib ifindex persist
+!
+ip tacacs source-interface Vlan{{ mgmt_vlan_id }}
+tacacs-server directed-request restricted
+
+network-policy profile 1
+voice vlan untagged
+
+!
+banner motd  ^
+********************************************************************************
+THIS IS A PRIVATE SYSTEM INTENDED FOR SUNCOR AUTHORIZED USE ONLY.
+UNAUTHORIZED ACCESS WILL BE REPORTED TO SUNCOR'S INFORMATION SECURITY
+PERSONNEL AND LAW ENFORCEMENT AGENCIES.
+USE OF SUNCOR'S SYSTEMS IS INTENDED FOR BUSINESS PURPOSES.
+THERE IS NO RIGHT OF PRIVACY IN THIS SYSTEM. INFORMATION SYSTEMS AND SECURITY
+PERSONNEL MAY GIVE TO LAW ENFORCEMENT OFFICIALS ANY POTENTIAL EVIDENCE OF CRIME
+FOUND ON THIS SYSTEM. USE OF THIS SYSTEM BY ANY USER, AUTHORIZED OR
+UNAUTHORIZED, CONSTITUTES EXPRESS CONSENT TO THIS MONITORING, WHICH MAY INCLUDE
+INTERCEPTION, RECORDING, READING, COPYING, OR CAPTURING AND, IF REASONABLY
+REQUIRED AND PERMITTED BY LAW, DISCLOSURE TO THE APPROPRIATE AUTHORITIES.
+IF YOU DO NOT CONSENT, LOG OFF NOW.
+********************************************************************************
+CECI EST UN SYSTEME PRIVE QUI DOIT ETRE UNIQUEMENT UTILISE A DES FINS DUMENT
+AUTORISEES PAR SUNCOR. TOUT ACCES NON AUTORISE SERA RAPPORTE AU GROUPE DE
+LA SECURITE DE L'INFORMAITON DE SUNCOR ET AUX ORGANISMES D'APPLICATION DE
+LA LOI.
+L'UTILISATION DE CE SYSTEME EST PREVUE A DES FINS COMMERCIALES.
+AUCUN DROIT A LA VIE PRIVEE N'EXISTE DANS CE SYSTEME. LE PERSONNEL DES SERVICES
+INFORMATIQUES ET DU GROUPE DE LA SECURITE DE L'INFORMAITON PEUT SOUMETTRE TOUTE
+EVIDENCE D'UN CRIME POTENTIEL AUX RESPONSABLES DE L'APPLICATION DE LA LOI.
+L'UTILISATION DE CE SYSTEME PAR TOUTE PERSONNE AUTORISEE OU NON, CONSTITUE UN
+CONSENTEMENT TACITE A LA SURVEILLANCE, INCLUANT L'INTERCEPTION, L'ENREGISTREMENT,
+LA LECTURE, LA COPIE, OU LA CAPTURE ET, SI EXIGEE ET PERMISE PAR LA LOI,
+LA DIVULGATION AUX AUTORITES APPROPRIEES.
+SI VOUS NE CONSENTEZ PAS A CES CONDITIONS, SORTEZ DU SYSTEME MAINTENANT.
+********************************************************************************
+^
+!
+line con 0
+exec-timeout 15 0
+login authentication no_tacacs
+stopbits 1
+!
+line vty 0 4
+session-timeout 180
+#access-class acl-ssh-access in
+exec-timeout 15 0
+privilege level 15
+password 7 0705344247191C1746
+transport input ssh
+transport output ssh
+!
+line vty 5 31
+session-timeout 180
+#access-class acl-ssh-access in
+exec-timeout 15 0
+privilege level 15
+password 7 0705344247191C1746
+transport input ssh
+transport output ssh
+!
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+ip ssh source-interface Vlan{{ mgmt_vlan_id}}
+!
+access-list 5 permit 10.8.60.47
+access-list 5 permit 10.8.60.44
+access-list 5 permit 10.22.131.253
+access-list 6 deny   any
+!
+ntp access-group peer 5
+ntp access-group serve 6
+ntp server 10.8.60.44
+ntp server 10.22.131.253
+ntp server 10.8.60.47
+ntp source Vlan{{ mgmt_vlan_id}}
+ntp authentication-key 5 md5 11281D081E1C5A5E57 7
+ntp authenticate
+ntp trusted-key 5
+!
+!
+ip access-list standard acl-ssm-groups
+permit 232.0.0.0 0.255.255.255
+permit 239.232.0.0 0.0.255.255
+!
+ip access-list extended acl-network-control-cs6
+permit pim any any
+permit igmp any any
+permit ospf any any
+permit tcp any any eq bgp
+permit tcp any eq bgp any
+!
+ip access-list extended acl-telephony-ef
+!
+
+ip access-list extended acl-signaling-cs5
+!
+ip access-list extended acl-multimedia-confer-af43
+!
+ip access-list extended acl-multimedia-confer-af42
+!
+ip access-list extended acl-multimedia-confer-af41
+
+!
+no ip access-list extended acl-realtime-interact-cs4
+ip access-list extended acl-realtime-interact-cs4
+ remark SIP/H323 video and audio port range
+ permit udp any any range 2326 6951
+ permit udp any range 2326 6951 any
+ remark Arbitrary port ranges
+ permit udp any any range 49152 65535
+ permit udp any range 49152 65535 any
+ remark Polycom Video/Audio range
+ permit tcp any any range 3230 3235
+ permit tcp any range 3230 3235 any
+ permit udp any any range 3230 3235
+ permit udp any range 3230 3235 any
+ remark IOS H.323 Gateways. Cisco Conference Connection. Uncomment as required and coordinate with Tools.
+ remark permit tcp any {% raw %}{{{{% endraw %}specific-video-subnet{% raw %}}}}{% endraw %} range 11000 65535
+ remark permit tcp {% raw %}{{{{% endraw %}specific-video-subnet{% raw %}}}}{% endraw %} range 11000 65535 any
+
+!
+ip access-list extended acl-multimedia-stream-af33
+!
+
+ip access-list extended acl-multimedia-stream-af32
+
+!
+ip access-list extended acl-multimedia-stream-af31
+!
+
+ip access-list extended acl-broadcast-video-cs3
+permit udp any any eq 1718
+permit udp any eq 1718 any
+permit udp any any eq 1719
+permit udp any eq 1719 any
+remark Q.931 call setup
+permit tcp any any eq 1720
+permit tcp any eq 1720 any
+remark Q.931/H225 Signaling
+permit tcp any any eq 2776
+permit tcp any eq 2776 any
+remark SIP
+permit tcp any any range 5060 5061
+permit tcp any range 5060 5061 any
+remark H245 signaling
+permit tcp any any range 5555 6555
+permit tcp any range 5555 6555 any
+!
+ip access-list extended acl-low-latency-data-af23
+!
+
+ip access-list extended acl-low-latency-data-af22
+
+!
+ip access-list extended acl-low-latency-data-af21
+!
+
+ip access-list extended acl-oam-cs2
+permit tcp any any eq 22
+permit tcp any eq 22 any
+permit tcp any any eq telnet
+permit tcp any eq telnet any
+permit udp any any eq snmp
+permit udp any eq snmp any
+permit udp any any eq snmptrap
+permit udp any eq snmptrap any
+permit icmp any any
+permit udp any any eq syslog
+permit udp any eq syslog any
+permit tcp any any eq tacacs
+permit tcp any eq tacacs any
+!
+!
+ip access-list extended acl-high-rate-data-af13
+remark CIFS
+permit tcp any eq 139 any
+permit tcp any any eq 139
+permit tcp any eq 445 any
+permit tcp any any eq 445
+remark NFS
+permit tcp any eq 2049 any
+permit tcp any any eq 2049
+remark MAPI
+permit tcp any eq 7830 any
+permit tcp any any eq 7830
+remark JETDIRECT
+permit tcp any eq 9100 any
+permit tcp any any eq 9100
+!
+ip access-list extended acl-high-rate-data-af12
+
+!
+ip access-list extended acl-high-rate-data-af11
+
+!
+ip access-list extended acl-low-priority-data-cs1
+remark SCCM 2007
+permit tcp host 10.144.128.22 eq www any
+permit tcp any host 10.144.128.22 eq www
+permit tcp host 10.144.128.23 eq www any
+permit tcp any host 10.144.128.23 eq www
+permit tcp host 10.8.66.4 eq www any
+permit tcp any host 10.8.66.4 eq www
+permit tcp host 156.44.16.14 eq www any
+permit tcp any host 156.44.16.14 eq www
+permit tcp host 10.184.48.21 eq www any
+permit tcp any host 10.184.48.21 eq www
+permit tcp host 10.22.208.13 eq www any
+permit tcp any host 10.22.208.13 eq www
+permit tcp host 10.27.35.21 eq www any
+permit tcp any host 10.27.35.21 eq www
+permit tcp host 10.64.76.222 eq www any
+permit tcp any host 10.64.76.222 eq www
+permit tcp host 10.65.102.21 eq www any
+permit tcp any host 10.65.102.21 eq www
+permit tcp host 10.153.4.21 eq www any
+permit tcp any host 10.153.4.21 eq www
+permit tcp host 10.8.67.144 eq www any
+permit tcp any host 10.8.67.144 eq www
+permit tcp host 10.96.24.19 eq www any
+permit tcp any host 10.96.24.19 eq www
+permit tcp host 156.44.47.102 eq www any
+permit tcp any host 156.44.47.102 eq www
+permit tcp host 10.96.65.21 eq www any
+permit tcp any host 10.96.65.21 eq www
+permit tcp host 10.112.19.57 eq www any
+permit tcp any host 10.112.19.57 eq www
+remark SCCM 2012
+permit tcp host 10.144.128.183 eq www any
+permit tcp any host 10.144.128.183 eq www
+permit tcp host 10.144.128.184 eq www any
+permit tcp any host 10.144.128.184 eq www
+permit tcp host 10.184.48.27 eq www any
+permit tcp any host 10.184.48.27 eq www
+permit tcp host 10.22.128.183 eq www any
+permit tcp any host 10.22.128.183 eq www
+permit tcp host 10.146.128.92 eq www any
+permit tcp any host 10.146.128.92 eq www
+permit tcp host 10.152.4.83 eq www any
+permit tcp any host 10.152.4.83 eq www
+permit tcp host 156.44.226.140 eq www any
+permit tcp any host 156.44.226.140 eq www
+permit tcp host 10.184.48.34 eq www any
+permit tcp any host 10.184.48.34 eq www
+permit tcp host 10.153.4.17 eq www any
+permit tcp any host 10.153.4.17 eq www
+remark Data Domain
+permit tcp any eq 2051 any
+permit tcp any any eq 2051
+remark Net backup
+permit tcp any eq 13724 any
+permit tcp any any eq 13724
+permit tcp any eq 1556 any
+permit tcp any any eq 1556
+permit tcp any eq 2049 any
+permit tcp any any eq 2049
+permit tcp any eq 2052 any
+permit tcp any any eq 2052
+permit tcp any eq sunrpc any
+permit tcp any any eq sunrpc
+permit udp any eq sunrpc any
+permit udp any any eq sunrpc
+remark Recovery Point
+permit tcp any eq 5040 any
+permit tcp any any eq 5040
+remark LAN Sweeper
+permit ip host 10.145.96.127 any
+permit ip any host 10.145.96.127
+remark QoS_EPO
+permit ip host 10.146.132.27 any
+permit ip any host 10.146.132.27
+permit ip host 10.145.96.87 any
+permit ip any host 10.145.96.87
+!
+!
+class-map match-any class-qos-intf-network-control-cs6
+match access-group name acl-network-control-cs6
+match ip dscp cs6
+
+class-map match-any class-qos-intf-telephony-ef
+match access-group name acl-telephony-ef
+match ip dscp ef
+
+class-map match-any class-qos-intf-signaling-cs5
+match access-group name acl-signaling-cs5
+match ip dscp cs5
+
+class-map match-any class-qos-intf-multimedia-confer-af43
+match access-group name acl-multimedia-confer-af43
+match ip dscp af43
+
+class-map match-any class-qos-intf-multimedia-confer-af42
+match access-group name acl-multimedia-confer-af42
+match ip dscp af42
+
+class-map match-any class-qos-intf-multimedia-confer-af41
+match access-group name acl-multimedia-confer-af41
+match ip dscp af41
+
+class-map match-any class-qos-intf-realtime-interact-cs4
+match access-group name acl-realtime-interact-cs4
+match ip dscp cs4
+
+class-map match-any class-qos-intf-multimedia-stream-af33
+match access-group name acl-multimedia-stream-af33
+match ip dscp af33
+
+class-map match-any class-qos-intf-multimedia-stream-af32
+match access-group name acl-multimedia-stream-af32
+match ip dscp af32
+
+class-map match-any class-qos-intf-multimedia-stream-af31
+match access-group name acl-multimedia-stream-af31
+match ip dscp af31
+
+class-map match-any class-qos-intf-broadcast-video-cs3
+match access-group name acl-broadcast-video-cs3
+match ip dscp cs3
+
+class-map match-any class-qos-intf-low-latency-data-af23
+match access-group name acl-low-latency-data-af23
+match ip dscp af23
+
+class-map match-any class-qos-intf-low-latency-data-af22
+match access-group name acl-low-latency-data-af22
+match ip dscp af22
+
+class-map match-any class-qos-intf-low-latency-data-af21
+match access-group name acl-low-latency-data-af21
+match ip dscp af21
+
+class-map match-any class-qos-intf-oam-cs2
+match access-group name acl-oam-cs2
+match ip dscp cs2
+
+class-map match-any class-qos-intf-high-rate-data-af13
+match access-group name acl-high-rate-data-af13
+match ip dscp af13
+
+class-map match-any class-qos-intf-high-rate-data-af12
+match access-group name acl-high-rate-data-af12
+match ip dscp af12
+
+class-map match-any class-qos-intf-high-rate-data-af11
+match access-group name acl-high-rate-data-af11
+match ip dscp af11
+
+class-map match-any class-qos-intf-low-priority-data-cs1
+match access-group name acl-low-priority-data-cs1
+match ip dscp cs1
+!
+!
+policy-map policy-qos-intf-tl3
+class class-qos-intf-network-control-cs6
+  set dscp cs6
+class class-qos-intf-telephony-ef
+  set dscp ef
+class class-qos-intf-signaling-cs5
+  set dscp cs5
+class class-qos-intf-multimedia-confer-af43
+  set dscp af43
+class class-qos-intf-multimedia-confer-af42
+  set dscp af42
+class class-qos-intf-multimedia-confer-af41
+  set dscp af41
+class class-qos-intf-realtime-interact-cs4
+  set dscp cs4
+class class-qos-intf-multimedia-stream-af33
+  set dscp af33
+class class-qos-intf-multimedia-stream-af32
+  set dscp af32
+class class-qos-intf-multimedia-stream-af31
+  set dscp af31
+class class-qos-intf-broadcast-video-cs3
+  set dscp cs3
+class class-qos-intf-low-latency-data-af23
+  set dscp af23
+class class-qos-intf-low-latency-data-af22
+  set dscp af22
+class class-qos-intf-low-latency-data-af21
+  set dscp af21
+class class-qos-intf-oam-cs2
+  set dscp cs2
+class class-qos-intf-high-rate-data-af13
+  set dscp af13
+class class-qos-intf-high-rate-data-af12
+  set dscp af12
+class class-qos-intf-high-rate-data-af11
+  set dscp af11
+class class-qos-intf-low-priority-data-cs1
+  set dscp cs1
+class class-default
+  set dscp default
+!
+!
+class-map match-any class-q-intf-q1-pq
+match ip dscp cs6
+match ip dscp cs7
+
+class-map match-any class-q-intf-q2-pq
+match ip dscp cs5
+match ip dscp ef
+
+class-map match-any class-q-intf-q3-stnd
+match dscp cs4
+match dscp af41
+match dscp af42
+match dscp af43
+
+class-map match-any class-q-intf-q4-stnd
+match dscp cs3
+match dscp af31
+match dscp af32
+match dscp af33
+
+class-map match-any class-q-intf-q5-stnd
+match dscp cs2
+match dscp af21
+match dscp af22
+match dscp af23
+
+class-map match-any class-q-intf-q6-stnd
+match dscp af11
+match dscp af12
+match dscp af13
+
+class-map match-any class-q-intf-q7-stnd
+match dscp cs1
+!
+!
+policy-map policy-q-intf
+class class-q-intf-q1-pq
+  priority level 1 percent 5
+  queue-buffers ratio 2
+class class-q-intf-q2-pq
+  priority level 2 percent 10
+  set cos 5
+  queue-buffers ratio 3
+class class-q-intf-q3-stnd
+  bandwidth remaining percent 20
+  set cos 4
+  queue-buffers ratio 15
+class class-q-intf-q4-stnd
+  bandwidth remaining percent 15
+  set cos 3
+  queue-buffers ratio 15
+class class-q-intf-q5-stnd
+  bandwidth remaining percent 15
+  set cos 2
+  queue-buffers ratio 15
+class class-q-intf-q6-stnd
+  bandwidth remaining percent 10
+  set cos 1
+  queue-buffers ratio 15
+class class-q-intf-q7-stnd
+  bandwidth remaining percent 5
+  set cos 1
+  queue-buffers ratio 5
+class class-default
+  bandwidth remaining percent 35
+  set cos 0
+  queue-buffers ratio 30
+!
+class-map match-any system-cpp-police-topology-control
+  description Topology control
+
+class-map match-any system-cpp-police-sw-forward
+  description Sw forwarding, L2 LVX data, LOGGING
+
+class-map match-any system-cpp-default
+  description Inter FED, EWLC control, EWLC data
+
+class-map match-any system-cpp-police-sys-data
+  description Learning cache ovfl, High Rate App, Exception, EGR Exception, NFL SAMPLED DATA, RPF Failed
+
+class-map match-any system-cpp-police-punt-webauth
+  description Punt Webauth
+
+class-map match-any system-cpp-police-l2lvx-control
+  description L2 LVX control packets
+
+class-map match-any system-cpp-police-forus
+  description Forus Address resolution and Forus traffic
+
+class-map match-any system-cpp-police-multicast-end-station
+  description MCAST END STATION
+
+class-map match-any system-cpp-police-high-rate-app
+  description High Rate Applications
+
+class-map match-any system-cpp-police-multicast
+  description Transit Traffic and MCAST Data
+
+class-map match-any system-cpp-police-l2-control
+  description L2 control
+
+class-map match-any system-cpp-police-dot1x-auth
+  description DOT1X Auth
+
+class-map match-any system-cpp-police-data
+  description ICMP redirect, ICMP_GEN and BROADCAST
+
+class-map match-any system-cpp-police-stackwise-virt-control
+  description Stackwise Virtual
+
+class-map match-any system-cpp-police-control-low-priority
+  description General punt
+
+class-map match-any non-client-nrt-class
+
+class-map match-any system-cpp-police-routing-control
+  description Routing control and Low Latency
+
+class-map match-any system-cpp-police-protocol-snooping
+  description Protocol snooping
+
+class-map match-any system-cpp-police-dhcp-snooping
+  description DHCP snooping
+
+class-map match-any system-cpp-police-system-critical
+  description System Critical and Gold Pkt
+
+policy-map system-cpp-policy
+!
+!
+{% for uplink in uplinks %}
+    interface {{ uplink.int_name }}
+    description "<<remotehost={{ uplink.remote_host }}; port={{ uplink.remote_port }}>>"
+    speed nonegotiate
+    service-policy output policy-q-intf
+    {% if uplink.etherc_num %}
+        channel-group {{ uplink.etherc_num }} mode active
+        channel-protocol lacp
+        !
+    {% else %}
+        switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+        switchport mode trunk
+        spanning-tree portfast disable
+        spanning-tree bpduguard disable
+        logging event link-status
+        logging event trunk-status
+        speed nonegotiate
+        ip dhcp snooping trust
+        load-interval 30
+    {% endif %}
+{% endfor %}
+!
+{% if uplinks[0].etherc_num %}
+    interface Port-channel {{ uplinks[0].etherc_num }}
+    description "<<remotehost={{ uplinks[0].etherc_remote_host }}; port={{ uplinks[0].etherc_remote_port }}>>"
+    switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+    switchport mode trunk
+    spanning-tree portfast disable
+    spanning-tree bpduguard disable
+    logging event link-status
+    logging event trunk-status
+    ip dhcp snooping trust
+    load-interval 30
+    speed nonegotiate
+    device-tracking attach-policy trusted_policy
+{% endif %}
+!
+{% if ap_port | length > 0 %}
+    {% set ap_port_count = ap_port | length %}
+{% else %}
+    {% set ap_port_count = 0 %}
+{% endif %}
+!
+{% if specialty_ports | length > 0 %}
+    {% set specialty_ports_count = specialty_ports | length %}
+{% else %}
+    {% set specialty_ports_count = 0 %}
+{% endif %}
+!
+{% set total_available_user_ports = total_switch_ports - specialty_ports_count - ap_port_count %}
+!
+{% macro generate_interface_config(start, end, hostname, data_vlan) %}
+interface range {{ start }} - {{ end }}
+  description "<<remotehost=User>>"
+  switchport
+  switchport mode access
+  switchport access vlan {{ data_vlan }}
+  network-policy 1
+  switchport port-security
+  switchport port-security maximum 3
+  switchport port-security violation restrict
+  switchport port-security aging time 5
+  switchport port-security aging type inactivity
+  no snmp trap link-status
+  storm-control broadcast level 2.00
+  storm-control action shutdown
+  service-policy input policy-qos-intf-tl3
+  service-policy output policy-q-intf
+{% endmacro %}
+
+{% if total_switch_ports == 24 %}
+  {% if total_available_user_ports < 17 %}
+    {{ generate_interface_config('g1/0/1', total_available_user_ports, hostname, data_vlan) }}
+  
+  {% elif total_available_user_ports > 16 %}
+    {{ generate_interface_config('g1/0/1', '16', hostname, data_vlan) }}
+    !
+    {{ generate_interface_config('te1/0/17', total_available_user_ports, hostname, data_vlan) }}
+  
+  {% endif %}
+
+{% elif total_switch_ports == 48 %}
+  {% if total_available_user_ports < 37 %}
+    {{ generate_interface_config('g1/0/1', total_available_user_ports, hostname, data_vlan) }}
+  
+  {% elif total_available_user_ports > 36 %}
+    {{ generate_interface_config('g1/0/1', '36', hostname, data_vlan) }}
+    !
+    {{ generate_interface_config('te1/0/37', total_available_user_ports, hostname, data_vlan) }}
+  
+  {% endif %}
+{% endif %}
+!
+{% if ap_port | length > 0 %}
+    {% for ap in ap_port %}
+        interface t1/0/{{ total_available_user_ports + loop.index }}
+        description "<<remotehost={{ ap }}>>"
+        switchport trunk native vlan {{ data_vlan }}
+        switchport trunk allowed vlan {{ data_vlan }}
+        switchport mode trunk
+        storm-control broadcast level 2.00
+        storm-control action shutdown
+        !
+    {% endfor %}
+{% endif %}
+!
+{% if specialty_ports | length > 0 %}
+    {% for special_vlan_id in specialty_ports %}
+        interface t1/0/{{ total_available_user_ports + ap_port_count + loop.index}}
+        description "<<remotehost=User>>"
+        switchport
+        switchport mode access
+        switchport access vlan {{ special_vlan_id[0] }}
+        network-policy 1
+        switchport port-security
+        switchport port-security maximum 3
+        switchport port-security violation restrict
+        switchport port-security aging time 5
+        switchport port-security aging type inactivity
+        no snmp trap link-status
+        storm-control broadcast level 2.00
+        storm-control action shutdown
+        service-policy input policy-qos-intf-tl3
+        service-policy output policy-q-intf
+        !
+    {% endfor %}
+{% endif %}
