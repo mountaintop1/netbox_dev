@@ -1,0 +1,34 @@
+{
+    "hostname": "os-etf-217ra100-01-sw-acc-a",
+	"mgmt_vlan_id": 60,
+	"vlans": [
+				[60, "mgmt"], 
+				[1054, "blan"], 
+				[3329, "guest"], 
+				[4001, "blackhole"]
+			],
+	"mgmt_int_ip_add": "10.182.5.71",
+	"mgmt_int_mask": "255.255.254.0",
+	"mgmt_default_gateway": "10.182.4.1",
+	"community': 'E6R3nr8qKd",
+	"uplinks": [
+		{
+			"int_name": "Te1/1/3", 
+			"remote_host": "os-z07-41ra0043-01-sw-lef-a", 
+			"remote_port": "xe-0/0/18", 
+            "etherc_num": 1,  
+			"etherc_remote_host": "os-z07-41ra0043-01-sw-lef-a/b", "etherc_remote_port": "ae18"
+		},
+		{
+			"int_name": "Te1/1/4", 
+			"remote_host": "os-z07-41ra0043-01-sw-lef-b", 
+			"remote_port": "xe-0/0/18", 
+            "etherc_num": 1,  
+			"etherc_remote_host": "os-z07-41ra0043-01-sw-lef-a/b", "etherc_remote_port": "ae18"
+		},
+		],
+	"ap_port": [],
+	"specialty_ports": [],
+    "total_switch_ports": 48,
+    "data_vlan": 1054,
+}
