@@ -1,4 +1,9 @@
 !
+{% for int device.interface.all %}
+   int.name
+   int.mode
+{% endfor%}
+
 no service pad
 no platform punt-keepalive disable-kernel-core
 no ip domain lookup
