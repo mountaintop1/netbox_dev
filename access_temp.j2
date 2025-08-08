@@ -1,4 +1,9 @@
 !
+address = device[0].interfaces.all()[56].ip_addresses.filter(address__family=4)[0].address
+address.ip
+address.netmask
+device[0].interfaces.all()[56].is_virtual
+
 {% for int in device.interfaces.all() %}
    {{ int.name }}
    {{ int.mode }}
