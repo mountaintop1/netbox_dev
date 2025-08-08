@@ -26,7 +26,7 @@ service password-encryption
 !
 lldp run
 !
-hostname  {{ object.name }}
+hostname  {{ device.name }}
 !
 logging discriminator HIDE_LOG severity drops 4 facility drops PLATFORM mnemonics drops ELEMENT_WARNING
 logging count
