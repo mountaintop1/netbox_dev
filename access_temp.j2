@@ -1,7 +1,5 @@
 !
-{% for int in device.interfaces.all %}
-   {{int}}
-{% endfor %}
+{{ device.interfaces.all }}
 
 no service pad
 no platform punt-keepalive disable-kernel-core
