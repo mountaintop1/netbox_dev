@@ -1,6 +1,7 @@
 !
 {% for int in device.interfaces.all %}
-   {{ int.name }}
+   {{int}}
+   {{int.name}}
 {% endfor %}
 
 no service pad
