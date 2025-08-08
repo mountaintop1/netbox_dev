@@ -2,18 +2,19 @@
 {% for int in device.interfaces.all() %}
    {{ int.name }}
    {{ int.mode }}
+   {% if int.lag %}
+      {{ int.lag.name }}
+   {% endif %}
    {% if int.mode and int.mode == 'access' %}
       {{ int.untagged_vlan.vid }}
       {{ int.untagged_vlan.name }}
    {% endif %}
-   
    {% if int.mode and int.mode == 'tagged' %}
       {% for vlan in int.tagged_vlans.all() %}
          {{ vlan.name }}
          {{ vlan.vid }}
       {% endfor %}
    {% endif %}
-
 {% endfor %}
 
 
