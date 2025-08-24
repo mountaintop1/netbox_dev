@@ -1,11 +1,114 @@
 !
+>>> devices = Device.objects.all()
+>>> for device in devices:
+...     vlan_grp = device.site.vlan_groups.all()
+...     for vg in vlan_grp:
+...         if vg.name == device.name:
+...             for item in vg.vlans.all():
+...                 print(device.name, item.name, item.vid, item.description)
+...
+os-z07-41ra1054-01-sw-acc-a mgmt 60 Mgmt
+os-z07-41ra1054-01-sw-acc-a blan 1054 Business LAN
+os-z07-41ra1054-01-sw-acc-a guest 3054 Guest Vlan
+os-z22-41ra1077-01-sw-acc-b mgmt 60 Mgmt
+os-z22-41ra1077-01-sw-acc-b blan 1072 Business LAN
+os-z22-41ra1077-01-sw-acc-b guest 3072 Guest Vlan
+os-z30-41ra1032-01-sw-acc-a mgmt 60 Mgmt
+os-z30-41ra1032-01-sw-acc-a blan 1032 Business LAN
+os-z30-41ra1032-01-sw-acc-a guest 3032 Guest Vlan
+>>>
+
+>>> device = Device.objects.all()
+>>> vlan_grp = device[1].site.vlan_groups.all()
+>>> for vg in vlan_grp:
+...     if vg.name == device[1].name:
+...         for item in vg.vlans.all():
+...             print(item.name, item.vid)
+...
+mgmt 60
+blan 1072
+guest 3072
+>>> vlan_grp = device[0].site.vlan_groups.all()
+>>> for vg in vlan_grp:
+...     if vg.name == device[0].name:
+...         for item in vg.vlans.all():
+...             print(item.name, item.vid)
+...
+mgmt 60
+blan 1054
+guest 3054
+>>>
+>>> vlan_grp = device[0].site.vlan_groups.all()
+>>> for vg in vlan_grp:
+...     print(vg.name)
+...     if vg.name == device[0].name:
+...         for item in vg.vlans.all():
+...             print(item.name, item.vid)
+...
+os-z07-41ra1054-01-sw-acc-a
+os-z22-41ra1077-01-sw-acc-b
+mgmt 60
+blan 1072
+guest 3072
+
+vlans = device[0].site.vlans.all()
+vlan_grp = device[0].site.vlan_groups.all()
+vlan_grp[0].vlans.all()
+
+
 address = device[0].interfaces.all()[56].ip_addresses.filter(address__family=4)[0].address
 address.ip
 address.netmask
 device[0].interfaces.all()[56].is_virtual
 
+
+>>> lag = device[0].interfaces.all().filter(type='lag')[0]
+>>> lag.name
+'po1'
+>>> lag.description
+'<<remotehost=os-z20-41ra0043-01-sw-lef-a/b; port=ae20>>'
+>>> for vl in lag.tagged_vlans.all():
+...     print(vl.name)
+...     print(vl.vid)
+...
+v60_mgmt
+60
+v1072_41ra0556
+1072
+v3072_41ra0556
+3072
+>>>
+device[0].interfaces.all().filter(type='lag')[0].name
+lag_mem = device[0].interfaces.all().filter(type='lag')[0].member_interfaces.all()
+
+for mem in lag_mem:
+...     print(mem.name)
+...     print(mem.description)
+
+>>> mgmt_vlan = device[0].interfaces.all().filter(type='virtual')
+>>> mgmt_vlan
+<RestrictedQuerySet [<Interface: vlan60>]>
+>>> mgmt_vlan[0]
+<Interface: vlan60>
+>>> mgmt_vlan[0].name
+'vlan60'
+>>> mgmt_vlan[0].description
+'mgmt_int'
+>>> mgmt_vlan[0].ip_addresses.filter(address__family=4)[0].address
+IPNetwork('10.182.4.86/23')
+>>> mgmt_ip = mgmt_vlan[0].ip_addresses.filter(address__family=4)[0].address
+>>> mgmt_ip = mgmt_vlan[0].ip_addresses.filter(address__family=4)[0].address.ip
+>>> mgmt_ip
+IPAddress('10.182.4.86')
+>>> mgmt_netmask = mgmt_vlan[0].ip_addresses.filter(address__family=4)[0].address.netmask
+>>> mgmt_netmask
+IPAddress('255.255.254.0')
+>>>
+
+
 {% for int in device.interfaces.all() %}
    {{ int.name }}
+   {{ int.description }}
    {{ int.mode }}
    {% if int.lag %}
       {{ int.lag.name }}
