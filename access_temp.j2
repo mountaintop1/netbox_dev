@@ -79,3 +79,43 @@ no spanning-tree etherchannel guard misconfig
 spanning-tree portfast default
 spanning-tree extend system-id
 !
+!
+errdisable recovery cause udld
+errdisable recovery cause bpduguard
+errdisable recovery cause security-violation
+errdisable recovery cause channel-misconfig
+errdisable recovery cause pagp-flap
+errdisable recovery cause dtp-flap
+errdisable recovery cause link-flap
+errdisable recovery cause sfp-config-mismatch
+errdisable recovery cause gbic-invalid
+errdisable recovery cause l2ptguard
+errdisable recovery cause psecure-violation
+errdisable recovery cause port-mode-failure
+errdisable recovery cause dhcp-rate-limit
+errdisable recovery cause pppoe-ia-rate-limit
+errdisable recovery cause mac-limit
+errdisable recovery cause storm-control
+errdisable recovery cause inline-power
+errdisable recovery cause arp-inspection
+errdisable recovery cause link-monitor-failure
+errdisable recovery cause oam-remote-failure
+errdisable recovery cause loopback
+errdisable recovery cause psp
+!
+device-tracking policy trusted_policy
+device-role switch
+trusted-port
+!
+!
+password encryption aes
+!
+redundancy
+mode sso
+!
+{% for vlan_id in device.site.vlan_groups.get(name=device.name).vlans.all() %}
+ vlan {{ vlan_id.vid }}
+ name {{ vlan_id.name }}
+ !
+{% endfor %}
+!
