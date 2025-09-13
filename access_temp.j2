@@ -114,8 +114,8 @@ redundancy
 mode sso
 !
 {% for vlan_id in device.site.vlan_groups.get(name=device.name).vlans.all() %}
- vlan {{ vlan_id.vid }}
- name {{ vlan_id.name }}
- !
+vlan {{ vlan_id.vid }}
+   name {{ vlan_id.name }}
+!
 {% endfor %}
 !
