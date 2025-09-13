@@ -1,4 +1,9 @@
 !
+{% set vlan_group = device.site.vlan_groups.get(name=device.name) if device.site and device.site.vlan_groups else None %}
+{% set vlans = vlan_group.vlans.all() %}
+{% set mgmt_vlan = vlan_group.vlans.get(name='mgmt') if vlan_group and vlan_group.vlans else None %}
+{% set mgmt_vid = mgmt_vlan.vid if mgmt_vlan else None %}
+!
 no service pad
 no platform punt-keepalive disable-kernel-core
 no ip domain lookup
@@ -50,7 +55,7 @@ tacacs server EasternTacacsServers
 aaa group server tacacs+ SuncorTacacsServers
    server name WesternTacacsServers
    server name EasternTacacsServers   
-   ip tacacs source-interface Vlan{{ device.site.vlan_groups.get(name=device.name).vlans.get(name='mgmt').vid }}
+   ip tacacs source-interface Vlan{{ mgmt_vid}}
 !
 ip domain name network.lan
 
@@ -113,9 +118,41 @@ password encryption aes
 redundancy
 mode sso
 !
-{% for vlan_id in device.site.vlan_groups.get(name=device.name).vlans.all() %}
+{% for vlan_id in vlans %}
 vlan {{ vlan_id.vid }}
    name {{ vlan_id.name }}
 !
 {% endfor %}
+!
+interface vlan{{ mgmt_vid}}
+ip address {{ mgmt_int_ip_add }} {{ mgmt_int_mask }}
+no ip redirects 
+!
+ip default-gateway {{ gateway }}
+!
+no qos rewrite ip dscp
+qos queue-softmax-multiplier 1200 
+!
+logging history size 50
+logging trap notifications
+logging facility local5
+logging source-interface Vlan{{ mgmt_vid}}
+logging host 10.157.1.196
+logging host 10.159.1.196
+logging host 10.145.88.29
+logging host 10.146.88.29
+logging host 10.22.120.57
+logging host 10.146.78.4
+!
+ip access-list standard acl-snmp-read-only
+permit 10.22.120.57
+permit 10.146.88.29
+permit 10.145.88.29
+permit 10.157.1.192 0.0.0.31
+permit 10.159.1.192 0.0.0.31
+permit 10.8.31.0 0.0.0.127
+permit 10.16.31.0 0.0.0.127
+permit 10.64.31.0 0.0.0.127
+permit 10.22.66.128 0.0.0.127
+deny   any log
 !
