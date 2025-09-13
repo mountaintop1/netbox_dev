@@ -732,40 +732,43 @@ class-map match-any system-cpp-police-system-critical
 !
 policy-map system-cpp-policy
 !
-{% for uplink in uplinks %}
-    interface {{ uplink.int_name }}
-    description "<<remotehost={{ uplink.remote_host }}; port={{ uplink.remote_port }}>>"
-    speed nonegotiate
-    service-policy output policy-q-intf
-    {% if uplink.etherc_num %}
-        channel-group {{ uplink.etherc_num }} mode active
-        channel-protocol lacp
-        !
-    {% else %}
-        switchport trunk allowed vlan {{ vlan_ids | join(',') }}
-        switchport mode trunk
-        spanning-tree portfast disable
-        spanning-tree bpduguard disable
-        logging event link-status
-        logging event trunk-status
-        speed nonegotiate
-        ip dhcp snooping trust
-        load-interval 30
-    {% endif %}
+{% set device_interfaces = device.interfaces.all() %}
+{% for int in device_interfaces | selectattr('lag', 'ne', none) %}
+   {% set vlan_ids = [] %}
+   {% for v in int.tagged_vlans.all() %}
+      {% set _ = vlan_ids.append(v.vid) %}
+   {% endfor %}
+interface {{ int.name}}
+   description "{{ int.description }}"
+   speed nonegotiate
+   service-policy output policy-q-intf
+   channel-group {{ int.lag[-1] }} mode active
+   channel-protocol lacp
+   switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+   switchport mode trunk
+   spanning-tree portfast disable
+   spanning-tree bpduguard disable
+   logging event link-status
+   ip dhcp snooping trust
+   load-interval 30
 {% endfor %}
 !
-{% if uplinks[0].etherc_num %}
-    interface Port-channel {{ uplinks[0].etherc_num }}
-    description "<<remotehost={{ uplinks[0].etherc_remote_host }}; port={{ uplinks[0].etherc_remote_port }}>>"
-    switchport trunk allowed vlan {{ vlan_ids | join(',') }}
-    switchport mode trunk
-    spanning-tree portfast disable
-    spanning-tree bpduguard disable
-    logging event link-status
-    logging event trunk-status
-    ip dhcp snooping trust
-    load-interval 30
-    speed nonegotiate
-    device-tracking attach-policy trusted_policy
-{% endif %}
+{% for int in device_interfaces | selectattr('type', 'equalto', 'lag') %}
+   {% set vlan_ids = [] %}
+   {% for v in int.tagged_vlans.all() %}
+      {% set _ = vlan_ids.append(v.vid) %}
+   {% endfor %}
+interface {{ int.name }}
+   description "{{ int.description }}"
+   switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+   switchport mode trunk
+   spanning-tree portfast disable
+   spanning-tree bpduguard disable
+   logging event link-status
+   logging event trunk-status
+   ip dhcp snooping trust
+   load-interval 30
+   speed nonegotiate
+   device-tracking attach-policy trusted_policy
+{% endfor %}
 !
