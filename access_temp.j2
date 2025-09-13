@@ -3,6 +3,9 @@
 {% set vlans = vlan_group.vlans.all() %}
 {% set mgmt_vlan = vlan_group.vlans.get(name='mgmt') if vlan_group and vlan_group.vlans else None %}
 {% set mgmt_vid = mgmt_vlan.vid if mgmt_vlan else None %}
+{% set mgmt_net = device.interfaces.get(type='virtual').ip_addresses.get().address %}
+{% set mgmt_ip = mgmt_net.ip %}
+{% set mgmt_netmask = mgmt_net.netmask %}
 !
 no service pad
 no platform punt-keepalive disable-kernel-core
@@ -125,7 +128,7 @@ vlan {{ vlan_id.vid }}
 {% endfor %}
 !
 interface vlan{{ mgmt_vid}}
-ip address {{ mgmt_int_ip_add }} {{ mgmt_int_mask }}
+ip address {{ mgmt_ip }} {{ mgmt_netmask }}
 no ip redirects 
 !
 ip default-gateway {{ gateway }}
