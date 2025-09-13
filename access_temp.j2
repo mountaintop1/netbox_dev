@@ -1,9 +1,7 @@
-!
 {% set vlan_group = device.site.vlan_groups.get(name=device.name) if device.site and device.site.vlan_groups else None %}
 {% set vlans = vlan_group.vlans.all() %}
 {% set mgmt_vlan = vlan_group.vlans.get(name='mgmt') if vlan_group and vlan_group.vlans else None %}
 {% set mgmt_vid = mgmt_vlan.vid if mgmt_vlan else None %}
-
 {% set mgmt_net = device.interfaces.get(type='virtual').ip_addresses.get().address %}
 {% set mgmt_ip = mgmt_net.ip %}
 {% set mgmt_netmask = mgmt_net.netmask %}
@@ -24,7 +22,6 @@ no service udp-small-servers
 no service call-home
 service unsupported-transceiver
 !
-
 service tcp-keepalives-in
 service tcp-keepalives-out
 !
@@ -88,7 +85,6 @@ no spanning-tree etherchannel guard misconfig
 spanning-tree portfast default
 spanning-tree extend system-id
 !
-!
 errdisable recovery cause udld
 errdisable recovery cause bpduguard
 errdisable recovery cause security-violation
@@ -116,7 +112,6 @@ device-tracking policy trusted_policy
 device-role switch
 trusted-port
 !
-!
 password encryption aes
 !
 redundancy
@@ -125,7 +120,6 @@ mode sso
 {% for vlan_id in vlans %}
 vlan {{ vlan_id.vid }}
    name {{ vlan_id.name }}
-!
 {% endfor %}
 !
 interface vlan{{ mgmt_vid}}
