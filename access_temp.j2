@@ -32,7 +32,7 @@ service password-encryption
 !
 lldp run
 !
-hostname  {{- device.name -}}
+hostname  {{ device.name }}
 !
 logging discriminator HIDE_LOG severity drops 4 facility drops PLATFORM mnemonics drops ELEMENT_WARNING
 logging count
@@ -56,7 +56,7 @@ tacacs server EasternTacacsServers
 aaa group server tacacs+ SuncorTacacsServers
    server name WesternTacacsServers
    server name EasternTacacsServers   
-   ip tacacs source-interface Vlan{{ mgmt_vid}}
+   ip tacacs source-interface Vlan{{ mgmt_vid }}
 !
 ip domain name network.lan
 !
@@ -118,15 +118,15 @@ redundancy
 mode sso
 !
 {%- for vlan_id in vlans -%}
-vlan {{- vlan_id.vid -}}
-   name {{- vlan_id.name -}}
+vlan {{ vlan_id.vid }}
+   name {{ vlan_id.name }}
 {%- endfor -%}
 !
 interface vlan{{ mgmt_vid}}
-   ip address {{- mgmt_ip -}} {{- mgmt_netmask -}}
+   ip address {{ mgmt_ip }} {{ mgmt_netmask }}
    no ip redirects 
 !
-ip default-gateway {{- gateway -}}
+ip default-gateway {{ gateway }}
 !
 no qos rewrite ip dscp
 qos queue-softmax-multiplier 1200 
@@ -134,7 +134,7 @@ qos queue-softmax-multiplier 1200
 logging history size 50
 logging trap notifications
 logging facility local5
-logging source-interface Vlan{{ mgmt_vid}}
+logging source-interface Vlan{{ mgmt_vid }}
 logging host 10.157.1.196
 logging host 10.159.1.196
 logging host 10.145.88.29
@@ -732,11 +732,11 @@ class-map match-any system-cpp-police-system-critical
 !
 policy-map system-cpp-policy
 {%- set device_interfaces = device.interfaces.all() -%}
-{%- for int in device_interfaces.filter(lag__isnull=False) -%}
+{% for int in device_interfaces.filter(lag__isnull=False) %}
    {%- set vlan_ids = [] -%}
-   {%- for v in int.tagged_vlans.all() -%}
+   {% for v in int.tagged_vlans.all() %}
       {% set _ = vlan_ids.append(v.vid) %}
-   {%- endfor -%}
+   {% endfor %}
 interface {{ int.name }}
    description "{{ int.description }}"
    speed nonegotiate
@@ -750,12 +750,12 @@ interface {{ int.name }}
    logging event link-status
    ip dhcp snooping trust
    load-interval 30
-{%- endfor -%}
+{% endfor %}
 {%- for int in device_interfaces.filter(type='lag') -%}
    {% set vlan_ids = [] %}
-   {%- for v in int.tagged_vlans.all() -%}
+   {% for v in int.tagged_vlans.all() %}
       {% set _ = vlan_ids.append(v.vid) %}
-   {%- endfor -%}
+   {% endfor %}
 interface {{ int.name }}
    description "{{ int.description }}"
    switchport trunk allowed vlan {{ vlan_ids | join(',') }}
