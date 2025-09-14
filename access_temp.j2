@@ -45,6 +45,7 @@ enable secret 9 $9$KUQ3lTSgrdAc6U$V9.vfvjelox14/zdQxmToY6LAFeVmQ3iq57eGsXeUF6
 !
 aaa new-model
 !
+!
 tacacs server WesternTacacsServers
    address ipv4 10.146.119.221
    key 7 044B0E121D71585C581809
@@ -53,10 +54,25 @@ tacacs server EasternTacacsServers
    address ipv4 10.22.128.221
    key 7 044B0E121D71585C581809
    timeout 30
+!
 aaa group server tacacs+ SuncorTacacsServers
    server name WesternTacacsServers
    server name EasternTacacsServers   
    ip tacacs source-interface Vlan{{ mgmt_vid }}
+!
+!
+aaa authentication login default group SuncorTacacsServers local
+aaa authentication login no_tacacs local enable
+aaa authorization exec default group SuncorTacacsServers local
+aaa authorization commands 1 default group SuncorTacacsServers none
+aaa authorization commands 15 default group SuncorTacacsServers none
+aaa accounting exec default start-stop group SuncorTacacsServers
+aaa accounting commands 1 default start-stop group SuncorTacacsServers
+aaa accounting commands 15 default start-stop group SuncorTacacsServers
+aaa accounting network default start-stop group SuncorTacacsServers
+aaa authorization config-commands
+aaa session-id common
+!
 !
 ip domain name network.lan
 !
@@ -812,6 +828,8 @@ privilege level 15
 password 7 0705344247191C1746
 transport input ssh
 transport output ssh
+transport output none
+!
 !
 line vty 5 31
 session-timeout 180
@@ -821,4 +839,7 @@ privilege level 15
 password 7 0705344247191C1746
 transport input ssh
 transport output ssh
+transport output none
 !
+!
+!--------Thank You-------
