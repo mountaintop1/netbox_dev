@@ -652,7 +652,7 @@ interface {{ int.name }}
    storm-control action shutdown
 !
    {% endif %}
-{% endfor -%}
+{%- endfor -%}
 {%- for int in device_interfaces.filter(lag__isnull=False) -%}
    {%- set vlan_ids = [] -%}
    {%- for v in int.tagged_vlans.all() -%}
