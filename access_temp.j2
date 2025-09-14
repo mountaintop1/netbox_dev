@@ -737,7 +737,7 @@ policy-map system-cpp-policy
 !
 !
 {% set device_interfaces = device.interfaces.all() %}
-{% for int in device_interfaces.filter(mode='access') %}
+{%- for int in device_interfaces.filter(mode='access') -%}
 interface {{ int.name }}
   description "{{ int.description }}"
   switchport
