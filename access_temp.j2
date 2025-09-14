@@ -732,14 +732,12 @@ class-map match-any system-cpp-police-system-critical
 !
 policy-map system-cpp-policy
 !
-!
 {%- set device_interfaces = device.interfaces.all() -%}
 {%- for int in device_interfaces.filter(lag__isnull=False) -%}
    {%- set vlan_ids = [] -%}
    {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
    {%- endfor -%}
-!
 !
 interface {{ int.name }}
    description "{{ int.description }}"
@@ -755,14 +753,12 @@ interface {{ int.name }}
    ip dhcp snooping trust
    load-interval 30
 !
-!
 {% endfor %}
 {%- for int in device_interfaces.filter(type='lag') -%}
    {% set vlan_ids = [] %}
    {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
    {%- endfor -%}
-!
 !
 interface {{ int.name }}
    description "{{ int.description }}"
