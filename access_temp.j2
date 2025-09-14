@@ -733,7 +733,7 @@ class-map match-any system-cpp-police-system-critical
 policy-map system-cpp-policy
 !
 !
-{%- set device_interfaces = device.interfaces.all() -%}
+{% set device_interfaces = device.interfaces.all() %}
 {% for int in device_interfaces.filter(lag__isnull=False) %}
    {%- set vlan_ids = [] -%}
    {%- for v in int.tagged_vlans.all() -%}
