@@ -731,9 +731,11 @@ class-map match-any system-cpp-police-system-critical
   description System Critical and Gold Pkt
 !
 policy-map system-cpp-policy
+
 !
+lag = device[0].interfaces.all().filter(type='lag')[0]
 {% set device_interfaces = device.interfaces.all() %}
-{% for int in device_interfaces | selectattr('lag', 'ne', none) %}
+{% for int in device_interfaces.filter(lag__isnull=False) %}
    {% set vlan_ids = [] %}
    {% for v in int.tagged_vlans.all() %}
       {% set _ = vlan_ids.append(v.vid) %}
@@ -753,7 +755,7 @@ interface {{ int.name}}
    load-interval 30
 {% endfor %}
 !
-{% for int in device_interfaces | selectattr('type', 'equalto', 'lag') %}
+{% for int in device_interfaces.filter(type='lag') %}
    {% set vlan_ids = [] %}
    {% for v in int.tagged_vlans.all() %}
       {% set _ = vlan_ids.append(v.vid) %}
