@@ -635,7 +635,7 @@ interface {{ int.name }}
    storm-control broadcast level 2.00
    storm-control action shutdown
 !
-   {% endif %}
+   {%- endif -%}
 {% endfor %}
 {%- for int in device_interfaces.filter(lag__isnull=False) -%}
    {%- set vlan_ids = [] -%}
