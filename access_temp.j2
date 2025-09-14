@@ -657,7 +657,7 @@ interface {{ int.name }}
    {%- set vlan_ids = [] -%}
    {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
-   {% endfor %}
+   {%- endfor -%}
 interface {{ int.name }}
    description "{{ int.description }}"
    speed nonegotiate
