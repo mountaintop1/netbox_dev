@@ -637,7 +637,7 @@ interface {{ int.name }}
 !
    {% endif %}
 {%- endfor -%}
-{% for int in device_interfaces.filter(lag__isnull=False) %}
+{%- for int in device_interfaces.filter(lag__isnull=False) -%}
    {%- set vlan_ids = [] -%}
    {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
