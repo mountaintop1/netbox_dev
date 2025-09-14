@@ -120,7 +120,7 @@ mode sso
 {% for vlan_id in vlans %}
 vlan {{ vlan_id.vid }}
    name {{ vlan_id.name }}
-{%- endfor -%}
+{% endfor %}
 !
 interface vlan{{ mgmt_vid}}
    ip address {{ mgmt_ip }} {{ mgmt_netmask }}
@@ -731,12 +731,14 @@ class-map match-any system-cpp-police-system-critical
   description System Critical and Gold Pkt
 !
 policy-map system-cpp-policy
+!
+!
 {%- set device_interfaces = device.interfaces.all() -%}
-{% for int in device_interfaces.filter(lag__isnull=False) %}
+{%- for int in device_interfaces.filter(lag__isnull=False) -%}
    {%- set vlan_ids = [] -%}
-   {% for v in int.tagged_vlans.all() %}
+   {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
-   {% endfor %}
+   {%- endfor -%}
 interface {{ int.name }}
    description "{{ int.description }}"
    speed nonegotiate
@@ -750,12 +752,12 @@ interface {{ int.name }}
    logging event link-status
    ip dhcp snooping trust
    load-interval 30
-{% endfor %}
+{%- endfor -%}
 {%- for int in device_interfaces.filter(type='lag') -%}
    {% set vlan_ids = [] %}
-   {% for v in int.tagged_vlans.all() %}
+   {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
-   {% endfor %}
+   {%- endfor -%}
 interface {{ int.name }}
    description "{{ int.description }}"
    switchport trunk allowed vlan {{ vlan_ids | join(',') }}
