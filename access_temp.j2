@@ -117,7 +117,7 @@ password encryption aes
 redundancy
 mode sso
 !
-{%- for vlan_id in vlans -%}
+{% for vlan_id in vlans %}
 vlan {{ vlan_id.vid }}
    name {{ vlan_id.name }}
 {%- endfor -%}
