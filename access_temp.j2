@@ -737,6 +737,26 @@ policy-map system-cpp-policy
 !
 !
 {% set device_interfaces = device.interfaces.all() %}
+{% for int in device_interfaces.filter(mode='access') %}
+interface {{ int.name }}
+  description "{{ int.description }}"
+  switchport
+  switchport mode access
+  switchport access vlan {{ int.untagged_vlan.vid }}
+  network-policy 1
+  switchport port-security
+  switchport port-security maximum 3
+  switchport port-security violation restrict
+  switchport port-security aging time 5
+  switchport port-security aging type inactivity
+  no snmp trap link-status
+  storm-control broadcast level 2.00
+  storm-control action shutdown
+  service-policy input policy-qos-intf-tl3
+  service-policy output policy-q-intf
+  !
+{% endfor %}
+!
 {% for int in device_interfaces.filter(lag__isnull=False) %}
    {%- set vlan_ids = [] -%}
    {%- for v in int.tagged_vlans.all() -%}
@@ -757,6 +777,7 @@ interface {{ int.name }}
    load-interval 30
 !
 {% endfor %}
+
 {%- for int in device_interfaces.filter(type='lag') -%}
    {% set vlan_ids = [] %}
    {%- for v in int.tagged_vlans.all() -%}
@@ -777,22 +798,3 @@ interface {{ int.name }}
    device-tracking attach-policy trusted_policy
 {% endfor %}
 !
-{% for int in device_interfaces.filter(mode='access') %}
-interface {{ int.name }}
-  description "{{ int.description }}"
-  switchport
-  switchport mode access
-  switchport access vlan {{ int.untagged_vlan.vid }}
-  network-policy 1
-  switchport port-security
-  switchport port-security maximum 3
-  switchport port-security violation restrict
-  switchport port-security aging time 5
-  switchport port-security aging type inactivity
-  no snmp trap link-status
-  storm-control broadcast level 2.00
-  storm-control action shutdown
-  service-policy input policy-qos-intf-tl3
-  service-policy output policy-q-intf
-  !
-{% endfor %}
