@@ -620,7 +620,6 @@ interface {{ int.name }}
   service-policy output policy-q-intf
 !
 {% endfor %}
-
 {%- for int in device_interfaces.filter(mode='tagged') -%}
 {% set desc = (int.description | default('') | lower) %}
    {% if 'lap' in desc or 'wif' in desc or 'ap' in desc %}
@@ -636,10 +635,8 @@ interface {{ int.name }}
    storm-control broadcast level 2.00
    storm-control action shutdown
 !
-   {%- endif -%}
-{%- endfor -%}
-!
-!
+   {% endif %}
+{% endfor %}
 {% for int in device_interfaces.filter(lag__isnull=False) %}
    {%- set vlan_ids = [] -%}
    {%- for v in int.tagged_vlans.all() -%}
