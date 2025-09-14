@@ -1,10 +1,10 @@
-{% set vlan_group = device.site.vlan_groups.get(name=device.name) if device.site and device.site.vlan_groups else None %}
-{% set vlans = vlan_group.vlans.all() %}
-{% set mgmt_vlan = vlan_group.vlans.get(name='mgmt') if vlan_group and vlan_group.vlans else None %}
-{% set mgmt_vid = mgmt_vlan.vid if mgmt_vlan else None %}
-{% set mgmt_net = device.interfaces.get(type='virtual').ip_addresses.get().address %}
-{% set mgmt_ip = mgmt_net.ip %}
-{% set mgmt_netmask = mgmt_net.netmask %}
+{%- set vlan_group = device.site.vlan_groups.get(name=device.name) if device.site and device.site.vlan_groups else None -%}
+{%- set vlans = vlan_group.vlans.all() -%}
+{%- set mgmt_vlan = vlan_group.vlans.get(name='mgmt') if vlan_group and vlan_group.vlans else None -%}
+{%- set mgmt_vid = mgmt_vlan.vid if mgmt_vlan else None -%}
+{%- set mgmt_net = device.interfaces.get(type='virtual').ip_addresses.get().address -%}
+{%- set mgmt_ip = mgmt_net.ip -%}
+{%- set mgmt_netmask = mgmt_net.netmask -%}
 !
 no service pad
 no platform punt-keepalive disable-kernel-core
@@ -32,7 +32,7 @@ service password-encryption
 !
 lldp run
 !
-hostname  {{ device.name }}
+hostname  {{- device.name -}}
 !
 logging discriminator HIDE_LOG severity drops 4 facility drops PLATFORM mnemonics drops ELEMENT_WARNING
 logging count
@@ -59,7 +59,7 @@ aaa group server tacacs+ SuncorTacacsServers
    ip tacacs source-interface Vlan{{ mgmt_vid}}
 !
 ip domain name network.lan
-
+!
 ip dhcp snooping
 no ip dhcp snooping information option
 ip dhcp snooping vlan 1-4094
@@ -117,16 +117,16 @@ password encryption aes
 redundancy
 mode sso
 !
-{% for vlan_id in vlans %}
-vlan {{ vlan_id.vid }}
-   name {{ vlan_id.name }}
-{% endfor %}
+{%- for vlan_id in vlans -%}
+vlan {{- vlan_id.vid -}}
+   name {{- vlan_id.name -}}
+{%- endfor -%}
 !
 interface vlan{{ mgmt_vid}}
-   ip address {{ mgmt_ip }} {{ mgmt_netmask }}
+   ip address {{- mgmt_ip -}} {{- mgmt_netmask -}}
    no ip redirects 
 !
-ip default-gateway {{ gateway }}
+ip default-gateway {{- gateway -}}
 !
 no qos rewrite ip dscp
 qos queue-softmax-multiplier 1200 
@@ -731,16 +731,13 @@ class-map match-any system-cpp-police-system-critical
   description System Critical and Gold Pkt
 !
 policy-map system-cpp-policy
-
-!
-lag = device[0].interfaces.all().filter(type='lag')[0]
-{% set device_interfaces = device.interfaces.all() %}
-{% for int in device_interfaces.filter(lag__isnull=False) %}
-   {% set vlan_ids = [] %}
-   {% for v in int.tagged_vlans.all() %}
+{%- set device_interfaces = device.interfaces.all() -%}
+{%- for int in device_interfaces.filter(lag__isnull=False) -%}
+   {%- set vlan_ids = [] -%}
+   {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
-   {% endfor %}
-interface {{ int.name}}
+   {%- endfor -%}
+interface {{ int.name }}
    description "{{ int.description }}"
    speed nonegotiate
    service-policy output policy-q-intf
@@ -753,13 +750,12 @@ interface {{ int.name}}
    logging event link-status
    ip dhcp snooping trust
    load-interval 30
-{% endfor %}
-!
-{% for int in device_interfaces.filter(type='lag') %}
+{%- endfor -%}
+{%- for int in device_interfaces.filter(type='lag') -%}
    {% set vlan_ids = [] %}
-   {% for v in int.tagged_vlans.all() %}
+   {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
-   {% endfor %}
+   {%- endfor -%}
 interface {{ int.name }}
    description "{{ int.description }}"
    switchport trunk allowed vlan {{ vlan_ids | join(',') }}
@@ -772,5 +768,4 @@ interface {{ int.name }}
    load-interval 30
    speed nonegotiate
    device-tracking attach-policy trusted_policy
-{% endfor %}
-!
+{%- endfor -%}
