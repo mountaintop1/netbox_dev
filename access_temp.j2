@@ -743,7 +743,7 @@ interface {{ int.name }}
    description "{{ int.description }}"
    speed nonegotiate
    service-policy output policy-q-intf
-   channel-group {{ int.lag[-1] }} mode active
+   channel-group {{ int.lag | last }} mode active
    channel-protocol lacp
    switchport trunk allowed vlan {{ vlan_ids | join(',') }}
    switchport mode trunk
