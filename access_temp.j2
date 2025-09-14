@@ -635,7 +635,7 @@ interface {{ int.name }}
  service-policy input policy-qos-intf-tl3
  service-policy output policy-q-intf
 !
-{%- endfor -%}
+{% endfor %}
 {%- for int in device_interfaces.filter(mode='tagged') -%}
 {%- set desc = (int.description | default('') | lower) -%}
 {%- if 'lap' in desc or 'wif' in desc or 'ap' in desc -%}
