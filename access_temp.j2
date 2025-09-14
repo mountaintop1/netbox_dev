@@ -739,6 +739,8 @@ policy-map system-cpp-policy
    {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
    {%- endfor -%}
+!
+!
 interface {{ int.name }}
    description "{{ int.description }}"
    speed nonegotiate
@@ -752,13 +754,16 @@ interface {{ int.name }}
    logging event link-status
    ip dhcp snooping trust
    load-interval 30
-   !
+!
+!
 {% endfor %}
 {%- for int in device_interfaces.filter(type='lag') -%}
    {% set vlan_ids = [] %}
    {%- for v in int.tagged_vlans.all() -%}
       {% set _ = vlan_ids.append(v.vid) %}
    {%- endfor -%}
+!
+!
 interface {{ int.name }}
    description "{{ int.description }}"
    switchport trunk allowed vlan {{ vlan_ids | join(',') }}
@@ -772,3 +777,4 @@ interface {{ int.name }}
    speed nonegotiate
    device-tracking attach-policy trusted_policy
 {% endfor %}
+!
