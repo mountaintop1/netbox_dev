@@ -110,11 +110,17 @@ errdisable recovery cause oam-remote-failure
 errdisable recovery cause loopback
 errdisable recovery cause psp
 !
+!
 device-tracking policy trusted_policy
 device-role switch
 trusted-port
 !
+!
+network-policy profile 1
+   voice vlan untagged
+!
 password encryption aes
+!
 !
 redundancy
 mode sso
@@ -123,12 +129,6 @@ mode sso
 vlan {{ vlan_id.vid }}
    name {{ vlan_id.name }}
 {% endfor %}
-!
-interface vlan{{ mgmt_vid}}
-   ip address {{ mgmt_ip }} {{ mgmt_netmask }}
-   no ip redirects 
-!
-ip default-gateway {{ gateway }}
 !
 no qos rewrite ip dscp
 qos queue-softmax-multiplier 1200 
@@ -170,142 +170,6 @@ ip access-list extended acl-ssh-access
    permit tcp 10.146.68.0 0.0.0.255 gt 1024 any eq 22
    deny   ip any any log
 !
-snmp-server community {{ community }} RO acl-snmp-read-only
-snmp-server trap-source Vlan{{ mgmt_vid }}
-snmp-server file-transfer access-group acl-snmp-read-only protocol tftp
-snmp-server contact IFNSSDAT
-snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
-snmp-server enable traps flowmon
-snmp-server enable traps call-home message-send-fail server-fail
-snmp-server enable traps tty
-snmp-server enable traps auth-framework sec-violation
-snmp-server enable traps rep
-snmp-server enable traps vtp
-snmp-server enable traps vlancreate
-snmp-server enable traps vlandelete
-snmp-server enable traps port-security
-snmp-server enable traps cpu threshold
-snmp-server enable traps memory bufferpeak
-snmp-server enable traps envmon fan shutdown supply temperature status
-snmp-server enable traps fru-ctrl
-snmp-server enable traps flash insertion removal
-snmp-server enable traps energywise
-snmp-server enable traps power-ethernet police
-snmp-server enable traps entity
-snmp-server enable traps ike policy add
-snmp-server enable traps ike policy delete
-snmp-server enable traps ike tunnel start
-snmp-server enable traps ike tunnel stop
-snmp-server enable traps ipsec cryptomap add
-snmp-server enable traps ipsec cryptomap delete
-snmp-server enable traps ipsec cryptomap attach
-snmp-server enable traps ipsec cryptomap detach
-snmp-server enable traps ipsec tunnel start
-snmp-server enable traps ipsec tunnel stop
-snmp-server enable traps ipsec too-many-sas
-snmp-server enable traps ipsla
-snmp-server enable traps config-copy
-snmp-server enable traps config
-snmp-server enable traps config-ctid
-snmp-server enable traps event-manager
-snmp-server enable traps vstack
-snmp-server enable traps bridge newroot topologychange
-snmp-server enable traps stpx inconsistency root-inconsistency loop-inconsistency
-snmp-server enable traps syslog
-snmp-server enable traps vlan-membership
-snmp-server enable traps errdisable
-snmp-server enable traps rf
-snmp-server enable traps transceiver all
-snmp-server enable traps bulkstat collection transfer
-snmp-server enable traps mac-notification change move threshold
-snmp-server enable traps vrfmib vrf-up vrf-down vnet-trunk-up vnet-trunk-down
-snmp-server host 10.157.1.196 {{ community }}
-snmp-server host 10.159.1.196 {{ community }}
-snmp-server host 10.145.88.29 {{ community }}
-snmp-server host 10.146.88.29 {{ community }}
-snmp-server host 10.22.120.57 {{ community }}
-snmp-server file-transfer access-group 7 protocol tftp
-snmp ifmib ifindex persist
-!
-ip tacacs source-interface Vlan{{ mgmt_vid }}
-tacacs-server directed-request restricted
-!
-network-policy profile 1
-   voice vlan untagged
-
-!
-banner motd  ^
-********************************************************************************
-THIS IS A PRIVATE SYSTEM INTENDED FOR SUNCOR AUTHORIZED USE ONLY.
-UNAUTHORIZED ACCESS WILL BE REPORTED TO SUNCOR'S INFORMATION SECURITY
-PERSONNEL AND LAW ENFORCEMENT AGENCIES.
-USE OF SUNCOR'S SYSTEMS IS INTENDED FOR BUSINESS PURPOSES.
-THERE IS NO RIGHT OF PRIVACY IN THIS SYSTEM. INFORMATION SYSTEMS AND SECURITY
-PERSONNEL MAY GIVE TO LAW ENFORCEMENT OFFICIALS ANY POTENTIAL EVIDENCE OF CRIME
-FOUND ON THIS SYSTEM. USE OF THIS SYSTEM BY ANY USER, AUTHORIZED OR
-UNAUTHORIZED, CONSTITUTES EXPRESS CONSENT TO THIS MONITORING, WHICH MAY INCLUDE
-INTERCEPTION, RECORDING, READING, COPYING, OR CAPTURING AND, IF REASONABLY
-REQUIRED AND PERMITTED BY LAW, DISCLOSURE TO THE APPROPRIATE AUTHORITIES.
-IF YOU DO NOT CONSENT, LOG OFF NOW.
-********************************************************************************
-CECI EST UN SYSTEME PRIVE QUI DOIT ETRE UNIQUEMENT UTILISE A DES FINS DUMENT
-AUTORISEES PAR SUNCOR. TOUT ACCES NON AUTORISE SERA RAPPORTE AU GROUPE DE
-LA SECURITE DE L'INFORMAITON DE SUNCOR ET AUX ORGANISMES D'APPLICATION DE
-LA LOI.
-L'UTILISATION DE CE SYSTEME EST PREVUE A DES FINS COMMERCIALES.
-AUCUN DROIT A LA VIE PRIVEE N'EXISTE DANS CE SYSTEME. LE PERSONNEL DES SERVICES
-INFORMATIQUES ET DU GROUPE DE LA SECURITE DE L'INFORMAITON PEUT SOUMETTRE TOUTE
-EVIDENCE D'UN CRIME POTENTIEL AUX RESPONSABLES DE L'APPLICATION DE LA LOI.
-L'UTILISATION DE CE SYSTEME PAR TOUTE PERSONNE AUTORISEE OU NON, CONSTITUE UN
-CONSENTEMENT TACITE A LA SURVEILLANCE, INCLUANT L'INTERCEPTION, L'ENREGISTREMENT,
-LA LECTURE, LA COPIE, OU LA CAPTURE ET, SI EXIGEE ET PERMISE PAR LA LOI,
-LA DIVULGATION AUX AUTORITES APPROPRIEES.
-SI VOUS NE CONSENTEZ PAS A CES CONDITIONS, SORTEZ DU SYSTEME MAINTENANT.
-********************************************************************************
-^
-!
-line con 0
-exec-timeout 15 0
-login authentication no_tacacs
-stopbits 1
-!
-line vty 0 4
-session-timeout 180
-access-class acl-ssh-access in
-exec-timeout 15 0
-privilege level 15
-password 7 0705344247191C1746
-transport input ssh
-transport output ssh
-!
-line vty 5 31
-session-timeout 180
-access-class acl-ssh-access in
-exec-timeout 15 0
-privilege level 15
-password 7 0705344247191C1746
-transport input ssh
-transport output ssh
-!
-ip ssh version 2
-ip ssh time-out 60
-ip ssh authentication-retries 3
-ip ssh source-interface Vlan{{ mgmt_vid}}
-!
-access-list 5 permit 10.8.60.47
-access-list 5 permit 10.8.60.44
-access-list 5 permit 10.22.131.253
-access-list 6 deny   any
-!
-ntp access-group peer 5
-ntp access-group serve 6
-ntp server 10.8.60.44
-ntp server 10.22.131.253
-ntp server 10.8.60.47
-ntp source Vlan{{ mgmt_vid}}
-ntp authentication-key 5 md5 11281D081E1C5A5E57 7
-ntp authenticate
-ntp trusted-key 5
 !
 ip access-list standard acl-ssm-groups
    permit 232.0.0.0 0.255.255.255
@@ -754,7 +618,7 @@ interface {{ int.name }}
   storm-control action shutdown
   service-policy input policy-qos-intf-tl3
   service-policy output policy-q-intf
-  !
+!
 {% endfor %}
 !
 {% for int in device_interfaces.filter(lag__isnull=False) %}
@@ -797,4 +661,148 @@ interface {{ int.name }}
    speed nonegotiate
    device-tracking attach-policy trusted_policy
 {% endfor %}
+!
+!
+banner motd  ^
+********************************************************************************
+THIS IS A PRIVATE SYSTEM INTENDED FOR SUNCOR AUTHORIZED USE ONLY.
+UNAUTHORIZED ACCESS WILL BE REPORTED TO SUNCOR'S INFORMATION SECURITY
+PERSONNEL AND LAW ENFORCEMENT AGENCIES.
+USE OF SUNCOR'S SYSTEMS IS INTENDED FOR BUSINESS PURPOSES.
+THERE IS NO RIGHT OF PRIVACY IN THIS SYSTEM. INFORMATION SYSTEMS AND SECURITY
+PERSONNEL MAY GIVE TO LAW ENFORCEMENT OFFICIALS ANY POTENTIAL EVIDENCE OF CRIME
+FOUND ON THIS SYSTEM. USE OF THIS SYSTEM BY ANY USER, AUTHORIZED OR
+UNAUTHORIZED, CONSTITUTES EXPRESS CONSENT TO THIS MONITORING, WHICH MAY INCLUDE
+INTERCEPTION, RECORDING, READING, COPYING, OR CAPTURING AND, IF REASONABLY
+REQUIRED AND PERMITTED BY LAW, DISCLOSURE TO THE APPROPRIATE AUTHORITIES.
+IF YOU DO NOT CONSENT, LOG OFF NOW.
+********************************************************************************
+CECI EST UN SYSTEME PRIVE QUI DOIT ETRE UNIQUEMENT UTILISE A DES FINS DUMENT
+AUTORISEES PAR SUNCOR. TOUT ACCES NON AUTORISE SERA RAPPORTE AU GROUPE DE
+LA SECURITE DE L'INFORMAITON DE SUNCOR ET AUX ORGANISMES D'APPLICATION DE
+LA LOI.
+L'UTILISATION DE CE SYSTEME EST PREVUE A DES FINS COMMERCIALES.
+AUCUN DROIT A LA VIE PRIVEE N'EXISTE DANS CE SYSTEME. LE PERSONNEL DES SERVICES
+INFORMATIQUES ET DU GROUPE DE LA SECURITE DE L'INFORMAITON PEUT SOUMETTRE TOUTE
+EVIDENCE D'UN CRIME POTENTIEL AUX RESPONSABLES DE L'APPLICATION DE LA LOI.
+L'UTILISATION DE CE SYSTEME PAR TOUTE PERSONNE AUTORISEE OU NON, CONSTITUE UN
+CONSENTEMENT TACITE A LA SURVEILLANCE, INCLUANT L'INTERCEPTION, L'ENREGISTREMENT,
+LA LECTURE, LA COPIE, OU LA CAPTURE ET, SI EXIGEE ET PERMISE PAR LA LOI,
+LA DIVULGATION AUX AUTORITES APPROPRIEES.
+SI VOUS NE CONSENTEZ PAS A CES CONDITIONS, SORTEZ DU SYSTEME MAINTENANT.
+********************************************************************************
+^
+!
+!
+interface vlan{{ mgmt_vid}}
+   ip address {{ mgmt_ip }} {{ mgmt_netmask }}
+   no ip redirects 
+!
+ip default-gateway {{ gateway }}
+!
+!
+snmp-server community {{ community }} RO acl-snmp-read-only
+snmp-server trap-source Vlan{{ mgmt_vid }}
+snmp-server file-transfer access-group acl-snmp-read-only protocol tftp
+snmp-server contact IFNSSDAT
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps flowmon
+snmp-server enable traps call-home message-send-fail server-fail
+snmp-server enable traps tty
+snmp-server enable traps auth-framework sec-violation
+snmp-server enable traps rep
+snmp-server enable traps vtp
+snmp-server enable traps vlancreate
+snmp-server enable traps vlandelete
+snmp-server enable traps port-security
+snmp-server enable traps cpu threshold
+snmp-server enable traps memory bufferpeak
+snmp-server enable traps envmon fan shutdown supply temperature status
+snmp-server enable traps fru-ctrl
+snmp-server enable traps flash insertion removal
+snmp-server enable traps energywise
+snmp-server enable traps power-ethernet police
+snmp-server enable traps entity
+snmp-server enable traps ike policy add
+snmp-server enable traps ike policy delete
+snmp-server enable traps ike tunnel start
+snmp-server enable traps ike tunnel stop
+snmp-server enable traps ipsec cryptomap add
+snmp-server enable traps ipsec cryptomap delete
+snmp-server enable traps ipsec cryptomap attach
+snmp-server enable traps ipsec cryptomap detach
+snmp-server enable traps ipsec tunnel start
+snmp-server enable traps ipsec tunnel stop
+snmp-server enable traps ipsec too-many-sas
+snmp-server enable traps ipsla
+snmp-server enable traps config-copy
+snmp-server enable traps config
+snmp-server enable traps config-ctid
+snmp-server enable traps event-manager
+snmp-server enable traps vstack
+snmp-server enable traps bridge newroot topologychange
+snmp-server enable traps stpx inconsistency root-inconsistency loop-inconsistency
+snmp-server enable traps syslog
+snmp-server enable traps vlan-membership
+snmp-server enable traps errdisable
+snmp-server enable traps rf
+snmp-server enable traps transceiver all
+snmp-server enable traps bulkstat collection transfer
+snmp-server enable traps mac-notification change move threshold
+snmp-server enable traps vrfmib vrf-up vrf-down vnet-trunk-up vnet-trunk-down
+snmp-server host 10.157.1.196 {{ community }}
+snmp-server host 10.159.1.196 {{ community }}
+snmp-server host 10.145.88.29 {{ community }}
+snmp-server host 10.146.88.29 {{ community }}
+snmp-server host 10.22.120.57 {{ community }}
+snmp-server file-transfer access-group 7 protocol tftp
+snmp ifmib ifindex persist
+!
+!
+ip tacacs source-interface Vlan{{ mgmt_vid }}
+tacacs-server directed-request restricted
+!
+ip ssh version 2
+ip ssh time-out 60
+ip ssh authentication-retries 3
+ip ssh source-interface Vlan{{ mgmt_vid}}
+!
+access-list 5 permit 10.8.60.47
+access-list 5 permit 10.8.60.44
+access-list 5 permit 10.22.131.253
+access-list 6 deny   any
+!
+ntp access-group peer 5
+ntp access-group serve 6
+ntp server 10.8.60.44
+ntp server 10.22.131.253
+ntp server 10.8.60.47
+ntp source Vlan{{ mgmt_vid}}
+ntp authentication-key 5 md5 11281D081E1C5A5E57 7
+ntp authenticate
+ntp trusted-key 5
+!
+!
+line con 0
+exec-timeout 15 0
+login authentication no_tacacs
+stopbits 1
+!
+line vty 0 4
+session-timeout 180
+access-class acl-ssh-access in
+exec-timeout 15 0
+privilege level 15
+password 7 0705344247191C1746
+transport input ssh
+transport output ssh
+!
+line vty 5 31
+session-timeout 180
+access-class acl-ssh-access in
+exec-timeout 15 0
+privilege level 15
+password 7 0705344247191C1746
+transport input ssh
+transport output ssh
 !
