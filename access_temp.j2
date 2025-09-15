@@ -45,16 +45,6 @@ enable secret 9 $9$KUQ3lTSgrdAc6U$V9.vfvjelox14/zdQxmToY6LAFeVmQ3iq57eGsXeUF6
 !
 aaa new-model
 !
-!
-tacacs server WesternTacacsServers
-   address ipv4 10.146.119.221
-   key 7 044B0E121D71585C581809
-   timeout 30
-tacacs server EasternTacacsServers
-   address ipv4 10.22.128.221
-   key 7 044B0E121D71585C581809
-   timeout 30
-!
 aaa group server tacacs+ SuncorTacacsServers
    server name WesternTacacsServers
    server name EasternTacacsServers   
@@ -790,8 +780,19 @@ snmp-server file-transfer access-group 7 protocol tftp
 snmp ifmib ifindex persist
 !
 !
+!
+tacacs server WesternTacacsServers
+   address ipv4 10.146.119.221
+   key 7 044B0E121D71585C581809
+   timeout 30
+tacacs server EasternTacacsServers
+   address ipv4 10.22.128.221
+   key 7 044B0E121D71585C581809
+   timeout 30
+!
 ip tacacs source-interface Vlan{{ mgmt_vid }}
 tacacs-server directed-request restricted
+!
 !
 ip ssh version 2
 ip ssh time-out 60
