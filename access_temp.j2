@@ -40,8 +40,8 @@ logging buffered discriminator HIDE_LOG 1000000
 logging console discriminator HIDE_LOG critical
 logging monitor discriminator HIDE_LOG
 !
-username sunlocal privilege 15 secret 9 $9$ubbUiHAeoXkBc.$YqtDN9PD07ue8lCdZW8XpOvygGb7r3lOYEAQi7Gyka.
-enable secret 9 $9$KUQ3lTSgrdAc6U$V9.vfvjelox14/zdQxmToY6LAFeVmQ3iq57eGsXeUF6
+username sunlocal privilege 15 secret 9 $9$ubbUiHAeoXkBc.$YqtDN9PD07ue8lCdZW
+enable secret 9 $9$KUQ3lTSgrdAc6U$V9.vfvjelox14/zdQx
 !
 aaa new-model
 !
@@ -783,11 +783,11 @@ snmp ifmib ifindex persist
 !
 tacacs server WesternTacacsServers
    address ipv4 10.146.119.221
-   key 7 044B0E121D71585C581809
+   key 7 044B0E121D7158
    timeout 30
 tacacs server EasternTacacsServers
    address ipv4 10.22.128.221
-   key 7 044B0E121D71585C581809
+   key 7 044B0E121D
    timeout 30
 !
 ip tacacs source-interface Vlan{{ mgmt_vid }}
@@ -810,7 +810,7 @@ ntp server 10.8.60.44
 ntp server 10.22.131.253
 ntp server 10.8.60.47
 ntp source Vlan{{ mgmt_vid}}
-ntp authentication-key 5 md5 11281D081E1C5A5E57 7
+ntp authentication-key 5 md5 11281Dffffff 7
 ntp authenticate
 ntp trusted-key 5
 !
@@ -825,7 +825,7 @@ session-timeout 180
 access-class acl-ssh-access in
 exec-timeout 15 0
 privilege level 15
-password 7 0705344247191C1746
+password 7 070534dffffff
 transport input ssh
 transport output ssh
 transport output none
@@ -836,7 +836,7 @@ session-timeout 180
 access-class acl-ssh-access in
 exec-timeout 15 0
 privilege level 15
-password 7 0705344247191C1746
+password 7 0705344dddddd
 transport input ssh
 transport output ssh
 transport output none
