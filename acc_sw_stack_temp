@@ -607,10 +607,7 @@ policy-map system-cpp-policy
 !
 !
 
-{%- set vcs = device.virtual_chassis.members.all() %}
-{%- for vc in vcs -%}
 
-{% endfor %}
 
 !
 banner motd  ^
