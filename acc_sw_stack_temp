@@ -685,9 +685,7 @@ policy-map system-cpp-policy
           device-tracking attach-policy trusted_policy
       {% endfor %}
    {% endfor %}
-{%- else device.virtual_chassis %}
 {%- endif -%}
-
 !
 banner motd  ^
 ********************************************************************************
