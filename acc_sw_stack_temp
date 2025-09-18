@@ -608,8 +608,8 @@ policy-map system-cpp-policy
 !
 
 {%- set vcs = device.virtual_chassis.members.all() %}
-{%- for device in vcs -%}
-   {% set device_interfaces = device.interfaces.all() -%}
+{%- for vc in vcs -%}
+   {% set device_interfaces = vc.interfaces.all() -%}
    {%- for int in device_interfaces.filter(mode='access') -%}
       interface {{ int.name }}
        description "{{ int.description }}"
