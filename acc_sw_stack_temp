@@ -686,7 +686,7 @@ policy-map system-cpp-policy
       {% endfor %}
    {% endfor %}
 {%- else device.virtual_chassis %}
-{%- endif %}
+{%- endif -%}
 
 !
 banner motd  ^
