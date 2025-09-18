@@ -719,7 +719,7 @@ interface vlan{{ mgmt_vid}}
    ip address {{ mgmt_ip }} {{ mgmt_netmask }}
    no ip redirects 
 !
-ip default-gateway {{ gateway }}
+ip default-gateway {{ device.cf.get("gateway") }}
 !
 !
 snmp-server community {{ community }} RO acl-snmp-read-only
