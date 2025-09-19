@@ -628,7 +628,7 @@ policy-map system-cpp-policy
        service-policy input policy-qos-intf-tl3
        service-policy output policy-q-intf
 !
-      {%- endif %}
+      {% endif %}
    {%- endfor %}
 {% endfor %}
 !
