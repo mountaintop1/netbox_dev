@@ -611,7 +611,7 @@ policy-map system-cpp-policy
    {%- for vc in vcs -%}
       {% set device_interfaces = vc.interfaces.all() -%}
       {%- for int in device_interfaces -%}
-         {%- if int.mode == 'access' %}
+         {%- if int.mode == 'access' -%}
           interface {{ int.name }}
             description "{{ int.description }}"
             switchport
@@ -629,7 +629,7 @@ policy-map system-cpp-policy
             service-policy input policy-qos-intf-tl3
             service-policy output policy-q-intf
 !
-         {% endif %}
+         {%- endif -%}
       {% endfor %}
    {% endfor %}
 {% endif %}
