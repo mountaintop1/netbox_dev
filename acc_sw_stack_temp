@@ -680,7 +680,6 @@ policy-map system-cpp-policy
              load-interval 30
              speed nonegotiate
              device-tracking attach-policy trusted_policy
-!
          {% endif -%}
       {% endfor %}
    {% endfor %}
