@@ -644,6 +644,7 @@ policy-map system-cpp-policy
                 storm-control broadcast level 2.00
                 storm-control action shutdown
 !
+            {%- endif %}
          {%- elif int.lag %}
             {%- set vlan_ids = [] -%}
             {%- for v in int.tagged_vlans.all() -%}
