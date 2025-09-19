@@ -607,7 +607,7 @@ policy-map system-cpp-policy
 !
 !
 {%- set vcs = device.virtual_chassis.members.all() -%}
-{%- for vc in vcs %}
+{%- for vc in vcs -%}
    {% set device_interfaces = vc.interfaces.all() -%}
    {%- for int in device_interfaces -%}
       {%- if int.mode == 'access' -%}
@@ -629,7 +629,7 @@ policy-map system-cpp-policy
        service-policy output policy-q-intf
 !
       {%- endif %}
-   {% endfor %}
+   {%- endfor %}
 {% endfor %}
 !
 !
