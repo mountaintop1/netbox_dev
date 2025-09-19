@@ -606,9 +606,83 @@ class-map match-any system-cpp-police-system-critical
 policy-map system-cpp-policy
 !
 !
-
-
-
+{% set device_interfaces = device.interfaces.all() -%}
+{%- for int in device_interfaces.filter(mode='access') -%}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ switchport
+ switchport mode access
+ switchport access vlan {{ int.untagged_vlan.vid }}
+ network-policy 1
+ switchport port-security
+ switchport port-security maximum 3
+ switchport port-security violation restrict
+ switchport port-security aging time 5
+ switchport port-security aging type inactivity
+ no snmp trap link-status
+ storm-control broadcast level 2.00
+ storm-control action shutdown
+ service-policy input policy-qos-intf-tl3
+ service-policy output policy-q-intf
+!
+{% endfor %}
+{%- for int in device_interfaces.filter(mode='tagged') -%}
+{%- set desc = (int.description | default('') | lower) -%}
+{%- if 'lap' in desc or 'wif' in desc or 'ap' in desc or 'rap' in desc -%}
+{%- set vlan_ids = [] -%}
+{%- for v in int.tagged_vlans.all() -%}
+{%- set _ = vlan_ids.append(v.vid) -%}
+{% endfor %}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ switchport trunk native vlan {{ int.untagged_vlan.vid }}
+ switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+ switchport mode trunk
+ storm-control broadcast level 2.00
+ storm-control action shutdown
+!
+{%- endif -%}
+{% endfor %}
+{%- for int in device_interfaces.filter(lag__isnull=False) -%}
+{%- set vlan_ids = [] -%}
+{%- for v in int.tagged_vlans.all() -%}
+{%- set _ = vlan_ids.append(v.vid) -%}
+{% endfor %}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ speed nonegotiate
+ service-policy output policy-q-intf
+ channel-group {{ int.lag.name[-1] }} mode active
+ channel-protocol lacp
+ switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+ switchport mode trunk
+ spanning-tree portfast disable
+ spanning-tree bpduguard disable
+ logging event link-status
+ ip dhcp snooping trust
+ load-interval 30
+!
+{% endfor %}
+{%- for int in device_interfaces.filter(type='lag') -%}
+{%- set vlan_ids = [] -%}
+{%- for v in int.tagged_vlans.all() -%}
+{%- set _ = vlan_ids.append(v.vid) -%}
+{%- endfor -%}
+!
+interface {{ int.name }}
+ description "{{ int.description }}"
+ switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+ switchport mode trunk
+ spanning-tree portfast disable
+ spanning-tree bpduguard disable
+ logging event link-status
+ logging event trunk-status
+ ip dhcp snooping trust
+ load-interval 30
+ speed nonegotiate
+ device-tracking attach-policy trusted_policy
+{% endfor %}
+!
 !
 banner motd  ^
 ********************************************************************************
