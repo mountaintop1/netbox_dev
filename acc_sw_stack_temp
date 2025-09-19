@@ -644,7 +644,7 @@ interface {{ int.name }}
  storm-control broadcast level 2.00
  storm-control action shutdown
 !
-{%- endif %}
+{% endif %}
 {% endif -%}
 {% endfor %}
 {%- for int in device_interfaces.filter(lag__isnull=False) -%}
@@ -686,7 +686,6 @@ interface {{ int.name }}
  speed nonegotiate
  device-tracking attach-policy trusted_policy
 !
-{% endfor %}
 {% endfor %}
 {% endfor %}
 {% endif %}
