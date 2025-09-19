@@ -645,25 +645,6 @@ policy-map system-cpp-policy
                 storm-control action shutdown
 !
             {%- endif %}
-         {%- elif int.lag | default(false) %}
-            {%- set vlan_ids = [] -%}
-            {%- for v in int.tagged_vlans.all() -%}
-               {%- set _ = vlan_ids.append(v.vid) -%}
-            {% endfor %}
-            interface {{ int.name }}
-             description "{{ int.description }}"
-             speed nonegotiate
-             service-policy output policy-q-intf
-             channel-group {{ int.lag.name[-1] }} mode active
-             channel-protocol lacp
-             switchport trunk allowed vlan {{ vlan_ids | join(',') }}
-             switchport mode trunk
-             spanning-tree portfast disable
-             spanning-tree bpduguard disable
-             logging event link-status
-             ip dhcp snooping trust
-             load-interval 30
-!
          {%- elif int.type == 'lag' %}
             {%- set vlan_ids = [] -%}
             {%- for v in int.tagged_vlans.all() -%}
