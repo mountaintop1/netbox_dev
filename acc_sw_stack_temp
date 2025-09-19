@@ -645,11 +645,33 @@ interface {{ int.name }}
  storm-control action shutdown
 !
 {%- endif %}
-{%- elif int.type == 'lag' %}
+{% endif -%}
+{%- for int in device_interfaces.filter(lag__isnull=False) -%}
 {%- set vlan_ids = [] -%}
 {%- for v in int.tagged_vlans.all() -%}
-   {%- set _ = vlan_ids.append(v.vid) -%}
+{%- set _ = vlan_ids.append(v.vid) -%}
+{% endfor %}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ speed nonegotiate
+ service-policy output policy-q-intf
+ channel-group {{ int.lag.name[-1] }} mode active
+ channel-protocol lacp
+ switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+ switchport mode trunk
+ spanning-tree portfast disable
+ spanning-tree bpduguard disable
+ logging event link-status
+ ip dhcp snooping trust
+ load-interval 30
+!
+{% endfor %}
+{%- for int in device_interfaces.filter(type='lag') -%}
+{%- set vlan_ids = [] -%}
+{%- for v in int.tagged_vlans.all() -%}
+{%- set _ = vlan_ids.append(v.vid) -%}
 {%- endfor -%}
+!
 interface {{ int.name }}
  description "{{ int.description }}"
  switchport trunk allowed vlan {{ vlan_ids | join(',') }}
@@ -662,7 +684,7 @@ interface {{ int.name }}
  load-interval 30
  speed nonegotiate
  device-tracking attach-policy trusted_policy
-{% endif -%}
+{% endfor %}
 {% endfor %}
 {% endfor %}
 {% endif %}
