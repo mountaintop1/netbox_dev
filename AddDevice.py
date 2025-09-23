@@ -8,7 +8,7 @@ from dcim.models import Device, DeviceRole, DeviceType, Site
 class NewBranchScript(Script):
 
     class Meta:
-        name = "New Branch"
+        name = "AddDevices"
         description = "Provision a new branch site"
 
     site_name = StringVar(
