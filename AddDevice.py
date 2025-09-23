@@ -2,7 +2,7 @@ from extras.scripts import *
 from django.utils.text import slugify
 
 from dcim.choices import DeviceStatusChoices, SiteStatusChoices
-from dcim.models import Device, DeviceRole, DeviceType, Site
+from dcim.models import Device, DeviceRole, DeviceType, Site, Region
 
 
 class AddDevices(Script):
@@ -11,9 +11,14 @@ class AddDevices(Script):
         name = "Add New Devices"
         description = "Provision a new switch"
     
+    region = ObjectVar(
+        description="Choose region",
+        model=Region,
+    )
     site = ObjectVar(
         description="Choose site from existing",
         model=Site,
+        required=False
     )
     create_new_site_name = StringVar(
         description="Name of the new site",
