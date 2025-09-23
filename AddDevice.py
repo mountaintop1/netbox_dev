@@ -10,7 +10,12 @@ class AddDevices(Script):
     class Meta:
         name = "AddDevices"
         description = "Provision a new switch"
-
+    
+    site_obj = ObjectVar(
+        description="Chose Site from dropdown",
+        model=Site,
+        display_field="name"
+    )
     site_name = StringVar(
         description="Name of the new site"
     )
