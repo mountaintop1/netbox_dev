@@ -16,7 +16,8 @@ class AddDevices(Script):
         model=Site,
     )
     create_new_site_name = StringVar(
-        description="Name of the new site"
+        description="Name of the new site",
+        required=False
     )
     switch_count = IntegerVar(
         description="Number of access switches to create"
