@@ -17,7 +17,7 @@ class NewBranchScript(Script):
     site_obj = ObjectVar(
         description="Access switch model",
         model=Site,
-        display_field = site_obj.name
+        display_field = 'name'
     )
     switch_count = IntegerVar(
         description="Number of access switches to create"
