@@ -8,13 +8,12 @@ from dcim.models import Device, DeviceRole, DeviceType, Site
 class AddDevices(Script):
 
     class Meta:
-        name = "AddDevices"
+        name = "Add New Devices"
         description = "Provision a new switch"
     
     site_name = ObjectVar(
         description="Name of the new site"
         model=Site,
-        display_field="name"
     )
     switch_count = IntegerVar(
         description="Number of access switches to create"
