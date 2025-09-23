@@ -5,17 +5,17 @@ from dcim.choices import DeviceStatusChoices, SiteStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site
 
 
-class NewBranchScript(Script):
+class AddDevices(Script):
 
     class Meta:
         name = "AddDevices"
-        description = "Provision a new branch site"
+        description = "Provision a new switch"
 
     site_name = StringVar(
         description="Name of the new site"
     )
     site_obj = ObjectVar(
-        description="Access switch model",
+        description="Chose Site from dropdown",
         model=Site,
         display_field = 'name'
     )
