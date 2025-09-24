@@ -19,8 +19,8 @@ class AddDevices(Script):
         fieldsets = (
             ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
-            ('Uplink Side A', ('remote_sw_name_a',)),
-            ('Uplink Side B', ('remote_sw_name_b',)),
+            ('Uplink Side A', ('remote_sw_name_a', 'int_description_a', 'lag_int_a')),
+            ('Uplink Side B', ('remote_sw_name_b', 'int_description_b', 'lag_int_b')),
         )
     
     device_name = StringVar(
@@ -63,20 +63,20 @@ class AddDevices(Script):
         label='Guest VLAN ID'
     )
     remote_sw_name_a = ChoiceVar(choices=CHOICES)
-    int_description_1 = StringVar(
+    int_description_a = StringVar(
         description="Uplink Side A Interface Description",
         label='Uplink Intf Description',
     )
-    lag_int_1 = StringVar(
+    lag_int_a = StringVar(
         description="Uplink Side A Lag Interface example: Po1/ae1",
         label='Lag Interface Name',
     )
     remote_sw_name_b = MultiChoiceVar(choices=CHOICES)
-    int_description_2 = StringVar(
+    int_description_b = StringVar(
         description="Uplink Side B Interface Description",
         label='Uplink Intf Description',
     )
-    lag_int_2 = StringVar(
+    lag_int_b = StringVar(
         description="Uplink Side B Lag Interface example: Po1/ae1",
         label='Lag Interface Name',
     )
