@@ -24,8 +24,6 @@ LAG_CHOICES = (
     ('Po3', 'Po3'),
 )
 
-class AnotherCustomScript(Script):
-    ...
 
 class AddDevices(Script):
 
