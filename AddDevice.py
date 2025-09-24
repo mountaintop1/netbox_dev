@@ -63,8 +63,23 @@ class AddDevices(Script):
         label='Guest VLAN ID'
     )
     remote_sw_name_a = ChoiceVar(choices=CHOICES)
+    int_description_1 = StringVar(
+        description="Uplink Side A Interface Description",
+        label='Uplink Intf Description',
+    )
+    lag_int_1 = StringVar(
+        description="Uplink Side A Lag Interface example: Po1/ae1",
+        label='Lag Interface Name',
+    )
     remote_sw_name_b = MultiChoiceVar(choices=CHOICES)
-
+    int_description_2 = StringVar(
+        description="Uplink Side B Interface Description",
+        label='Uplink Intf Description',
+    )
+    lag_int_2 = StringVar(
+        description="Uplink Side B Lag Interface example: Po1/ae1",
+        label='Lag Interface Name',
+    )
     def run(self, data, commit):
 
         # Create the new site
