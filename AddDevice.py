@@ -2,7 +2,7 @@ from extras.scripts import *
 from django.utils.text import slugify
 
 from dcim.choices import DeviceStatusChoices, SiteStatusChoices
-from dcim.models import Device, DeviceRole, DeviceType, Site, Region
+from dcim.models import Device, DeviceRole, DeviceType, Site
 
 
 class AddDevices(Script):
@@ -11,42 +11,31 @@ class AddDevices(Script):
         name = "Add New Devices"
         description = "Provision a new switch"
     
-    region = ObjectVar(
-        description="Choose region",
-        model=Region,
-    )
-    site = ObjectVar(
-        description="Choose site from existing",
-        model=Site,
-        required=False
-    )
-    switch_count = IntegerVar(
-        description="Number of access switches to create"
+    device_name = StringVar(
+        description="Device hostname",
     )
     switch_model = ObjectVar(
         description="Access switch model",
-        model=DeviceType
+        model=DeviceType,
     )
-    router_count = IntegerVar(
-        description="Number of routers to create"
+    site = ObjectVar(
+        description="Site name",
+        model=Site,
     )
-    router_model = ObjectVar(
-        description="Router model",
-        model=DeviceType
+    mgmt_ip = StringVar(
+        description="Device Mgmt IP example: 192.168.20.10/23",
     )
-    ap_count = IntegerVar(
-        description="Number of APs to create"
+    gateway_ip = StringVar(
+        description="Default Gateway. example: 10.10.10.1",
     )
-    ap_model = ObjectVar(
-        description="AP model",
-        model=DeviceType
+    mgmt_vid = IntegerVar(
+        description="Mgmt VLAN ID example: 60"
     )
-    server_count = IntegerVar(
-        description="Number of servers to create"
+    blan_vid = IntegerVar(
+        description="Business LAN VLAN ID example: 1101"
     )
-    server_model = ObjectVar(
-        description="Server model",
-        model=DeviceType
+    guest_vid = IntegerVar(
+        description="Guest VLAN ID example: 3101"
     )
 
     def run(self, data, commit):
