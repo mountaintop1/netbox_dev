@@ -23,8 +23,9 @@ class AddDevices(Script):
         fieldsets = (
             ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
-            ('Uplink Side A', ('remote_sw_name_a', 'int_description_a', 'lag_int_a')),
-            ('Uplink Side B', ('remote_sw_name_b', 'int_description_b', 'lag_int_b')),
+            ('Uplink Side A', ('uplink_1', 'uplink_desc_a',)),
+            ('Uplink Side B', ('uplink_2', 'uplink_desc_b',)),
+            ('Lag Interface', ('lag_name', 'lag_desc')),
         )
     
     device_name = StringVar(
@@ -66,23 +67,31 @@ class AddDevices(Script):
         description="Guest VLAN ID example: 3101",
         label='Guest VLAN ID'
     )
-    remote_sw_name_a = ChoiceVar(choices=CHOICES)
-    int_description_a = StringVar(
+    uplink_1 = ChoiceVar(
+        choices=CHOICES,
+        description="Uplink Interface",
+        label='Uplink Interface'
+    )
+    uplink_desc_a = StringVar(
         description="Uplink Side A Interface Description",
-        label='Uplink Intf Description',
+        label='Uplink Intf. Description',
     )
-    lag_int_a = StringVar(
-        description="Uplink Side A Lag Interface example: Po1/ae1",
-        label='Lag Interface Name',
+    uplink_2 = ChoiceVar(
+        choices=CHOICES,
+        description="Uplink Interface",
+        label='Uplink Interface'
     )
-    remote_sw_name_b = ChoiceVar(choices=CHOICES)
-    int_description_b = StringVar(
+    uplink_desc_b = StringVar(
         description="Uplink Side B Interface Description",
         label='Uplink Intf Description',
     )
-    lag_int_b = StringVar(
-        description="Uplink Side B Lag Interface example: Po1/ae1",
+    lag_name  = StringVar(
+        description="Uplink Side A/B Lag Interface name example: Po1/ae1",
         label='Lag Interface Name',
+    )
+    lag_desc = StringVar(
+        description="Uplink Side A/B Lag Interface descriptoion",
+        label='Lag Interface Description',
     )
     def run(self, data, commit):
 
