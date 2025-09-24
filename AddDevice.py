@@ -19,7 +19,8 @@ class AddDevices(Script):
         fieldsets = (
             ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
-            ('Uplink Object', ('direction',))
+            ('Uplink Side A', ('remote_sw_name_a',)),
+            ('Uplink Side B', ('remote_sw_name_b',)),
         )
     
     device_name = StringVar(
@@ -61,7 +62,8 @@ class AddDevices(Script):
         description="Guest VLAN ID example: 3101",
         label='Guest VLAN ID'
     )
-    direction = ChoiceVar(choices=CHOICES)
+    remote_sw_name_a = ChoiceVar(choices=CHOICES)
+    remote_sw_name_a = ChoiceVar(choices=CHOICES)
 
     def run(self, data, commit):
 
