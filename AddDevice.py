@@ -82,6 +82,7 @@ class AddDevices(Script):
     uplink_desc_a = StringVar(
         description="Uplink Side A Interface Description",
         label='Uplink Interface Description',
+        default='<<remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18>>',
     )
     uplink_2 = ChoiceVar(
         choices=CHOICES,
@@ -91,6 +92,7 @@ class AddDevices(Script):
     uplink_desc_b = StringVar(
         description="Uplink Side B Interface Description",
         label='Uplink Interface Description',
+        default='<<remotehost=os-z07-41ra0043-01-sw-lef-b; port=xe-0/0/18>>'
     )
     lag_name  = ChoiceVar(
         choices=LAG_CHOICES,
@@ -101,6 +103,7 @@ class AddDevices(Script):
     lag_desc = StringVar(
         description="Uplink Side A/B Lag Interface description",
         label='Lag Interface Description',
+        default='<<remotehost=os-z07-41ra0043-01-sw-lef-a/b; port=ae18>>'
     )
     def run(self, data, commit):
 
