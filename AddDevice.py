@@ -15,6 +15,12 @@ CHOICES = (
     ('GigabitEthernet1/2', 'Gi1/2'),
 )
 
+LAG_CHOICES = (
+    ('Po1', 'Po1'),
+    ('Po2', 'Po2'),
+    ('Po3', 'Po3'),
+)
+
 class AddDevices(Script):
 
     class Meta:
@@ -38,9 +44,9 @@ class AddDevices(Script):
         label='Device Model'
     )
     site = ObjectVar(
-        description="Site name",
+        description="Choose Site name from drop-down",
         model=Site,
-        label='Site'
+        label='Site Name'
     )
     mgmt_address = IPAddressVar(
         description="Device Mgmt IP example: 192.168.20.10/23",
@@ -58,6 +64,7 @@ class AddDevices(Script):
     mgmt_vlan = IntegerVar(
         description="Mgmt VLAN ID example: 60",
         label='Mgmt VLAN ID',
+        default=60
     )
     blan_vlan = IntegerVar(
         description="Business LAN VLAN ID example: 1101",
@@ -69,28 +76,30 @@ class AddDevices(Script):
     )
     uplink_1 = ChoiceVar(
         choices=CHOICES,
-        description="Uplink Interface",
+        description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
     uplink_desc_a = StringVar(
         description="Uplink Side A Interface Description",
-        label='Uplink Intf. Description',
+        label='Uplink Interface Description',
     )
     uplink_2 = ChoiceVar(
         choices=CHOICES,
-        description="Uplink Interface",
+        description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
     uplink_desc_b = StringVar(
         description="Uplink Side B Interface Description",
-        label='Uplink Intf Description',
+        label='Uplink Interface Description',
     )
-    lag_name  = StringVar(
-        description="Uplink Side A/B Lag Interface name example: Po1/ae1",
+    lag_name  = ChoiceVar(
+        choices=LAG_CHOICES,
+        description="Uplink Side A/B Lag Interface drop-down. example: Po1/ae1",
         label='Lag Interface Name',
+        default='Po1',
     )
     lag_desc = StringVar(
-        description="Uplink Side A/B Lag Interface descriptoion",
+        description="Uplink Side A/B Lag Interface description",
         label='Lag Interface Description',
     )
     def run(self, data, commit):
