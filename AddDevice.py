@@ -8,7 +8,7 @@ from dcim.models import Device, DeviceRole, DeviceType, Site
 CHOICES = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
     ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
-    ('TenGigabitEthernet1/1/3', 'Te1/1/4'),
+    ('TenGigabitEthernet1/1/3', 'Te1/1/3'),
     ('TenGigabitEthernet1/1/4', 'Te1/1/4'),
     ('TwentyFiveGigabitEthernet1/1/1', 'TWe1/1/1'),
     ('TwentyFiveGigabitEthernet1/1/2', 'TWe1/1/2'),
