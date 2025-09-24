@@ -4,8 +4,6 @@ from django.utils.text import slugify
 from dcim.choices import DeviceStatusChoices, SiteStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site
 
-name = "Suncor Custom Script"
-script_order = (AnotherCustomScript, AddDevices)
 
 CHOICES = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
@@ -186,3 +184,7 @@ class AddDevices(Script):
             output.append(','.join(attrs))
 
         return '\n'.join(output)
+
+
+name = "Suncor Custom Script"
+script_order = (AnotherCustomScript, AddDevices)
