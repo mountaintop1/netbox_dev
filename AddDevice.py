@@ -187,4 +187,3 @@ class AddDevices(Script):
 
 
 name = "Suncor Custom Script"
-script_order = (AnotherCustomScript, AddDevices)
