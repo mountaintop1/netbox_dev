@@ -51,7 +51,7 @@ class AddDevices(Script):
         model=Site,
         label='Site Name'
     )
-    mgmt_address = IPAddressVar(
+    mgmt_address = IPAddressWithMaskVar(
         description="Device Mgmt IP example: 192.168.20.10/23",
         label='Mgmt IP Address'
     )
