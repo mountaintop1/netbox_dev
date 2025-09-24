@@ -34,13 +34,15 @@ class AddDevices(Script):
     )
     is_stack_switch = BooleanVar(
         description="Is thid switch a stack",
-        default=False
+        default=False,
+        label='is_stack'
     )
     mgmt_vlan = IntegerVar(
         description="Mgmt VLAN ID example: 60"
     )
     blan_vlan = IntegerVar(
-        description="Business LAN VLAN ID example: 1101"
+        description="Business LAN VLAN ID example: 1101",
+        label='BLAN VLAN'
     )
     guest_vlan = IntegerVar(
         description="Guest VLAN ID example: 3101"
