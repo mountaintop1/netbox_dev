@@ -4,6 +4,8 @@ from django.utils.text import slugify
 from dcim.choices import DeviceStatusChoices, SiteStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site
 
+name = "Suncor Custom Script"
+
 CHOICES = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
     ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
