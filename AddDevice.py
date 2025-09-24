@@ -5,6 +5,7 @@ from dcim.choices import DeviceStatusChoices, SiteStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site
 
 name = "Suncor Custom Script"
+script_order = (AnotherCustomScript, AddDevices)
 
 CHOICES = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
@@ -22,6 +23,9 @@ LAG_CHOICES = (
     ('Po2', 'Po2'),
     ('Po3', 'Po3'),
 )
+
+class AnotherCustomScript(Script):
+    ...
 
 class AddDevices(Script):
 
