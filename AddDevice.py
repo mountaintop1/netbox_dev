@@ -11,41 +11,48 @@ class AddDevices(Script):
         name = "Add New Devices"
         description = "Provision a new switch"
         fieldsets = (
-            ('First group', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
-            ('Second group', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
+            ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
+            ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
         )
     
     device_name = StringVar(
         description="Device hostname",
+        label='Device Name'
     )
     switch_model = ObjectVar(
         description="Access switch model",
         model=DeviceType,
+        label='Device Model'
     )
     site = ObjectVar(
         description="Site name",
         model=Site,
+        label='Site'
     )
     mgmt_address = IPAddressVar(
         description="Device Mgmt IP example: 192.168.20.10/23",
+        label='Mgmt IP Address'
     )
     gateway_address = StringVar(
         description="Default Gateway. example: 10.10.10.1",
+        label='Default Gateway',
     )
     is_stack_switch = BooleanVar(
-        description="Is thid switch a stack",
+        description="Is this a stack switch",
         default=False,
         label='is_stack'
     )
     mgmt_vlan = IntegerVar(
-        description="Mgmt VLAN ID example: 60"
+        description="Mgmt VLAN ID example: 60",
+        label='Mgmt VLAN ID',
     )
     blan_vlan = IntegerVar(
         description="Business LAN VLAN ID example: 1101",
-        label='BLAN VLAN'
+        label='BLAN VLAN ID'
     )
     guest_vlan = IntegerVar(
-        description="Guest VLAN ID example: 3101"
+        description="Guest VLAN ID example: 3101",
+        label='Guest VLAN ID'
     )
 
     def run(self, data, commit):
