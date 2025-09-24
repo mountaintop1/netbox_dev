@@ -22,19 +22,19 @@ class AddDevices(Script):
         description="Site name",
         model=Site,
     )
-    mgmt_ip = StringVar(
+    mgmt_address = StringVar(
         description="Device Mgmt IP example: 192.168.20.10/23",
     )
-    gateway_ip = StringVar(
+    gateway_address = StringVar(
         description="Default Gateway. example: 10.10.10.1",
     )
-    mgmt_vid = IntegerVar(
+    mgmt_vlan = IntegerVar(
         description="Mgmt VLAN ID example: 60"
     )
-    blan_vid = IntegerVar(
+    blan_vlan = IntegerVar(
         description="Business LAN VLAN ID example: 1101"
     )
-    guest_vid = IntegerVar(
+    guest_vlan = IntegerVar(
         description="Guest VLAN ID example: 3101"
     )
 
