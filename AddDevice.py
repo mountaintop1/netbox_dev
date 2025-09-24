@@ -10,6 +10,10 @@ class AddDevices(Script):
     class Meta:
         name = "Add New Devices"
         description = "Provision a new switch"
+        fieldsets = (
+            ('First group', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address')),
+            ('Second group', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
+        )
     
     device_name = StringVar(
         description="Device hostname",
