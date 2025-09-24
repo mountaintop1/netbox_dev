@@ -10,8 +10,8 @@ CHOICES = (
     ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
     ('TenGigabitEthernet1/1/3', 'Te1/1/3'),
     ('TenGigabitEthernet1/1/4', 'Te1/1/4'),
-    ('TwentyFiveGigabitEthernet1/1/1', 'TWe1/1/1'),
-    ('TwentyFiveGigabitEthernet1/1/2', 'TWe1/1/2'),
+    ('TwentyFiveGigabitEthernet1/1/1', 'Twe1/1/1'),
+    ('TwentyFiveGigabitEthernet1/1/2', 'Twe1/1/2'),
     ('GigabitEthernet1/1', 'Gi1/1'),
     ('GigabitEthernet1/2', 'Gi1/2'),
 )
