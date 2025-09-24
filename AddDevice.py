@@ -75,7 +75,7 @@ class AddDevices(Script):
         description="Uplink Side A Lag Interface example: Po1/ae1",
         label='Lag Interface Name',
     )
-    remote_sw_name_b = MultiChoiceVar(choices=CHOICES)
+    remote_sw_name_b = ChoiceVar(choices=CHOICES)
     int_description_b = StringVar(
         description="Uplink Side B Interface Description",
         label='Uplink Intf Description',
