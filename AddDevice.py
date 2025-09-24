@@ -63,7 +63,7 @@ class AddDevices(Script):
         label='Guest VLAN ID'
     )
     remote_sw_name_a = ChoiceVar(choices=CHOICES)
-    remote_sw_name_a = ChoiceVar(choices=CHOICES)
+    remote_sw_name_b = ChoiceVar(choices=CHOICES)
 
     def run(self, data, commit):
 
