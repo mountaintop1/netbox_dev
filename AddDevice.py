@@ -11,7 +11,7 @@ class AddDevices(Script):
         name = "Add New Devices"
         description = "Provision a new switch"
         fieldsets = (
-            ('First group', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address')),
+            ('First group', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
             ('Second group', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
         )
     
@@ -31,6 +31,10 @@ class AddDevices(Script):
     )
     gateway_address = StringVar(
         description="Default Gateway. example: 10.10.10.1",
+    )
+    is_stack_switch = BooleanVar(
+        description="Is thid switch a stack",
+        default=False
     )
     mgmt_vlan = IntegerVar(
         description="Mgmt VLAN ID example: 60"
