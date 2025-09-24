@@ -22,7 +22,7 @@ class AddDevices(Script):
         description="Site name",
         model=Site,
     )
-    mgmt_address = IPNetworkVar(
+    mgmt_address = IPAddressVar(
         description="Device Mgmt IP example: 192.168.20.10/23",
     )
     gateway_address = StringVar(
