@@ -33,8 +33,8 @@ class AddDevices(Script):
             ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
             ('Connected Access Point', ('ap_count',)),
-            ('Uplink Side A', ('uplink_1', 'uplink_desc_a',)),
-            ('Uplink Side B', ('uplink_2', 'uplink_desc_b',)),
+            ('Uplink Port 1', ('uplink_1', 'uplink_desc_a',)),
+            ('Uplink Port 2', ('uplink_2', 'uplink_desc_b',)),
             ('Lag Interface', ('lag_name', 'lag_desc')),
         )
     
@@ -81,6 +81,7 @@ class AddDevices(Script):
     ap_count = IntegerVar(
         description="Number of access point to be install on the switch",
         label='AP Count',
+        required=False
     )
     uplink_1 = ChoiceVar(
         choices=CHOICES,
@@ -88,7 +89,7 @@ class AddDevices(Script):
         label='Uplink Interface'
     )
     uplink_desc_a = StringVar(
-        description="Uplink Side A Interface Description",
+        description="Uplink Port 1 Interface Description",
         label='Uplink Interface Description',
         default='<<remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18>>',
     )
@@ -98,18 +99,18 @@ class AddDevices(Script):
         label='Uplink Interface'
     )
     uplink_desc_b = StringVar(
-        description="Uplink Side B Interface Description",
+        description="Uplink Port 2 Interface Description",
         label='Uplink Interface Description',
         default='<<remotehost=os-z07-41ra0043-01-sw-lef-b; port=xe-0/0/18>>'
     )
     lag_name  = ChoiceVar(
         choices=LAG_CHOICES,
-        description="Uplink Side A/B Lag Interface drop-down. example: Po1/ae1",
+        description="Uplink Port 1/2 Lag Interface drop-down. example: Po1/ae1",
         label='Lag Interface Name',
         default='Po1',
     )
     lag_desc = StringVar(
-        description="Uplink Side A/B Lag Interface description",
+        description="Uplink Port 1/2 Lag Interface description",
         label='Lag Interface Description',
         default='<<remotehost=os-z07-41ra0043-01-sw-lef-a/b; port=ae18>>'
     )
