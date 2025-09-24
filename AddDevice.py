@@ -2,7 +2,8 @@ from extras.scripts import *
 from django.utils.text import slugify
 
 from dcim.choices import DeviceStatusChoices, SiteStatusChoices
-from dcim.models import Device, DeviceRole, DeviceType, Site, Platform
+from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface
+from ipam.models import IPAddress, VLAN, VLANGroup
 
 
 CHOICES = (
