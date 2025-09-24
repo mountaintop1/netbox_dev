@@ -2,7 +2,7 @@ from extras.scripts import *
 from django.utils.text import slugify
 
 from dcim.choices import DeviceStatusChoices, SiteStatusChoices
-from dcim.models import Device, DeviceRole, DeviceType, Site
+from dcim.models import Device, DeviceRole, DeviceType, Site, IPAddress, VLAN, VLANGroup, Platform, Interface
 
 
 CHOICES = (
@@ -32,6 +32,7 @@ class AddDevices(Script):
         fieldsets = (
             ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
+            ('Connected Access Point', ('ap_count')),
             ('Uplink Side A', ('uplink_1', 'uplink_desc_a',)),
             ('Uplink Side B', ('uplink_2', 'uplink_desc_b',)),
             ('Lag Interface', ('lag_name', 'lag_desc')),
@@ -76,6 +77,10 @@ class AddDevices(Script):
     guest_vlan = IntegerVar(
         description="Guest VLAN ID example: 3101",
         label='Guest VLAN ID'
+    )
+    ap_count = IntegerVar(
+        description="Number of access point to be install on the switch",
+        label='AP Count',
     )
     uplink_1 = ChoiceVar(
         choices=CHOICES,
