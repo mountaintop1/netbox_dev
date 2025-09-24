@@ -4,6 +4,12 @@ from django.utils.text import slugify
 from dcim.choices import DeviceStatusChoices, SiteStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site
 
+CHOICES = (
+    ('n', 'North'),
+    ('s', 'South'),
+    ('e', 'East'),
+    ('w', 'West')
+)
 
 class AddDevices(Script):
 
@@ -54,6 +60,7 @@ class AddDevices(Script):
         description="Guest VLAN ID example: 3101",
         label='Guest VLAN ID'
     )
+    direction = ChoiceVar(choices=CHOICES)
 
     def run(self, data, commit):
 
