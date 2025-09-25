@@ -183,7 +183,7 @@ class AddDevices(Script):
         )
         interface_mgmt = Interface.objects.create(
             device=switch, 
-            name=data["mgmt_vlan"], 
+            name=str(data["mgmt_vlan"]), 
             type="virtual", 
             description="mgmt",
             mode='tagged'
