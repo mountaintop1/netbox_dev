@@ -139,7 +139,7 @@ class AddDevices(Script):
         switch.set_custom_field = ('gateway', data['gateway_address'])
         switch.save()
         self.log_success(f"Created new switch: {switch} from {data}")
-        self.log_success(f"Custome field attached: {switch.custom_field}, {switch.name}, {switch.interfaces.all().count()}")
+        self.log_success(f"Custom field attached: {switch.custom_fields}, {switch.name}, {switch.interfaces.all().count()}")
         
 
 
