@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from dcim.choices import DeviceStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer
 from ipam.models import IPAddress, VLAN, VLANGroup
-
+from extras.models import ConfigTemplate
 
 CHOICES = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
@@ -134,7 +134,7 @@ class AddDevices(Script):
             status=DeviceStatusChoices.STATUS_ACTIVE,
             role=switch_role,
             platform=platform,
-            config_template='master_temp_acc_v1',
+            config_template=ConfigTemplate.objects.get(name='master_temp_acc_v1'),
             cf_gateway=data['gateway_address'],
             manufacturer=mfr,
         )
