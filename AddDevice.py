@@ -30,7 +30,7 @@ class AddDevices(Script):
     class Meta:
         name = "Add New Device To Site"
         description = "Provision a New switch to Site"
-
+        commit_default = False
         fieldsets = (
             ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
