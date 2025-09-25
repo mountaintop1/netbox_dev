@@ -160,7 +160,7 @@ class AddDevices(Script):
                 group=vlan_group,
                 vid=data["mgmt_vlan"],
                 name="mgmt",
-                status="active"
+                status="active",
                 description="Mgmt Vlan",
             )
         guest = VLAN.objects.create(
