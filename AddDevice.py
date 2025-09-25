@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from dcim.choices import DeviceStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer
 from ipam.models import IPAddress, VLAN, VLANGroup
-from extras.models import ConfigTemplate, CustomField
+from extras.models import ConfigTemplate
 
 CHOICES = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
@@ -139,9 +139,15 @@ class AddDevices(Script):
         switch.custom_field_data["gateway"] = data["gateway_address"]
         switch.full_clean()
         switch.save()
-        self.log_success(f"Created new switch: {switch} with {switch.interfaces.all().count() interfaces")
-
-
+        self.log_success(f"Created new switch: {switch} with {switch.interfaces.all().count()} interfaces")
+        vlan_group = LANGroup.objects.create(
+                        name=data["device_name"],
+                        slug=slugify(data["device_name"]),
+                        scope_type=ContentType.objects.get_for_model(Site),
+                        scope_id=site.id,
+                        description="vlan_grp",
+                    )
+        self.log_success(f"Created new vlan group: {vlan_group}")
 
 
 name = "Suncor Custom Script"
