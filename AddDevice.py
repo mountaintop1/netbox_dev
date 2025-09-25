@@ -154,6 +154,7 @@ class AddDevices(Script):
                         vid=data["blan_vlan"],
                         name="blan",
                         status="active",
+                        site=data['site'],
                         description="Business LAN",
                     )
         mgmt = VLAN.objects.create(
@@ -161,6 +162,7 @@ class AddDevices(Script):
                 vid=data["mgmt_vlan"],
                 name="mgmt",
                 status="active",
+                site=data['site'],
                 description="Mgmt Vlan",
             )
         guest = VLAN.objects.create(
@@ -168,6 +170,7 @@ class AddDevices(Script):
                 vid=data["guest_vlan"],
                 name="guest",
                 status="active",
+                site=data['site'],
                 description="Guest Vlan",
             )
         self.log_success(f"Created new vlans and added to group: VLANGroup: {vlan_group}, VLANs: {blan}:{mgmt}:{guest}")
