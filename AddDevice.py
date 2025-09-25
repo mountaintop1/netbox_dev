@@ -4,7 +4,7 @@ from django.utils.text import slugify
 from dcim.choices import DeviceStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer
 from ipam.models import IPAddress, VLAN, VLANGroup
-from extras.models import ConfigTemplate
+from extras.models import ConfigTemplate, CustomField
 
 CHOICES = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
@@ -135,12 +135,13 @@ class AddDevices(Script):
             role=switch_role,
             platform=platform,
             config_template=ConfigTemplate.objects.get(name='master_temp_acc_v1'),
-            cf_gateway=data['gateway_address'],
-            manufacturer=mfr,
         )
         switch.save()
         self.log_success(f"Created new switch: {switch} from {data}")
 
+        switch.custom_field = {'gateway': data['gateway_address']}
+        self.log_success(f"Custome field attached: {switch}")
+        
         # Generate a CSV table of new devices
         output = [
             'name,make,model'
