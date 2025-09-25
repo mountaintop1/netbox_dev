@@ -145,7 +145,7 @@ class AddDevices(Script):
                         name=data["device_name"],
                         slug=slugify(data["device_name"]),
                         scope_type=ContentType.objects.get_for_model(Site),
-                        scope_id=site.id,
+                        scope_id=data['site'].id,
                         description="vlan_grp",
                     )
         self.log_success(f"Created new vlan group: {vlan_group}")
