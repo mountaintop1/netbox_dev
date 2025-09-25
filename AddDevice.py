@@ -136,7 +136,7 @@ class AddDevices(Script):
             platform=platform,
             config_template=ConfigTemplate.objects.get(name='master_temp_acc_v1'),
         )
-        switch.set_custom_field("gateway", data["gateway_address"])
+        switch.custom_field_data["gateway"] = data["gateway_address"]
         switch.full_clean()
         switch.save()
         self.log_success(f"Created new switch: {switch} from {data}")
