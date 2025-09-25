@@ -1,5 +1,6 @@
 from extras.scripts import *
 from django.utils.text import slugify
+from django.contrib.contenttypes.models import ContentType
 
 from dcim.choices import DeviceStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer
