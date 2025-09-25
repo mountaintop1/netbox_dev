@@ -140,21 +140,8 @@ class AddDevices(Script):
         self.log_success(f"Created new switch: {switch} from {data}")
 
         switch.custom_field = {'gateway': data['gateway_address']}
-        self.log_success(f"Custome field attached: {switch}")
+        self.log_success(f"Custome field attached: {switch.custom_field}, {switch.name}, {switch.interfaces.all().count()}")
         
-        # Generate a CSV table of new devices
-        output = [
-            'name,make,model'
-        ]
-        for device in Device.objects.filter(site=site):
-            attrs = [
-                device.name,
-                device.device_type.manufacturer.name,
-                device.device_type.model
-            ]
-            output.append(','.join(attrs))
-
-        return '\n'.join(output)
 
 
 name = "Suncor Custom Script"
