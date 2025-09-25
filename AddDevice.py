@@ -174,6 +174,20 @@ class AddDevices(Script):
                 description="Guest Vlan",
             )
         self.log_success(f"Created new vlans and added to group: VLANGroup: {vlan_group}, VLANs: {blan}:{mgmt}:{guest}")
-
+        interface_portc = Interface.objects.create(
+            device=switch, 
+            name=data["lag_name"], 
+            type="lag", 
+            description=data["lag_desc"],
+            mode='tagged'
+        )
+        interface_mgmt = Interface.objects.create(
+            device=switch, 
+            name=data["mgmt_vlan"], 
+            type="virtual", 
+            description="mgmt",
+            mode='tagged'
+        )
+        self.log_success(f"Created new Po1 and mgmt int vlan: VLAN{interface_mgmt}, Portchannel:{interface_portc}")
 
 name = "Suncor Custom Script"
