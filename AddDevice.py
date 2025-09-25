@@ -149,6 +149,28 @@ class AddDevices(Script):
                         description="vlan_grp",
                     )
         self.log_success(f"Created new vlan group: {vlan_group}")
+        blan = VLAN.objects.create(
+                        group=vlan_group,
+                        vid=data["blan_vlan"],
+                        name="blan",
+                        status="active",
+                        description="Business LAN",
+                    )
+        mgmt = VLAN.objects.create(
+                group=vlan_group,
+                vid=data["mgmt_vlan"],
+                name="mgmt",
+                status="active"
+                description="Mgmt Vlan",
+            )
+        guest = VLAN.objects.create(
+                group=vlan_group,
+                vid=data["guest_vlan"],
+                name="guest",
+                status="active",
+                description="Guest Vlan",
+            )
+        self.log_success(f"Created new vlans and added to group: {vlan_group}, {blan}, {mgmt}, {guest}")
 
 
 name = "Suncor Custom Script"
