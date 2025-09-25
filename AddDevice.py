@@ -170,7 +170,7 @@ class AddDevices(Script):
                 status="active",
                 description="Guest Vlan",
             )
-        self.log_success(f"Created new vlans and added to group: {vlan_group}, {blan}, {mgmt}, {guest}")
+        self.log_success(f"Created new vlans and added to group: VLANGroup: {vlan_group}, VLANs: {blan}:{mgmt}:{guest}")
 
 
 name = "Suncor Custom Script"
