@@ -140,7 +140,7 @@ class AddDevices(Script):
         switch.full_clean()
         switch.save()
         self.log_success(f"Created new switch: {switch} with {switch.interfaces.all().count()} interfaces")
-        vlan_group = LANGroup.objects.create(
+        vlan_group = VLANGroup.objects.create(
                         name=data["device_name"],
                         slug=slugify(data["device_name"]),
                         scope_type=ContentType.objects.get_for_model(Site),
