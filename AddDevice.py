@@ -34,6 +34,7 @@ class AddDevices(Script):
             ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
             ('Connected Access Point', ('ap_count',)),
+            ('Wired Guest', ('guest_count',)),
             ('Uplink Port 1', ('uplink_1', 'uplink_desc_a',)),
             ('Uplink Port 2', ('uplink_2', 'uplink_desc_b',)),
             ('Lag Interface', ('lag_name', 'lag_desc')),
@@ -82,7 +83,14 @@ class AddDevices(Script):
     ap_count = IntegerVar(
         description="Number of access point to be install on the switch",
         label='AP Count',
-        required=False
+        required=False,
+        default=0
+    )
+    guest_count = IntegerVar(
+        description="Number of wired guest users that need access on the switch",
+        label='Guest Count',
+        required=False,
+        default=0
     )
     uplink_1 = ChoiceVar(
         choices=CHOICES,
