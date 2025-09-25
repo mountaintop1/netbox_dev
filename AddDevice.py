@@ -83,12 +83,12 @@ class AddDevices(Script):
     ap_count = IntegerVar(
         description="Number of access point to be install on the switch",
         label='AP Count',
-        default=1
+        required=False
     )
     guest_count = IntegerVar(
         description="Number of wired guest users that need access on the switch",
         label='Guest Count',
-        default=1
+        required=False
     )
     uplink_1 = ChoiceVar(
         choices=CHOICES,
