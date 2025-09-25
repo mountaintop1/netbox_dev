@@ -136,11 +136,9 @@ class AddDevices(Script):
             platform=platform,
             config_template=ConfigTemplate.objects.get(name='master_temp_acc_v1'),
         )
+        switch.set_custom_field = ('gateway', data['gateway_address'])
         switch.save()
         self.log_success(f"Created new switch: {switch} from {data}")
-
-        switch.custom_field = {'gateway': data['gateway_address']}
-        switch.save()
         self.log_success(f"Custome field attached: {switch.custom_field}, {switch.name}, {switch.interfaces.all().count()}")
         
 
