@@ -140,7 +140,15 @@ class AddDevices(Script):
         switch.full_clean()
         switch.save()
         self.log_success(f"Created new switch: {switch} with {switch.interfaces.all().count() interfaces")
-        
+
+        vlan_group = VLANGroup.objects.create(
+                        name=data["device_name"],
+                        slug=slugify(data["device_name"]),
+                        scope_type=ContentType.objects.get_for_model(Site),
+                        scope_id=site.id,
+                        description="vlan_grp"
+                    )
+        self.log_success(f"Created new vlan group: {vlan_group}")
 
 
 name = "Suncor Custom Script"
