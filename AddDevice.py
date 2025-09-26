@@ -312,4 +312,3 @@ class AddDevicesVer(Script):
     def run(self, data, commit):
         pass
 
-name = "Suncor Custom Script"
