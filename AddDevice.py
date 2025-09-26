@@ -190,4 +190,17 @@ class AddDevices(Script):
         )
         self.log_success(f"Created new Po1 and mgmt int vlan: VLAN{interface_mgmt}, Portchannel:{interface_portc}")
 
+        mgmt_ip = IPAddress.objects.create(
+            address=data['mgmt_address'],
+            device=switch,
+            status="active",
+            description=data["device_name"],
+            interface=interface_mgmt,
+        )
+        self.log_success(f"Created IP Address and assigned to switch: Mgmt IP: {mgmt_ip} on {switch}")
+        
+        switch.primary_ip4.address = data['mgmt_address']
+        switch.save()
+        self.log_success(f"IP Address assigned as primary IPv4 address: {switch.primary_ip4.address}")
+
 name = "Suncor Custom Script"
