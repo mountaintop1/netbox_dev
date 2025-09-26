@@ -7,6 +7,32 @@ from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interfac
 from ipam.models import IPAddress, VLAN, VLANGroup
 from extras.models import ConfigTemplate
 
+
+def distribute_items(main_list, ap_count=None, guest_count=None):
+    """
+    Distribute up to ap_count items to ap_list and up to guest_count items to guest_list.
+    Removes assigned items from main_list (returned as a new list).
+    Returns (ap_list, guest_list, main_list).
+    """
+    ap_list = []
+    guest_list = []
+
+    # Assign to ap_list
+    if isinstance(ap_count, int) and ap_count > 0:
+        take_ap = min(ap_count, len(main_list))
+        ap_list = main_list[:take_ap]
+        main_list = main_list[take_ap:]
+
+    # Assign to guest_list (after ap_list has taken its share)
+    if isinstance(guest_count, int) and guest_count > 0:
+        take_guest = min(guest_count, len(main_list))
+        guest_list = main_list[:take_guest]
+        main_list = main_list[take_guest:]
+
+    return main_list, ap_list, guest_list
+
+
+
 CHOICES = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
     ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
@@ -203,5 +229,11 @@ class AddDevices(Script):
         switch.primary_ip4 = mgmt_ip
         switch.save()
         self.log_success(f"IP Address assigned as primary IPv4 address: {switch.primary_ip4.address}")
-        
+
+        usable_int = switch.interfaces.filter(name__contains='/0/').reverse()
+        blan_list, ap_list, guest_list = distribute_items(usable_int, data["ap_count"], data["guest_count"])
+        self.log_success(f"List of access port generated: {blaan_list}, {ap_list}, {guest_list}")
+
+
+
 name = "Suncor Custom Script"
