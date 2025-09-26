@@ -323,6 +323,3 @@ class AddDevicesVersion(Script):
         uplink2_int.refresh_from_db()
         self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
         
-
-
-name = "Suncor Custom Script"
