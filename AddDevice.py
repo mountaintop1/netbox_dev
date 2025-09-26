@@ -235,10 +235,10 @@ class AddDevices(Script):
         
         for idx, ap_int in enumerate(ap_list, start=1):
             ap_int.mode = "tagged"
-            apt_int.description = f"<<remotehost={data['device_name']}-wif-0{idx}>>"
-            apt_int.save()
-            apt_int.untagged_vlan = blan
-            apt_int.tagged_vlans.add(blan,)
+            ap_int.description = f"<<remotehost={data['device_name']}-wif-0{idx}>>"
+            ap_int.save()
+            ap_int.untagged_vlan = blan
+            ap_int.tagged_vlans.add(blan,)
             
         for b_int in blan_list:
             b_int.mode = "access"
