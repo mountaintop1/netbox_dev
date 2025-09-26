@@ -232,7 +232,7 @@ class AddDevices(Script):
 
         usable_int = switch.interfaces.filter(name__contains='/0/').reverse()
         blan_list, ap_list, guest_list = distribute_items(usable_int, data["ap_count"], data["guest_count"])
-        self.log_success(f"List of access port generated: {blaan_list}, {ap_list}, {guest_list}")
+        self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)}")
 
 
 
