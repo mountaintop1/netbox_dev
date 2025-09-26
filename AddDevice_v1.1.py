@@ -32,17 +32,38 @@ def distribute_items(main_list, ap_count=None, guest_count=None):
     return main_list, ap_list, guest_list
 
 
-
-CHOICES = (
+choices1 = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
     ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
     ('TenGigabitEthernet1/1/3', 'Te1/1/3'),
     ('TenGigabitEthernet1/1/4', 'Te1/1/4'),
+)
+choices2 = (
+    ('GigabitEthernet1/1/1', 'Gi1/1/1'),
+    ('GigabitEthernet1/1/2', 'Gi1/1/2'),
+    ('TenGigabitEthernet1/1/3', 'Te1/1/3'),
+    ('TenGigabitEthernet1/1/4', 'Te1/1/4'),
+)
+choices3 = (
     ('TwentyFiveGigabitEthernet1/1/1', 'Twe1/1/1'),
     ('TwentyFiveGigabitEthernet1/1/2', 'Twe1/1/2'),
+    ('TwentyFiveGigabitEthernet1/1/3', 'Twe1/1/3'),
+    ('TwentyFiveGigabitEthernet1/1/4', 'Twe1/1/4'),
+)
+choices4 = (
     ('GigabitEthernet1/1', 'Gi1/1'),
     ('GigabitEthernet1/2', 'Gi1/2'),
+    ('GigabitEthernet1/3', 'Gi1/3'),
+    ('GigabitEthernet1/4', 'Gi1/4'),
 )
+
+CHOICES = {
+    "cisco-c9300l-24p-4x": choices1,
+    "cisco-c9300l-48uxg-4x": choices1,
+    "cisco-c9300lm-24u-4y": choices3,
+    "cisco-c9200cx-12p-2x2g": choices2,
+    "cisco-ie-4000-8gt8gp4g-e": choices4,
+}
 
 LAG_CHOICES = (
     ('Po1', 'Po1'),
@@ -118,7 +139,10 @@ class AddDevices(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=CHOICES,
+        choices=lambda data: CHOICES_BY_MODEL.get(
+            getattr(data.get("switch_model"), "slug", None),  # use slug key
+            ()
+        ),
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -128,7 +152,10 @@ class AddDevices(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
     uplink_2 = ChoiceVar(
-        choices=CHOICES,
+        choices=lambda data: CHOICES_BY_MODEL.get(
+            getattr(data.get("switch_model"), "slug", None),  # use slug key
+            ()
+        ),
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -149,7 +176,11 @@ class AddDevices(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a/b; port=ae18'
     )
     def run(self, data, commit):
-
+        dt = data["switch_model"]                 # DeviceType instance
+        selected1 = data["uplink_1"]               # the chosen value from the dynamic list
+        selected2 = data["uplink_2"]
+        self.log_success(f"Model: {dt.slug} ({dt.model}), uplink_1: {selected1}, uplink_2: {selected2}")
+        
         # Create access switches
         switch_role = DeviceRole.objects.get(name='Access Switch')
         platform = Platform.objects.get(slug='ios')
