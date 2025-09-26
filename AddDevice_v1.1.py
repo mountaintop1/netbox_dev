@@ -32,38 +32,6 @@ def distribute_items(main_list, ap_count=None, guest_count=None):
     return main_list, ap_list, guest_list
 
 
-choices1 = (
-    ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
-    ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
-    ('TenGigabitEthernet1/1/3', 'Te1/1/3'),
-    ('TenGigabitEthernet1/1/4', 'Te1/1/4'),
-)
-choices2 = (
-    ('GigabitEthernet1/1/1', 'Gi1/1/1'),
-    ('GigabitEthernet1/1/2', 'Gi1/1/2'),
-    ('TenGigabitEthernet1/1/3', 'Te1/1/3'),
-    ('TenGigabitEthernet1/1/4', 'Te1/1/4'),
-)
-choices3 = (
-    ('TwentyFiveGigabitEthernet1/1/1', 'Twe1/1/1'),
-    ('TwentyFiveGigabitEthernet1/1/2', 'Twe1/1/2'),
-    ('TwentyFiveGigabitEthernet1/1/3', 'Twe1/1/3'),
-    ('TwentyFiveGigabitEthernet1/1/4', 'Twe1/1/4'),
-)
-choices4 = (
-    ('GigabitEthernet1/1', 'Gi1/1'),
-    ('GigabitEthernet1/2', 'Gi1/2'),
-    ('GigabitEthernet1/3', 'Gi1/3'),
-    ('GigabitEthernet1/4', 'Gi1/4'),
-)
-
-CHOICES = {
-    "cisco-c9300l-24p-4x": choices1,
-    "cisco-c9300l-48uxg-4x": choices1,
-    "cisco-c9300lm-24u-4y": choices3,
-    "cisco-c9200cx-12p-2x2g": choices2,
-    "cisco-ie-4000-8gt8gp4g-e": choices4,
-}
 
 CHOICES1 = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
