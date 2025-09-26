@@ -239,14 +239,14 @@ class AddDevices(Script):
             ap_int.mode = "tagged"
             ap_int.description = f"<<remotehost={data['device_name']}-wif-0{idx}>>"
             ap_int.save()
-            ap_int.untagged_vlan = blan
+            ap_int.untagged_vlan = blan.id
             ap_int.tagged_vlans.add(blan,)
             
         for b_int in blan_list:
             b_int.mode = "access"
             b_int.description = "<<remotehost=User>>"
             b_int.save()
-            b_int.untagged_vlan = blan
+            b_int.untagged_vlan = blan.id
         
         for g_int in guest_list:
             g_int.mode = "access"
