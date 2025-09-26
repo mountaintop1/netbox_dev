@@ -65,6 +65,17 @@ CHOICES = {
     "cisco-ie-4000-8gt8gp4g-e": choices4,
 }
 
+CHOICES1 = (
+    ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
+    ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
+    ('TenGigabitEthernet1/1/3', 'Te1/1/3'),
+    ('TenGigabitEthernet1/1/4', 'Te1/1/4'),
+    ('TwentyFiveGigabitEthernet1/1/1', 'Twe1/1/1'),
+    ('TwentyFiveGigabitEthernet1/1/2', 'Twe1/1/2'),
+    ('GigabitEthernet1/1', 'Gi1/1'),
+    ('GigabitEthernet1/2', 'Gi1/2'),
+)
+
 LAG_CHOICES = (
     ('Po1', 'Po1'),
     ('Po2', 'Po2'),
@@ -139,10 +150,7 @@ class AddDevicesVersion(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=lambda data: CHOICES.get(
-            getattr(data.get("switch_model"), "slug"),  # use slug key
-            ()
-        ),
+        choices=CHOICES1,
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -152,10 +160,7 @@ class AddDevicesVersion(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
     uplink_2 = ChoiceVar(
-        choices=lambda data: CHOICES.get(
-            getattr(data.get("switch_model"), "slug"),  # use slug key
-            ()
-        ),
+        choices=CHOICES1,
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -176,10 +181,6 @@ class AddDevicesVersion(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a/b; port=ae18'
     )
     def run(self, data, commit):
-        dt = data["switch_model"]                 # DeviceType instance
-        selected1 = data["uplink_1"]               # the chosen value from the dynamic list
-        selected2 = data["uplink_2"]
-        self.log_success(f"Model: {dt.slug} ({dt.model}), uplink_1: {selected1}, uplink_2: {selected2}")
         
         # Create access switches
         switch_role = DeviceRole.objects.get(name='Access Switch')
