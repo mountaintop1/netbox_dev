@@ -248,14 +248,14 @@ class AddDevices(Script):
             b_int.mode = "access"
             b_int.description = "<<remotehost=User>>"
             b_int.untagged_vlan = blan
-            b_int.int.full_clean()
+            b_int.full_clean()
             b_int.save()
     
         for g_int in guest_list:
             g_int.mode = "access"
             g_int.description = "<<remotehost=User>>"
             g_int.untagged_vlan = guest
-            g_int.int.full_clean()
+            g_int.full_clean()
             g_int.save()
             
         self.log_success("Updated all interfaces....................................")
