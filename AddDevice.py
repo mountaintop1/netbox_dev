@@ -240,7 +240,7 @@ class AddDevices(Script):
             ap_int.mode = "tagged"
             ap_int.description = f"<<remotehost={data['device_name']}-wif-0{idx}>>"
             ap_int.untagged_vlan = blan
-            ap.int.full_clean()
+            ap_int.full_clean()
             ap_int.save()
             ap_int.tagged_vlans.add(blan,)
             
