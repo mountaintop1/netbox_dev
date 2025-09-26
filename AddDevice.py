@@ -293,23 +293,27 @@ class AddDevices(Script):
         self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
 
 
-class AddDevicesVer(Script):
-
+class AssignUplink(Script):
     class Meta:
-        name = "Add New Device To Site Version 2"
-        description = "Provision a New switch to Site"
-        commit_default = False
-        fieldsets = (
-            ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
-            ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
-            ('Connected Access Point', ('ap_count',)),
-            ('Wired Guest', ('guest_count',)),
-            ('Uplink Port 1', ('uplink_1', 'uplink_desc_a',)),
-            ('Uplink Port 2', ('uplink_2', 'uplink_desc_b',)),
-            ('Lag Interface', ('lag_name', 'lag_desc')),
-        )
-    
-    def run(self, data, commit):
-        pass
+        name = "Assign Uplink"
+        description = "Assign uplink choice based on model"
 
-script_order = (AddDevicesVer, AddDevices)
+    switch_model = ObjectVar(model=DeviceType, label="Device Model", required=True)
+
+    def uplink_choices(self, data):
+        dt = data.get("switch_model")
+        if not dt:
+            return ()
+        # Example dynamic options; replace with your logic
+        return (("Gi1/0/1", "Gi1/0/1"), ("Gi1/0/2", "Gi1/0/2"))
+
+    uplink_1 = ChoiceVar(
+        choices=uplink_choices,
+        label="Uplink Interface",
+        required=True,
+    )
+
+    def run(self, data, commit=True):
+        dt = data["switch_model"]
+        uplink = data["uplink_1"]
+        self.log_success(f"Model: {dt.slug}, selected uplink: {uplink}")
