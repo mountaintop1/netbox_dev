@@ -232,8 +232,27 @@ class AddDevices(Script):
 
         usable_int = switch.interfaces.filter(name__contains='/0/').reverse()
         blan_list, ap_list, guest_list = distribute_items(usable_int, data["ap_count"], data["guest_count"])
+        
+        for idx, ap_int in enumerate(ap_list, start=1):
+            ap_int.mode = "tagged"
+            apt_int.description = f"<<remotehost={data['device_name']}-wif-0{idx}>>"
+            apt_int.save()
+            apt_int.untagged_vlan = blan
+            apt_int.tagged_vlans.add(blan,)
+            
+        for b_int in blan_list:
+            b_int.mode = "access"
+            b_int.description = "<<remotehost=User>>"
+            b_int.save()
+            b_int.untagged_vlan = blan
+        
+        for g_int in guest_list:
+            g_int.mode = "access"
+            g_int.description = "<<remotehost=User>>"
+            g_int.save()
+            g_int.untagged_vlan = guest
+            
         self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)}")
-
 
 
 name = "Suncor Custom Script"
