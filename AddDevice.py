@@ -291,7 +291,11 @@ class AddDevices(Script):
         uplink2_int.save()
         uplink2_int.refresh_from_db()
         self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
-        
 
+
+class AddDevicesVer(Script):
+
+    class Meta:
+        name = "Add New Device To Site Version 2"
 
 name = "Suncor Custom Script"
