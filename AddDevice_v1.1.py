@@ -139,7 +139,7 @@ class AddDevicesVersion(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=lambda data: CHOICES_BY_MODEL.get(
+        choices=lambda data: CHOICES.get(
             getattr(data.get("switch_model"), "slug", None),  # use slug key
             ()
         ),
@@ -152,7 +152,7 @@ class AddDevicesVersion(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
     uplink_2 = ChoiceVar(
-        choices=lambda data: CHOICES_BY_MODEL.get(
+        choices=lambda data: CHOICES.get(
             getattr(data.get("switch_model"), "slug", None),  # use slug key
             ()
         ),
