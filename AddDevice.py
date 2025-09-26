@@ -297,5 +297,19 @@ class AddDevicesVer(Script):
 
     class Meta:
         name = "Add New Device To Site Version 2"
+        description = "Provision a New switch to Site"
+        commit_default = False
+        fieldsets = (
+            ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
+            ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
+            ('Connected Access Point', ('ap_count',)),
+            ('Wired Guest', ('guest_count',)),
+            ('Uplink Port 1', ('uplink_1', 'uplink_desc_a',)),
+            ('Uplink Port 2', ('uplink_2', 'uplink_desc_b',)),
+            ('Lag Interface', ('lag_name', 'lag_desc')),
+        )
+    
+    def run(self, data, commit):
+        pass
 
 name = "Suncor Custom Script"
