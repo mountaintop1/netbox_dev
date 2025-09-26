@@ -259,6 +259,29 @@ class AddDevices(Script):
             g_int.save()
             
         self.log_success("Updated all interfaces....................................")
-
+        
+        uplink1_int = switch.interfaces.get(name=data["uplink_1"])
+        uplink1_int.mode = "tagged"
+        uplink1.description = f"<<{data['uplink_desc_a']}>>"
+        uplink1.lag = switch.interfaces.get(name=data["lag_name"])
+        uplink1.tagged_vlans.add(blan, mgmt, guest)
+        uplink1.full_clean()
+        uplink1.save()
+        self.log_success(f"Update uplink 1: {uplink1_int}")
+        
+        uplink2_int = switch.interfaces.get(name=data["uplink_2"])    
+        uplink2_int.mode = "tagged"
+        uplink2.description = f"<<{data['uplink_desc_b']}>>"
+        uplink2.lag = switch.interfaces.get(name=data["lag_name"])
+        uplink2.tagged_vlans.add(blan, mgmt, guest)
+        uplink2.full_clean()
+        uplink2.save()
+        self.log_success(f"Update uplink 2: {uplink2_int}")
+        
+        lag_int = switch.interfaces.get(name=data["lag_name"])
+        lag_int.tagged_vlans.add(blan, mgmt, guest)
+        lag_int.full_clean()
+        lag_int.save()
+        self.log_success(f"Update interface Lag: {lag_int}")
 
 name = "Suncor Custom Script"
