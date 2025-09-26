@@ -192,15 +192,16 @@ class AddDevices(Script):
 
         mgmt_ip = IPAddress.objects.create(
             address=data['mgmt_address'],
-            device=switch,
             status="active",
             description=data["device_name"],
-            interface=interface_mgmt,
         )
-        self.log_success(f"Created IP Address and assigned to switch: Mgmt IP: {mgmt_ip} on {switch}")
+        self.log_success(f"Created IP Address: Mgmt IP: {mgmt_ip}")
         
-        switch.primary_ip4.address = data['mgmt_address']
+        mgmt_ip.assigned_object = interface_mgmt
+        mgmt_ip.save()
+        
+        switch.primary_ip4 = mgmt_ip
         switch.save()
         self.log_success(f"IP Address assigned as primary IPv4 address: {switch.primary_ip4.address}")
-
+        
 name = "Suncor Custom Script"
