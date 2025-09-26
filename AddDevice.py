@@ -300,20 +300,7 @@ class AssignUplink(Script):
 
     switch_model = ObjectVar(model=DeviceType, label="Device Model", required=True)
 
-    def uplink_choices(self, data):
-        dt = data.get("switch_model")
-        if not dt:
-            return ()
-        # Example dynamic options; replace with your logic
-        return (("Gi1/0/1", "Gi1/0/1"), ("Gi1/0/2", "Gi1/0/2"))
+    def run(self, data, commit):
 
-    uplink_1 = ChoiceVar(
-        choices=uplink_choices,
-        label="Uplink Interface",
-        required=True,
-    )
-
-    def run(self, data, commit=True):
-        dt = data["switch_model"]
-        uplink = data["uplink_1"]
-        self.log_success(f"Model: {dt.slug}, selected uplink: {uplink}")
+        # Create access switches
+        tes1 = 'test1'
