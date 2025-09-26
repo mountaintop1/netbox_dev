@@ -51,10 +51,10 @@ LAG_CHOICES = (
 )
 
 
-class AddDevices(Script):
+class AddDevicesVer(Script):
 
     class Meta:
-        name = "Add New Device To Site"
+        name = "Add New Device To Site Version 2"
         description = "Provision a New switch to Site"
         commit_default = False
         fieldsets = (
