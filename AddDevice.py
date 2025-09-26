@@ -154,7 +154,7 @@ class AddDevices(Script):
         switch_role = DeviceRole.objects.get(name='Access Switch')
         platform = Platform.objects.get(slug='ios')
         mfr = Manufacturer.objects.get(slug="cisco")
-        switch = Device(
+        switch = Device.objects.create(
             device_type=data['switch_model'],
             name=data['device_name'],
             site=data['site'],
