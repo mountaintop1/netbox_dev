@@ -176,10 +176,6 @@ class AddDevicesVersion(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a/b; port=ae18'
     )
     def run(self, data, commit):
-        dt = data["switch_model"]                 # DeviceType instance
-        selected1 = data["uplink_1"]               # the chosen value from the dynamic list
-        selected2 = data["uplink_2"]
-        self.log_success(f"Model: {dt.slug} ({dt.model}), uplink_1: {selected1}, uplink_2: {selected2}")
         
         # Create access switches
         switch_role = DeviceRole.objects.get(name='Access Switch')
