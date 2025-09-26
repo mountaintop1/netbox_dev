@@ -33,7 +33,7 @@ def distribute_items(main_list, ap_count=None, guest_count=None):
 
 
 
-CHOICES1 = (
+CHOICES = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
     ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
     ('TenGigabitEthernet1/1/3', 'Te1/1/3'),
@@ -51,10 +51,10 @@ LAG_CHOICES = (
 )
 
 
-class AddDevicesVersion(Script):
+class AddDevices(Script):
 
     class Meta:
-        name = "Add New Device To Site Version 2"
+        name = "Add New Device To Site"
         description = "Provision a New switch to Site"
         commit_default = False
         fieldsets = (
@@ -118,7 +118,7 @@ class AddDevicesVersion(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=CHOICES1,
+        choices=CHOICES,
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -128,7 +128,7 @@ class AddDevicesVersion(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
     uplink_2 = ChoiceVar(
-        choices=CHOICES1,
+        choices=CHOICES,
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -149,7 +149,7 @@ class AddDevicesVersion(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a/b; port=ae18'
     )
     def run(self, data, commit):
-        
+
         # Create access switches
         switch_role = DeviceRole.objects.get(name='Access Switch')
         platform = Platform.objects.get(slug='ios')
@@ -292,3 +292,6 @@ class AddDevicesVersion(Script):
         uplink2_int.refresh_from_db()
         self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
         
+
+
+name = "Suncor Custom Script"
