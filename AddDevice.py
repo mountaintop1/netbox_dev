@@ -262,20 +262,20 @@ class AddDevices(Script):
         
         uplink1_int = switch.interfaces.get(name=data["uplink_1"])
         uplink1_int.mode = "tagged"
-        uplink1.description = f"<<{data['uplink_desc_a']}>>"
-        uplink1.lag = switch.interfaces.get(name=data["lag_name"])
-        uplink1.tagged_vlans.add(blan, mgmt, guest)
-        uplink1.full_clean()
-        uplink1.save()
+        uplink1_int.description = f"<<{data['uplink_desc_a']}>>"
+        uplink1_int.lag = switch.interfaces.get(name=data["lag_name"])
+        uplink1_int.tagged_vlans.add(blan, mgmt, guest)
+        uplink1_int.full_clean()
+        uplink1_int.save()
         self.log_success(f"Update uplink 1: {uplink1_int}")
         
         uplink2_int = switch.interfaces.get(name=data["uplink_2"])    
         uplink2_int.mode = "tagged"
-        uplink2.description = f"<<{data['uplink_desc_b']}>>"
-        uplink2.lag = switch.interfaces.get(name=data["lag_name"])
-        uplink2.tagged_vlans.add(blan, mgmt, guest)
-        uplink2.full_clean()
-        uplink2.save()
+        uplink2_int.description = f"<<{data['uplink_desc_b']}>>"
+        uplink2_int.lag = switch.interfaces.get(name=data["lag_name"])
+        uplink2_int.tagged_vlans.add(blan, mgmt, guest)
+        uplink2_int.full_clean()
+        uplink2_int.save()
         self.log_success(f"Update uplink 2: {uplink2_int}")
         
         lag_int = switch.interfaces.get(name=data["lag_name"])
