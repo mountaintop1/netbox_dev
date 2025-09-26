@@ -164,7 +164,7 @@ class AddDevices(Script):
             config_template=ConfigTemplate.objects.get(name='master_temp_acc_v1'),
         )
         switch.custom_field_data["gateway"] = data["gateway_address"]
-        switch.full_clean()
+        #switch.full_clean()
         switch.save()
         self.log_success(f"Created new switch: {switch} with {switch.interfaces.all().count()} interfaces")
         vlan_group = VLANGroup.objects.create(
