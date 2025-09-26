@@ -235,7 +235,6 @@ class AddDevices(Script):
         
         self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)}")
 
-        self.log_success(f"test {blan}   {guest}")
         for idx, ap_int in enumerate(ap_list, start=1):
             ap_int.mode = "tagged"
             ap_int.description = f"<<remotehost={data['device_name']}-wif-0{idx}>>"
