@@ -234,25 +234,29 @@ class AddDevices(Script):
         blan_list, ap_list, guest_list = distribute_items(usable_int, data["ap_count"], data["guest_count"])
         
         self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)}")
-        
+
+        self.log_success(f"test {blan}   {guest}")
         for idx, ap_int in enumerate(ap_list, start=1):
             ap_int.mode = "tagged"
             ap_int.description = f"<<remotehost={data['device_name']}-wif-0{idx}>>"
+            ap_int.untagged_vlan = blan
+            ap.int.full_clean()
             ap_int.save()
-            ap_int.untagged_vlan = blan.id
             ap_int.tagged_vlans.add(blan,)
             
         for b_int in blan_list:
             b_int.mode = "access"
             b_int.description = "<<remotehost=User>>"
+            b_int.untagged_vlan = blan
+            b_int.int.full_clean()
             b_int.save()
-            b_int.untagged_vlan = blan.id
-        
+    
         for g_int in guest_list:
             g_int.mode = "access"
             g_int.description = "<<remotehost=User>>"
-            g_int.save()
             g_int.untagged_vlan = guest
+            g_int.int.full_clean()
+            g_int.save()
             
         self.log_success("Updated all interfaces....................................")
 
