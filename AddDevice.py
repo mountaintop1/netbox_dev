@@ -312,3 +312,4 @@ class AddDevicesVer(Script):
     def run(self, data, commit):
         pass
 
+script_order = (AddDevicesVer, AddDevices)
