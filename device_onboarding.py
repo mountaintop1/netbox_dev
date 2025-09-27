@@ -402,24 +402,31 @@ class DeviceOnboardingVersioning(Script):
         label='Guest Count',
         required=False
     )
+    
     uplink_1 = ChoiceVar(
-        choices=lambda data: CHOICES.get(
+    choices=lambda data: CHOICES_BY_MODEL.get(
         getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
         ()
-        ),
-        description="Uplink Interface drop-down",
-        label='Uplink Interface'
+    ),
+    description="Uplink Interface drop-down",
+    label='Uplink Interface'
     )
+    
     uplink_desc_a = StringVar(
         description="Uplink Port 1 Interface Description",
         label='Uplink Interface Description',
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
+    
     uplink_2 = ChoiceVar(
-        choices=CHOICES,
-        description="Uplink Interface drop-down",
-        label='Uplink Interface'
+    choices=lambda data: CHOICES_BY_MODEL.get(
+        getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
+        ()
+    ),
+    description="Uplink Interface drop-down",
+    label='Uplink Interface'
     )
+    
     uplink_desc_b = StringVar(
         description="Uplink Port 2 Interface Description",
         label='Uplink Interface Description',
