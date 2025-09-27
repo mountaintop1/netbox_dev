@@ -409,10 +409,7 @@ class DeviceOnboardingVersioning(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=lambda data: CHOICES_BY_MODEL.get(
-            getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
-            ()
-        ),
+        choices=CHOICES,
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -422,10 +419,7 @@ class DeviceOnboardingVersioning(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
     uplink_2 = ChoiceVar(
-        choices=lambda data: CHOICES_BY_MODEL.get(
-            getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
-            ()
-        ),
+        choices=CHOICES,
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -445,6 +439,7 @@ class DeviceOnboardingVersioning(Script):
         label='Lag Interface Description',
         default='remotehost=os-z07-41ra0043-01-sw-lef-a/b; port=ae18'
     )
+    
     def run(self, data, commit):
         switch_role = DeviceRole.objects.get(name='Access Switch')
         platform = Platform.objects.get(slug='ios')
@@ -486,28 +481,3 @@ class DeviceOnboardingVersioning(Script):
         # If you want to apply config to all stack members, loop through `devices`.
 
         self.log_success(f"Stack creation complete. Total members: {len(devices)}")
-
-class DynamicSiteChoiceScript(Script):
-        class Meta:
-            name = "Dynamic Site Choice"
-            description = "Demonstrates a dynamic ChoiceVar for NetBox Sites"
-
-        def get_site_choices(self):
-            choices = []
-            for site in Site.objects.all():
-                choices.append((str(site.pk), site.name))  # Use primary key as value, site name as label
-            return choices
-
-        site_selection = ChoiceVar(
-            choices=[],  # Initialize with an empty list, will be populated dynamically
-            label="Select a Site"
-        )
-
-        def __init__(self):
-            super().__init__()
-            self.site_selection.choices = self.get_site_choices() # Populate choices during initialization
-
-        def run(self, data, commit):
-            selected_site_id = data['site_selection']
-            selected_site = Site.objects.get(pk=selected_site_id)
-            self.log_info(f"You selected site: {selected_site.name} (ID: {selected_site.pk})")
