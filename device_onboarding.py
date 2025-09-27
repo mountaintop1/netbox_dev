@@ -340,10 +340,10 @@ class DeviceOnboardingVersioning(Script):
 
     class Meta:
         name = "Device Onboarding and Versioning"
-        description = "Assign uplink choice based on model"
+        description = "Assign uplink choice based on model, supports stack switches"
         commit_default = False
         fieldsets = (
-            ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch')),
+            ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch', 'stack_member_count')),
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
             ('Connected Access Point', ('ap_count',)),
             ('Wired Guest', ('guest_count',)),
@@ -353,7 +353,7 @@ class DeviceOnboardingVersioning(Script):
         )
 
     device_name = StringVar(
-        description="Device hostname",
+        description="Device hostname (base name for stack)",
         label='Device Name'
     )
     switch_model = ObjectVar(
@@ -377,7 +377,13 @@ class DeviceOnboardingVersioning(Script):
     is_stack_switch = BooleanVar(
         description="Is this a stack switch",
         default=False,
-        label='is_stack'
+        label='Is Stack Switch'
+    )
+    stack_member_count = IntegerVar(
+        description="Number of stack members (ignored if not a stack switch)",
+        label='Stack Member Count',
+        default=1,
+        required=False
     )
     mgmt_vlan = IntegerVar(
         description="Mgmt VLAN ID example: 60",
@@ -403,9 +409,12 @@ class DeviceOnboardingVersioning(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=CHOICES,
+        choices=lambda data: CHOICES_BY_MODEL.get(
+            getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
+            ()
+        ),
         description="Uplink Interface drop-down",
-        label='Uplink Interface',
+        label='Uplink Interface'
     )
     uplink_desc_a = StringVar(
         description="Uplink Port 1 Interface Description",
@@ -413,7 +422,10 @@ class DeviceOnboardingVersioning(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
     uplink_2 = ChoiceVar(
-        choices=CHOICES,
+        choices=lambda data: CHOICES_BY_MODEL.get(
+            getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
+            ()
+        ),
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -433,11 +445,47 @@ class DeviceOnboardingVersioning(Script):
         label='Lag Interface Description',
         default='remotehost=os-z07-41ra0043-01-sw-lef-a/b; port=ae18'
     )
-
     def run(self, data, commit):
-        # Your logic here
-        pass
+        switch_role = DeviceRole.objects.get(name='Access Switch')
+        platform = Platform.objects.get(slug='ios')
+        config_template = ConfigTemplate.objects.get(name='master_temp_acc_v1')
+    
+        # Determine stack count: 1 if not stack, or user-specified count if stack
+        stack_count = data.get("stack_member_count") if data.get("is_stack_switch") else 1
+        
+        # Ensure stack_count is at least 1
+        stack_count = max(1, int(data.get("stack_member_count", 1)))
 
+        devices = []
+        for i in range(1, stack_count + 1):
+            # First device uses device_name, others use device_name + index
+            if i == 1:
+                name = data['device_name']
+            else:
+                name = f"{data['device_name']}{i}"
+            switch = Device.objects.create(
+                device_type=data['switch_model'],
+                name=name,
+                site=data['site'],
+                status=DeviceStatusChoices.STATUS_ACTIVE,
+                role=switch_role,
+                platform=platform,
+                config_template=config_template,
+            )
+            switch.custom_field_data["gateway"] = data["gateway_address"]
+            switch.full_clean()
+            switch.save()
+            devices.append(switch)
+            self.log_success(f"Created switch: {switch.name}")
+    
+        # Continue with your onboarding logic for VLANs, interfaces, etc.
+        # You can extend the rest of your logic to handle multiple devices in the stack as needed.
+        # For simplicity, below is just for the first device (main member).
+        main_switch = devices[0]
+        # ...rest of your onboarding logic for VLANs, interfaces, IPs, etc. using main_switch...
+        # If you want to apply config to all stack members, loop through `devices`.
+
+        self.log_success(f"Stack creation complete. Total members: {len(devices)}")
 
 class DynamicSiteChoiceScript(Script):
         class Meta:
