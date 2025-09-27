@@ -84,12 +84,12 @@ CHOICES_BY_MODEL = {
     "cisco-ie-4000-8gt8gp4g-e": choices4,
 }
 
-def uplink_choices(data):
-    dt = data.get("switch_model")  # DeviceType instance or None
+def uplink_choices(data=None):
+    dt = (data or {}).get("switch_model") if isinstance(data, dict) else None
     if not dt:
         return ()
-    return CHOICES_BY_MODEL.get(getattr(dt, "slug", None), ())
-
+    slug = dt.slug
+    return CHOICES_BY_MODEL.get(slug, ())
 
 class DeviceOnboarding(Script):
 
@@ -400,7 +400,7 @@ class DeviceOnboardingVersioning(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=CHOICES,
+        choices=uplink_choices,
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -410,7 +410,7 @@ class DeviceOnboardingVersioning(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
     uplink_2 = ChoiceVar(
-        choices=CHOICES,
+        choices=uplink_choices,
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
