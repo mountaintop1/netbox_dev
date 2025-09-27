@@ -439,7 +439,7 @@ class DeviceOnboardingVersioning(Script):
         pass
 
 
-    class DynamicSiteChoiceScript(Script):
+class DynamicSiteChoiceScript(Script):
         class Meta:
             name = "Dynamic Site Choice"
             description = "Demonstrates a dynamic ChoiceVar for NetBox Sites"
