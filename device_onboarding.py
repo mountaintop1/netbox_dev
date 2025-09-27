@@ -51,10 +51,10 @@ LAG_CHOICES = (
 )
 
 
-class AddDevices(Script):
+class DeviceOnboarding(Script):
 
     class Meta:
-        name = "Add New Device To Site"
+        name = "Device Onboarding"
         description = "Provision a New switch to Site"
         commit_default = False
         fieldsets = (
@@ -293,9 +293,9 @@ class AddDevices(Script):
         self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
 
 
-class AssignUplink(Script):
+class DeviceOnboardingVersioning(Script):
     class Meta:
-        name = "Assign Uplink"
+        name = "Device Onboarding and Versioning"
         description = "Assign uplink choice based on model"
 
     switch_model = ObjectVar(model=DeviceType, label="Device Model", required=True)
