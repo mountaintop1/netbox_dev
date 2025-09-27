@@ -404,9 +404,12 @@ class DeviceOnboardingVersioning(Script):
     )
     
     uplink_1 = ChoiceVar(
-    choices=CHOICES,
-    description="Uplink Interface drop-down",
-    label='Uplink Interface'
+        choices=lambda data: CHOICES_BY_MODEL.get(
+            getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
+            ()
+        ),
+        description="Uplink Interface drop-down",
+        label='Uplink Interface',
     )
     
     uplink_desc_a = StringVar(
@@ -416,9 +419,12 @@ class DeviceOnboardingVersioning(Script):
     )
     
     uplink_2 = ChoiceVar(
-    choices=CHOICES,
-    description="Uplink Interface drop-down",
-    label='Uplink Interface'
+        choices=lambda data: CHOICES_BY_MODEL.get(
+            getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
+            ()
+        ),
+        description="Uplink Interface drop-down",
+        label='Uplink Interface',
     )
     
     uplink_desc_b = StringVar(
@@ -426,12 +432,14 @@ class DeviceOnboardingVersioning(Script):
         label='Uplink Interface Description',
         default='remotehost=os-z07-41ra0043-01-sw-lef-b; port=xe-0/0/18'
     )
+    
     lag_name  = ChoiceVar(
         choices=LAG_CHOICES,
         description="Uplink Port 1/2 Lag Interface drop-down. example: Po1/ae1",
         label='Lag Interface Name',
         default='Po1',
     )
+    
     lag_desc = StringVar(
         description="Uplink Port 1/2 Lag Interface description",
         label='Lag Interface Description',
