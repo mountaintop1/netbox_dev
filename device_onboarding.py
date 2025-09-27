@@ -414,9 +414,6 @@ class DeviceOnboardingVersioning(Script):
     )
     uplink_2 = ChoiceVar(
         choices=CHOICES,
-    description="Uplink Interface drop-down",
-    label='Uplink Interface'
-),
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
