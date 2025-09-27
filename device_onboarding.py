@@ -135,35 +135,45 @@ class DeviceOnboarding(Script):
     is_stack_switch = BooleanVar(
         description="Is this a stack switch",
         default=False,
-        label='is_stack'
+        label='is_stack',
     )
     mgmt_vlan = IntegerVar(
         description="Mgmt VLAN ID example: 60",
         label='Mgmt VLAN ID',
-        default=60
+        default=60,
+        min_value=2,
+        max_value=4096,
     )
     blan_vlan = IntegerVar(
         description="Business LAN VLAN ID example: 1101",
-        label='BLAN VLAN ID'
+        label='BLAN VLAN ID',
+        min_value=2,
+        max_value=4096,
     )
     guest_vlan = IntegerVar(
         description="Guest VLAN ID example: 3101",
-        label='Guest VLAN ID'
+        label='Guest VLAN ID',
+        min_value=2,
+        max_value=4096,
     )
     ap_count = IntegerVar(
         description="Number of access point to be install on the switch",
         label='AP Count',
-        required=False
+        required=False,
+        min_value=1,
+        max_value=10,
     )
     guest_count = IntegerVar(
         description="Number of wired guest users that need access on the switch",
         label='Guest Count',
-        required=False
+        required=False,
+        min_value=1,
+        max_value=10,
     )
     uplink_1 = ChoiceVar(
         choices=CHOICES,
         description="Uplink Interface drop-down",
-        label='Uplink Interface'
+        label='Uplink Interface',
     )
     uplink_desc_a = StringVar(
         description="Uplink Port 1 Interface Description",
@@ -173,7 +183,7 @@ class DeviceOnboarding(Script):
     uplink_2 = ChoiceVar(
         choices=CHOICES,
         description="Uplink Interface drop-down",
-        label='Uplink Interface'
+        label='Uplink Interface',
     )
     uplink_desc_b = StringVar(
         description="Uplink Port 2 Interface Description",
@@ -368,7 +378,7 @@ class DeviceOnboardingVersioning(Script):
     )
     mgmt_address = IPAddressWithMaskVar(
         description="Device Mgmt IP example: 192.168.20.10/23",
-        label='Mgmt IP Address'
+        label='Mgmt IP Address',
     )
     gateway_address = StringVar(
         description="Default Gateway. example: 10.10.10.1",
@@ -377,41 +387,53 @@ class DeviceOnboardingVersioning(Script):
     is_stack_switch = BooleanVar(
         description="Is this a stack switch",
         default=False,
-        label='Is Stack Switch'
+        label='Is Stack Switch',
     )
     stack_member_count = IntegerVar(
         description="Number of stack members (ignored if not a stack switch)",
         label='Stack Member Count',
         default=1,
-        required=False
+        required=False,
+        min_value=1,
+        max_value=5,
     )
     mgmt_vlan = IntegerVar(
         description="Mgmt VLAN ID example: 60",
         label='Mgmt VLAN ID',
-        default=60
+        default=60,
+        min_value=2,
+        max_value=4096,
     )
     blan_vlan = IntegerVar(
         description="Business LAN VLAN ID example: 1101",
-        label='BLAN VLAN ID'
+        label='BLAN VLAN ID',
+        min_value=2,
+        max_value=4096,
     )
     guest_vlan = IntegerVar(
         description="Guest VLAN ID example: 3101",
-        label='Guest VLAN ID'
+        label='Guest VLAN ID',
+        min_value=2,
+        max_value=4096,
     )
     ap_count = IntegerVar(
         description="Number of access point to be install on the switch",
         label='AP Count',
-        required=False
+        required=False,
+        min_value=1,
+        max_value=10,
     )
     guest_count = IntegerVar(
         description="Number of wired guest users that need access on the switch",
         label='Guest Count',
-        required=False
+        required=False,
+        min_value=1,
+        max_value=10,
     )
     uplink_1 = ChoiceVar(
         choices=CHOICES,
         description="Uplink Interface drop-down",
-        label='Uplink Interface'
+        label='Uplink Interface',
     )
     uplink_desc_a = StringVar(
         description="Uplink Port 1 Interface Description",
@@ -421,7 +443,7 @@ class DeviceOnboardingVersioning(Script):
     uplink_2 = ChoiceVar(
         choices=CHOICES,
         description="Uplink Interface drop-down",
-        label='Uplink Interface'
+        label='Uplink Interface',
     )
     uplink_desc_b = StringVar(
         description="Uplink Port 2 Interface Description",
