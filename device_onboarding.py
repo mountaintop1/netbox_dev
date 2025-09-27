@@ -403,10 +403,11 @@ class DeviceOnboardingVersioning(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=lambda data: CHOICES_BY_MODEL.get(
-        getattr(data.get("switch_model"), "slug", None) if data.get("switch_model") else None,
+        choices=lambda data: CHOICES.get(
+        getattr(data.get("switch_model"), "slug", None)
+        if data.get("switch_model") else None,
         ()
-        ),
+    ),
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
