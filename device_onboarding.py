@@ -404,10 +404,7 @@ class DeviceOnboardingVersioning(Script):
     )
     
     uplink_1 = ChoiceVar(
-    choices=lambda data: CHOICES_BY_MODEL.get(
-        getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
-        ()
-    ),
+    choices=CHOICES,
     description="Uplink Interface drop-down",
     label='Uplink Interface'
     )
@@ -419,10 +416,7 @@ class DeviceOnboardingVersioning(Script):
     )
     
     uplink_2 = ChoiceVar(
-    choices=lambda data: CHOICES_BY_MODEL.get(
-        getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
-        ()
-    ),
+    choices=CHOICES,
     description="Uplink Interface drop-down",
     label='Uplink Interface'
     )
