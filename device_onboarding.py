@@ -76,13 +76,20 @@ choices4 = (
     ('GigabitEthernet1/4', 'Gi1/4'),
 )
 
-CHOICES1 = {
+CHOICES_BY_MODEL = {
     "cisco-c9300l-24p-4x": choices1,
     "cisco-c9300l-48uxg-4x": choices1,
     "cisco-c9300lm-24u-4y": choices3,
     "cisco-c9200cx-12p-2x2g": choices2,
     "cisco-ie-4000-8gt8gp4g-e": choices4,
 }
+
+def uplink_choices(data):
+    dt = data.get("switch_model")  # DeviceType instance or None
+    if not dt:
+        return ()
+    return CHOICES_BY_MODEL.get(getattr(dt, "slug", None), ())
+
 
 class DeviceOnboarding(Script):
 
