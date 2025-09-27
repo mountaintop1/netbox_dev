@@ -403,7 +403,10 @@ class DeviceOnboardingVersioning(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=uplink_choices,
+        choices=lambda data: CHOICES_BY_MODEL.get(
+        getattr(data.get("switch_model"), "slug", None) if data.get("switch_model") else None,
+        ()
+    ),
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
@@ -413,7 +416,13 @@ class DeviceOnboardingVersioning(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
     uplink_2 = ChoiceVar(
-        choices=uplink_choices,
+        choices=lambda data: CHOICES_BY_MODEL.get(
+        getattr(data.get("switch_model"), "slug", None) if data.get("switch_model") else None,
+        ()
+    ),
+    description="Uplink Interface drop-down",
+    label='Uplink Interface'
+),
         description="Uplink Interface drop-down",
         label='Uplink Interface'
     )
