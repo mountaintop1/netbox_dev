@@ -403,9 +403,12 @@ class DeviceOnboardingVersioning(Script):
         required=False
     )
     uplink_1 = ChoiceVar(
-        choices=CHOICES,
+        choices=lambda data: CHOICES_BY_MODEL.get(
+            getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
+            ()
+        ),
         description="Uplink Interface drop-down",
-        label='Uplink Interface'
+        label='Uplink Interface',
     )
     uplink_desc_a = StringVar(
         description="Uplink Port 1 Interface Description",
