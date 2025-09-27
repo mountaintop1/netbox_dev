@@ -337,7 +337,7 @@ class DeviceOnboarding(Script):
 
 
 class DeviceOnboardingVersioning(Script):
-    
+
     class Meta:
         name = "Device Onboarding and Versioning"
         description = "Assign uplink choice based on model"
@@ -402,44 +402,38 @@ class DeviceOnboardingVersioning(Script):
         label='Guest Count',
         required=False
     )
-    
     uplink_1 = ChoiceVar(
         choices=lambda data: CHOICES_BY_MODEL.get(
             getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
             ()
         ),
         description="Uplink Interface drop-down",
-        label='Uplink Interface',
+        label='Uplink Interface'
     )
-    
     uplink_desc_a = StringVar(
         description="Uplink Port 1 Interface Description",
         label='Uplink Interface Description',
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
-    
     uplink_2 = ChoiceVar(
         choices=lambda data: CHOICES_BY_MODEL.get(
             getattr(data.get("switch_model"), "slug", "") if data.get("switch_model") else "",
             ()
         ),
         description="Uplink Interface drop-down",
-        label='Uplink Interface',
+        label='Uplink Interface'
     )
-    
     uplink_desc_b = StringVar(
         description="Uplink Port 2 Interface Description",
         label='Uplink Interface Description',
         default='remotehost=os-z07-41ra0043-01-sw-lef-b; port=xe-0/0/18'
     )
-    
     lag_name  = ChoiceVar(
         choices=LAG_CHOICES,
         description="Uplink Port 1/2 Lag Interface drop-down. example: Po1/ae1",
         label='Lag Interface Name',
         default='Po1',
     )
-    
     lag_desc = StringVar(
         description="Uplink Port 1/2 Lag Interface description",
         label='Lag Interface Description',
@@ -447,6 +441,5 @@ class DeviceOnboardingVersioning(Script):
     )
 
     def run(self, data, commit):
-
-        # Create access switches
-        tes1 = 'test1'
+        # Your logic here
+        pass
