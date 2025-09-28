@@ -632,5 +632,32 @@ class DeviceOnboardingVersioning(Script):
                 self.log_success(f"Port allocation: BLAN ports = {len(blan_list)}, AP ports = {len(ap_list)}, GUEST ports = {len(guest_list)}")
          
         self.log_success(f"Total ports — BLAN: {len(blan_user_port)}, GUEST: {len(guest_user_port)}, AP: {len(ap_port)}")
+        
+        if ap_port:
+            for idx, ap_int in enumerate(ap_port, start=1):
+                ap_int.mode = "tagged"
+                ap_int.description = f"<<remotehost={main_switch}-wif-0{idx}>>"
+                ap_int.untagged_vlan = blan
+                ap_int.full_clean()
+                ap_int.save()
+                ap_int.tagged_vlans.add(blan,)
+        
+        if blan_user_port:            
+            for b_int in blan_user_port:
+                b_int.mode = "access"
+                b_int.description = "<<remotehost=User>>"
+                b_int.untagged_vlan = blan
+                b_int.full_clean()
+                b_int.save()
+        
+        if guest_user_port:
+            for g_int in guest_user_port:
+                g_int.mode = "access"
+                g_int.description = "<<remotehost=User>>"
+                g_int.untagged_vlan = guest
+                g_int.full_clean()
+                g_int.save()
+
+        self.log_success("Updated all interfaces as required....................................")
 
 
