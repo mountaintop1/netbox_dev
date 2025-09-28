@@ -629,7 +629,7 @@ class DeviceOnboardingVersioning(Script):
 
         for idx, device in enumerate(devices, start=1):
             if idx > 1:
-                for intf in device.interfaces.filter(name__contains="/0/"):
+                for intf in device.interfaces.all():
                     intf.name = replace_slot(intf.name, idx)
                     intf.save()
                 
