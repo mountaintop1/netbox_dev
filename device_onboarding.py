@@ -9,6 +9,25 @@ from ipam.models import IPAddress, VLAN, VLANGroup
 from extras.models import ConfigTemplate
 
 
+def replace_slot(interface: str, new_slot: int) -> str:
+    """
+    Replace the first number after the interface type with the given integer.
+    Example: "GigabitEthernet1/0/1", 2 -> "GigabitEthernet2/0/1"
+    """
+    # Find where the digits start
+    i = 0
+    while i < len(interface) and not interface[i].isdigit():
+        i += 1
+    if i == len(interface):
+        raise ValueError("No numeric part found in the interface string.")
+
+    # Find the end of the first numeric segment
+    j = i
+    while j < len(interface) and interface[j].isdigit():
+        j += 1
+
+    return interface[:i] + str(new_slot) + interface[j:]
+
 def per_switch_with_adding(ap_count: int, num_switches: int) -> Tuple[int,int,int]:
     if num_switches < 1:
         raise ValueError("num_switches must be >= 1")
