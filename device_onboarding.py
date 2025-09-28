@@ -569,7 +569,8 @@ class DeviceOnboardingVersioning(Script):
                 )
                 if data['is_stack_switch'] and (stack_count > 1):
                     self.log_success(f"Created new Po1 and mgmt int vlan: {interface_mgmt}, Portchannel:{interface_portc} on member {idx}")
-                self.log_success(f"Created new Po1 and mgmt int vlan: {interface_mgmt}, Portchannel:{interface_portc}")
+                else:
+                    self.log_success(f"Created new Po1 and mgmt int vlan: {interface_mgmt}, Portchannel:{interface_portc}")
             
             elif idx == len(devices):            
                 interface_portc = Interface.objects.create(
@@ -578,7 +579,7 @@ class DeviceOnboardingVersioning(Script):
                 type="lag", 
                 description=data["lag_desc"],
                 )   
-                self.log_success(f"Created new Po1 and mgmt int vlan: {interface_mgmt}, Portchannel:{interface_portc} on member {idx}")
+                self.log_success(f"Created new Po1: Portchannel:{interface_portc} on member {idx}")
         
         # Continue with your onboarding logic for VLANs, interfaces, etc.
         # You can extend the rest of your logic to handle multiple devices in the stack as needed.
