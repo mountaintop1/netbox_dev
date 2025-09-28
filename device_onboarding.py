@@ -580,6 +580,21 @@ class DeviceOnboardingVersioning(Script):
                 description=data["lag_desc"],
                 )   
                 self.log_success(f"Created new Po1: Portchannel:{interface_portc} on member {idx}")
+
+        mgmt_ip = IPAddress.objects.create(
+            address=data['mgmt_address'],
+            status="active",
+            description=data["device_name"],
+        )
+        self.log_success(f"Created IP Address: Mgmt IP: {mgmt_ip}")
+        
+        mgmt_ip.assigned_object = interface_mgmt
+        mgmt_ip.save()
+        
+        devices[0].primary_ip4 = mgmt_ip
+        devices[0].save()
+        self.log_success(f"IP Address assigned as primary IPv4 address: {devices[0].primary_ip4.address}")
+
         
         # Continue with your onboarding logic for VLANs, interfaces, etc.
         # You can extend the rest of your logic to handle multiple devices in the stack as needed.
