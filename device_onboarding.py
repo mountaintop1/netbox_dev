@@ -503,14 +503,14 @@ class DeviceOnboardingVersioning(Script):
             devices.append(switch)
             self.log_success(f"Created switch: {switch.name} with {switch.interfaces.all().count()} interfaces"")
         
-        if is_stack_switch:
+        if data['is_stack_switch']:
             self.log_success(f"Stack creation complete. Total members: {len(devices)}")
             vc = VirtualChassis.objects.create(
                 name=data['device_name'],
                 description=data['device_name'],
             )
             for idx, device in enumerate(devices, start=1):
-                    pr = 16 - idx 
+                pr = 16 - idx 
                 add_member_to_vc(device, vc, idx, pr)
                 if idx == 1:
                     vc.master = device
