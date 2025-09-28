@@ -548,6 +548,15 @@ class DeviceOnboardingVersioning(Script):
                     vc.refresh_from_db()
                 device.refresh_from_db()
 
+        for idx, device in enumerate(devices, start=1):
+            if idx > 1:
+                for intf in device.interfaces.all():
+                    intf.name = replace_slot(intf.name, idx)
+                    intf.save()
+                
+                device.refresh_from_db()
+                self.log_success(f"Interface name has been updated for stack member {idx}")
+
         vlan_group = VLANGroup.objects.create(
                         name=data["device_name"],
                         slug=slugify(data["device_name"]),
@@ -627,15 +636,6 @@ class DeviceOnboardingVersioning(Script):
         main_switch.save()
         self.log_success(f"Primary IPv4 address: {devices[0].primary_ip4.address} on {main_switch.name}")
 
-        for idx, device in enumerate(devices, start=1):
-            if idx > 1:
-                for intf in device.interfaces.all():
-                    intf.name = replace_slot(intf.name, idx)
-                    intf.save()
-                
-                device.refresh_from_db()
-                self.log_success(f"Interface name has been updated for stack member {idx}")
-
         blan_user_port = []
         guest_user_port = []
         ap_port = []
@@ -710,8 +710,12 @@ class DeviceOnboardingVersioning(Script):
             self.log_success(f"Update uplink 1: {uplink1_int} tagged={list(uplink1_int.tagged_vlans.values_list('vid', flat=True))} on stack member 1")
         else:
             self.log_success(f"Update uplink 1: {uplink1_int} tagged={list(uplink1_int.tagged_vlans.values_list('vid', flat=True))}")
-        
-        uplink2_int = devices[-1].interfaces.get(name=data["uplink_2"])
+
+        if data['is_stack_switch'] and (stack_count > 1):
+            uplink2_int = devices[-1].interfaces.get(name=replace_slot(data["uplink_2"], len(devices)))
+        else:
+            uplink2_int = devices[-1].interfaces.get(name=data["uplink_2"])
+
         uplink2_int.mode = "tagged"
         uplink2_int.description = f"<<{data['uplink_desc_b']}>>"
         uplink2_int.lag = devices[-1].interfaces.get(name=data["lag_name"])
