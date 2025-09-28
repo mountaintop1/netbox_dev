@@ -631,7 +631,9 @@ class DeviceOnboardingVersioning(Script):
                 self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)} on stack member {idx}")
             else:
                 self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)}")
-        
+         
+        self.log_success(f"total ports for BLAN, GUEST and AP: {len(blan_user_port)}, {len(guest_user_port)}, {len(ap_port)}")
+    
         # Continue with your onboarding logic for VLANs, interfaces, etc.
         # You can extend the rest of your logic to handle multiple devices in the stack as needed.
         # For simplicity, below is just for the first device (main member).
