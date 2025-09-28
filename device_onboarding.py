@@ -604,7 +604,7 @@ class DeviceOnboardingVersioning(Script):
         
         devices[0].primary_ip4 = mgmt_ip
         devices[0].save()
-        self.log_success(f"Primary IPv4 address: {devices[0].primary_ip4.address} on {devices[0].name}"")
+        self.log_success(f"Primary IPv4 address: {devices[0].primary_ip4.address} on {devices[0].name}")
 
         blan_user_port = []
         guest_user_port = []
@@ -631,9 +631,6 @@ class DeviceOnboardingVersioning(Script):
          
         self.log_success(f"Total ports — BLAN: {len(blan_user_port)}, GUEST: {len(guest_user_port)}, AP: {len(ap_port)}")
     
-        # Continue with your onboarding logic for VLANs, interfaces, etc.
-        # You can extend the rest of your logic to handle multiple devices in the stack as needed.
-        # For simplicity, below is just for the first device (main member).
         main_switch = devices[0]
         # ...rest of your onboarding logic for VLANs, interfaces, IPs, etc. using main_switch...
         # If you want to apply config to all stack members, loop through `devices`.
