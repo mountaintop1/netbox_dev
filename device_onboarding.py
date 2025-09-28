@@ -712,7 +712,9 @@ class DeviceOnboardingVersioning(Script):
             self.log_success(f"Update uplink 1: {uplink1_int} tagged={list(uplink1_int.tagged_vlans.values_list('vid', flat=True))}")
 
         if data['is_stack_switch'] and (stack_count > 1):
-            uplink2_int = devices[-1].interfaces.get(name=replace_slot(data["uplink_2"], len(devices)))
+            new_int = replace_slot(data["uplink_2"], len(devices))
+            uplink_new = lambda new_int: new_int[:-1] + "1"
+            uplink2_int = devices[-1].interfaces.get(name=uplink_new)
         else:
             uplink2_int = devices[-1].interfaces.get(name=data["uplink_2"])
 
