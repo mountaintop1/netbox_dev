@@ -620,12 +620,9 @@ class DeviceOnboardingVersioning(Script):
         for idx, device in enumerate(devices, start=1):   
             usable_int = device.interfaces.filter(name__contains='/0/').reverse()
             blan_list, ap_list, guest_list = distribute_items(usable_int, ap_count, guest_count)
-            if blan_list:
-                blan_user_port.extend(blan_list)
-            elif ap_list:
-                ap_port.extend(ap_list)
-            elif guest_list:
-                guest_user_port.extend(guest_list)
+            blan_user_port.extend(blan_list)
+            ap_port.extend(ap_list)
+            guest_user_port.extend(guest_list)
                 
             if data['is_stack_switch'] and (stack_count > 1):
                 self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)} on stack member {idx}")
