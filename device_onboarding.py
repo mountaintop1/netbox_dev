@@ -604,7 +604,7 @@ class DeviceOnboardingVersioning(Script):
         
         devices[0].primary_ip4 = mgmt_ip
         devices[0].save()
-        self.log_success(f"IP Address assigned as primary IPv4 address: {devices[0].primary_ip4.address}")
+        self.log_success(f"f"Primary IPv4 address: {devices[0].primary_ip4.address} on {devices[0].name}"")
 
         blan_user_port = []
         guest_user_port = []
@@ -625,11 +625,11 @@ class DeviceOnboardingVersioning(Script):
             guest_user_port.extend(guest_list)
                 
             if data['is_stack_switch'] and (stack_count > 1):
-                self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)} on stack member {idx}")
+                self.log_success(f"Port allocation: BLAN ports = {len(blan_list)}, AP ports = {len(ap_list)}, GUEST ports = {len(guest_list)} on stack member {idx}.")
             else:
-                self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)}")
+                self.log_success(f"Port allocation: BLAN ports = {len(blan_list)}, AP ports = {len(ap_list)}, GUEST ports = {len(guest_list)}")
          
-        self.log_success(f"total ports for BLAN, GUEST and AP: {len(blan_user_port)}, {len(guest_user_port)}, {len(ap_port)}")
+        self.log_success(f"Total ports — BLAN: {len(blan_user_port)}, GUEST: {len(guest_user_port)}, AP: {len(ap_port)}")
     
         # Continue with your onboarding logic for VLANs, interfaces, etc.
         # You can extend the rest of your logic to handle multiple devices in the stack as needed.
