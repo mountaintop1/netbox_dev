@@ -1,12 +1,23 @@
 from extras.scripts import *
 from django.utils.text import slugify
 from django.contrib.contenttypes.models import ContentType
+from typing import Tuple
 
 from dcim.choices import DeviceStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer, VirtualChassis
 from ipam.models import IPAddress, VLAN, VLANGroup 
 from extras.models import ConfigTemplate
 
+
+def per_switch_with_adding(ap_count: int, num_switches: int) -> Tuple[int,int,int]:
+    if num_switches < 1:
+        raise ValueError("num_switches must be >= 1")
+    # minimal total that is a multiple of num_switches and >= ap_count
+    remainder = ap_count % num_switches
+    added = 0 if remainder == 0 else (num_switches - remainder)
+    total = ap_count + added
+    per_switch = total // num_switches
+    return per_switch, total, added
 
 def add_member_to_vc(device: Device, vc: VirtualChassis, position: int, priority: int):
     device.virtual_chassis = vc
@@ -600,8 +611,8 @@ class DeviceOnboardingVersioning(Script):
         ap_port = []
         
         if data['is_stack_switch'] and (stack_count > 1):
-            ap_count = data["ap_count"]
-            guest_count = data["guest_count"]
+            ap_count = per_switch_with_adding(data["ap_count"], len(devices))[0]
+            guest_count = per_switch_with_adding(data["guest_count"], len(devices))[0]
         else:
             ap_count = data["ap_count"]
             guest_count = data["guest_count"]
