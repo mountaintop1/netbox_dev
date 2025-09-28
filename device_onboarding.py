@@ -591,7 +591,7 @@ class DeviceOnboardingVersioning(Script):
                 description=data["lag_desc"],
                 )   
                 self.log_success(f"Created new Po1: Portchannel:{interface_portc} on member {idx}")
-
+        
         mgmt_ip = IPAddress.objects.create(
             address=data['mgmt_address'],
             status="active",
@@ -604,7 +604,7 @@ class DeviceOnboardingVersioning(Script):
         
         devices[0].primary_ip4 = mgmt_ip
         devices[0].save()
-        self.log_success(f"f"Primary IPv4 address: {devices[0].primary_ip4.address} on {devices[0].name}"")
+        self.log_success(f"Primary IPv4 address: {devices[0].primary_ip4.address} on {devices[0].name}"")
 
         blan_user_port = []
         guest_user_port = []
