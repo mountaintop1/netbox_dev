@@ -627,6 +627,15 @@ class DeviceOnboardingVersioning(Script):
         main_switch.save()
         self.log_success(f"Primary IPv4 address: {devices[0].primary_ip4.address} on {main_switch.name}")
 
+        for idx, device in enumerate(devices, start=1):
+            if idx > 1:
+                for intf in device.interfaces.filter(name__contains="/0/"):
+                    intf.name = replace_slot(intf.name, idx)
+                    intf.save()
+                
+                device.refresh_from_db()
+                self.log_success(f"Interface name has been updated for stack member {idx}")
+
         blan_user_port = []
         guest_user_port = []
         ap_port = []
