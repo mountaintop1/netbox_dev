@@ -563,6 +563,8 @@ class DeviceOnboardingVersioning(Script):
             )
         self.log_success(f"Created new vlans and added to group: VLANGroup: {vlan_group}, VLANs: {blan}:{mgmt}:{guest}")
         
+        main_switch = devices[0]
+        
         for idx, device in enumerate(devices, start=1): 
             if idx == 1:
                 interface_portc = Interface.objects.create(
@@ -602,9 +604,9 @@ class DeviceOnboardingVersioning(Script):
         mgmt_ip.assigned_object = interface_mgmt
         mgmt_ip.save()
         
-        devices[0].primary_ip4 = mgmt_ip
-        devices[0].save()
-        self.log_success(f"Primary IPv4 address: {devices[0].primary_ip4.address} on {devices[0].name}")
+        main_switch.primary_ip4 = mgmt_ip
+        main_switch.save()
+        self.log_success(f"Primary IPv4 address: {devices[0].primary_ip4.address} on {main_switch.name}")
 
         blan_user_port = []
         guest_user_port = []
@@ -630,9 +632,5 @@ class DeviceOnboardingVersioning(Script):
                 self.log_success(f"Port allocation: BLAN ports = {len(blan_list)}, AP ports = {len(ap_list)}, GUEST ports = {len(guest_list)}")
          
         self.log_success(f"Total ports — BLAN: {len(blan_user_port)}, GUEST: {len(guest_user_port)}, AP: {len(ap_port)}")
-    
-        main_switch = devices[0]
-        # ...rest of your onboarding logic for VLANs, interfaces, IPs, etc. using main_switch...
-        # If you want to apply config to all stack members, loop through `devices`.
 
 
