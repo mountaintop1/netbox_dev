@@ -501,7 +501,7 @@ class DeviceOnboardingVersioning(Script):
             switch.save()
             switch.refresh_from_db()
             devices.append(switch)
-            self.log_success(f"Created switch: {switch.name} with {switch.interfaces.all().count()} interfaces"")
+            self.log_success(f"Created switch: {switch.name} with {switch.interfaces.all().count()} interfaces")
         
         if data['is_stack_switch']:
             self.log_success(f"Stack creation complete. Total members: {len(devices)}")
