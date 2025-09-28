@@ -8,6 +8,12 @@ from ipam.models import IPAddress, VLAN, VLANGroup
 from extras.models import ConfigTemplate
 
 
+def add_member_to_vc(device: Device, vc: VirtualChassis, position: int, priority: int):
+    device.virtual_chassis = vc
+    device.vc_priority = priority
+    device.vc_position = position
+    device.save()
+
 def distribute_items(main_list, ap_count=None, guest_count=None):
     """
     Distribute up to ap_count items to ap_list and up to guest_count items to guest_list.
@@ -480,6 +486,7 @@ class DeviceOnboardingVersioning(Script):
                 name = data['device_name']
             else:
                 name = f"{data['device_name']}{i}"
+                
             switch = Device.objects.create(
                 device_type=data['switch_model'],
                 name=name,
@@ -492,9 +499,26 @@ class DeviceOnboardingVersioning(Script):
             switch.custom_field_data["gateway"] = data["gateway_address"]
             switch.full_clean()
             switch.save()
+            switch.refresh_from_db()
             devices.append(switch)
-            self.log_success(f"Created switch: {switch.name}")
-    
+            self.log_success(f"Created switch: {switch.name} with {switch.interfaces.all().count()} interfaces"")
+        
+        if is_stack_switch:
+            self.log_success(f"Stack creation complete. Total members: {len(devices)}")
+            vc = VirtualChassis.objects.create(
+                name=data['device_name'],
+                description=data['device_name'],
+            )
+            for idx, device in enumerate(devices, start=1):
+                    pr = 16 - idx 
+                add_member_to_vc(device, vc, idx, pr)
+                if idx == 1:
+                    vc.master = device
+                    vc.save()
+                    vc.refresh_from_db()
+                device.refresh_from_db()
+
+        
         # Continue with your onboarding logic for VLANs, interfaces, etc.
         # You can extend the rest of your logic to handle multiple devices in the stack as needed.
         # For simplicity, below is just for the first device (main member).
@@ -502,4 +526,4 @@ class DeviceOnboardingVersioning(Script):
         # ...rest of your onboarding logic for VLANs, interfaces, IPs, etc. using main_switch...
         # If you want to apply config to all stack members, loop through `devices`.
 
-        self.log_success(f"Stack creation complete. Total members: {len(devices)}")
+
