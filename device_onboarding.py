@@ -274,7 +274,7 @@ class DeviceOnboarding(Script):
             description="mgmt",
             mode='tagged'
         )
-        self.log_success(f"Created new Po1 and mgmt int vlan: VLAN{interface_mgmt}, Portchannel:{interface_portc}")
+        self.log_success(f"Created new Po1 and mgmt int vlan: {interface_mgmt}, Portchannel:{interface_portc}")
 
         mgmt_ip = IPAddress.objects.create(
             address=data['mgmt_address'],
@@ -503,7 +503,7 @@ class DeviceOnboardingVersioning(Script):
             devices.append(switch)
             self.log_success(f"Created switch: {switch.name} with {switch.interfaces.all().count()} interfaces")
         
-        if data['is_stack_switch']:
+        if data['is_stack_switch'] and (stack_count > 1):
             self.log_success(f"Stack creation complete. Total members: {len(devices)}")
             vc = VirtualChassis.objects.create(
                 name=data['device_name'],
@@ -567,9 +567,9 @@ class DeviceOnboardingVersioning(Script):
                     type="virtual", 
                     description="mgmt interface",
                 )
-                if data['is_stack_switch']:
-                    self.log_success(f"Created new Po1 and mgmt int vlan: VLAN{interface_mgmt}, Portchannel:{interface_portc} on member {idx}")
-                self.log_success(f"Created new Po1 and mgmt int vlan: VLAN{interface_mgmt}, Portchannel:{interface_portc}")
+                if data['is_stack_switch'] and (stack_count > 1):
+                    self.log_success(f"Created new Po1 and mgmt int vlan: {interface_mgmt}, Portchannel:{interface_portc} on member {idx}")
+                self.log_success(f"Created new Po1 and mgmt int vlan: {interface_mgmt}, Portchannel:{interface_portc}")
             
             elif idx == len(devices):            
                 interface_portc = Interface.objects.create(
@@ -578,7 +578,7 @@ class DeviceOnboardingVersioning(Script):
                 type="lag", 
                 description=data["lag_desc"],
                 )   
-                self.log_success(f"Created new Po1 and mgmt int vlan: VLAN{interface_mgmt}, Portchannel:{interface_portc} on member {idx}")
+                self.log_success(f"Created new Po1 and mgmt int vlan: {interface_mgmt}, Portchannel:{interface_portc} on member {idx}")
         
         # Continue with your onboarding logic for VLANs, interfaces, etc.
         # You can extend the rest of your logic to handle multiple devices in the stack as needed.
