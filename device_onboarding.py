@@ -595,6 +595,31 @@ class DeviceOnboardingVersioning(Script):
         devices[0].save()
         self.log_success(f"IP Address assigned as primary IPv4 address: {devices[0].primary_ip4.address}")
 
+        blan_user_port = []
+        guest_user_port = []
+        ap_port = []
+        
+        if data['is_stack_switch'] and (stack_count > 1):
+            ap_count = data["ap_count"]
+            guest_count = data["guest_count"]
+        else:
+            ap_count = data["ap_count"]
+            guest_count = data["guest_count"]
+        
+        for idx, device in enumerate(devices, start=1):   
+            usable_int = device.interfaces.filter(name__contains='/0/').reverse()
+            blan_list, ap_list, guest_list = distribute_items(usable_int, ap_count, guest_count)
+            if blan_list:
+                blan_user_port.append(blan_list)
+            elif ap_list:
+                ap_port.append(ap_list)
+            elif guest_list:
+                guest_user_port.append(guest_list)
+                
+            if data['is_stack_switch'] and (stack_count > 1):
+                self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)} on stack member {idx}")
+            else:
+                self.log_success(f"List of access port generated: {len(blan_list)}, {len(ap_list)}, {len(guest_list)}")
         
         # Continue with your onboarding logic for VLANs, interfaces, etc.
         # You can extend the rest of your logic to handle multiple devices in the stack as needed.
