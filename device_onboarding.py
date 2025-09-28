@@ -269,7 +269,7 @@ class DeviceOnboarding(Script):
         )
         interface_mgmt = Interface.objects.create(
             device=switch, 
-            name=str(data["mgmt_vlan"]), 
+            name=f'vlan{str(data["mgmt_vlan"])}', 
             type="virtual", 
             description="mgmt",
             mode='tagged'
@@ -518,6 +518,67 @@ class DeviceOnboardingVersioning(Script):
                     vc.refresh_from_db()
                 device.refresh_from_db()
 
+        vlan_group = VLANGroup.objects.create(
+                        name=data["device_name"],
+                        slug=slugify(data["device_name"]),
+                        scope_type=ContentType.objects.get_for_model(Site),
+                        scope_id=data['site'].id,
+                        description="vlan_grp",
+                    )
+        self.log_success(f"Created new vlan group: {vlan_group}")
+        blan = VLAN.objects.create(
+                        group=vlan_group,
+                        vid=data["blan_vlan"],
+                        name="blan",
+                        status="active",
+                        site=data['site'],
+                        description="Business LAN",
+                    )
+        mgmt = VLAN.objects.create(
+                group=vlan_group,
+                vid=data["mgmt_vlan"],
+                name="mgmt",
+                status="active",
+                site=data['site'],
+                description="Mgmt Vlan",
+            )
+        guest = VLAN.objects.create(
+                group=vlan_group,
+                vid=data["guest_vlan"],
+                name="guest",
+                status="active",
+                site=data['site'],
+                description="Guest Vlan",
+            )
+        self.log_success(f"Created new vlans and added to group: VLANGroup: {vlan_group}, VLANs: {blan}:{mgmt}:{guest}")
+        
+        for idx, device in enumerate(devices, start=1): 
+            if idx == 1:
+                interface_portc = Interface.objects.create(
+                    device=device, 
+                    name=data["lag_name"], 
+                    type="lag", 
+                    description=data["lag_desc"],
+                    mode='tagged'
+                )
+                interface_mgmt = Interface.objects.create(
+                    device=device, 
+                    name=f'vlan{str(data["mgmt_vlan"])}', 
+                    type="virtual", 
+                    description="mgmt interface",
+                )
+                if data['is_stack_switch']:
+                    self.log_success(f"Created new Po1 and mgmt int vlan: VLAN{interface_mgmt}, Portchannel:{interface_portc} on member {idx}")
+                self.log_success(f"Created new Po1 and mgmt int vlan: VLAN{interface_mgmt}, Portchannel:{interface_portc}")
+            
+            elif idx == len(devices):            
+                interface_portc = Interface.objects.create(
+                device=device, 
+                name=data["lag_name"], 
+                type="lag", 
+                description=data["lag_desc"],
+                )   
+                self.log_success(f"Created new Po1 and mgmt int vlan: VLAN{interface_mgmt}, Portchannel:{interface_portc} on member {idx}")
         
         # Continue with your onboarding logic for VLANs, interfaces, etc.
         # You can extend the rest of your logic to handle multiple devices in the stack as needed.
