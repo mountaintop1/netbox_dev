@@ -688,4 +688,42 @@ class DeviceOnboardingVersioning(Script):
 
         self.log_success("Updated all interfaces as required....................................")
 
+        lag_int = main_switch.interfaces.get(name=data["lag_name"])
+        lag_int.tagged_vlans.add(blan, mgmt, guest)
+        lag_int.full_clean()
+        lag_int.save()
+        lag_int.refresh_from_db()
+        self.log_success(f"Update interface Lag: {lag_int}")
 
+        uplink1_int = main_switch.interfaces.get(name=data["uplink_1"])
+        uplink1_int.mode = "tagged"
+        uplink1_int.description = f"<<{data['uplink_desc_a']}>>"
+        uplink1_int.lag = main_switch.interfaces.get(name=data["lag_name"])
+        uplink1_int.full_clean()
+        uplink1_int.save()
+        
+        uplink1_int.tagged_vlans.set([blan, mgmt, guest])
+        uplink1_int.save()
+        uplink1_int.refresh_from_db()
+
+        if data['is_stack_switch'] and (stack_count > 1):
+            self.log_success(f"Update uplink 1: {uplink1_int} tagged={list(uplink1_int.tagged_vlans.values_list('vid', flat=True))} on stack member 1")
+        else:
+            self.log_success(f"Update uplink 1: {uplink1_int} tagged={list(uplink1_int.tagged_vlans.values_list('vid', flat=True))}")
+        
+        uplink2_int = devices[-1].interfaces.get(name=data["uplink_2"])
+        uplink2_int.mode = "tagged"
+        uplink2_int.description = f"<<{data['uplink_desc_b']}>>"
+        uplink2_int.lag = devices[-1].interfaces.get(name=data["lag_name"])
+        uplink2_int.full_clean()
+        uplink2_int.save()
+        
+        uplink2_int.tagged_vlans.set([blan, mgmt, guest])
+        uplink2_int.save()
+        uplink2_int.refresh_from_db()
+        
+        if data['is_stack_switch'] and (stack_count > 1):
+            self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))} on stack member {len(devices)}")
+        else:
+            self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
+            
