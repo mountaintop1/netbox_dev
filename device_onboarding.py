@@ -717,11 +717,7 @@ class DeviceOnboardingVersioning(Script):
         if data['is_stack_switch'] and (stack_count > 1):
             new_int = replace_slot(data["uplink_2"], len(devices))
             uplink_new = to_one_ended(new_int)
-            self.log_success(f"Update uplink 2: {uplink_new}")
-            
             uplink2_int = devices[-1].interfaces.get(name=uplink_new)
-            self.log_success(f"Update uplink 2: {uplink2_int.name}")
-            
         else:
             uplink2_int = devices[-1].interfaces.get(name=data["uplink_2"])
 
