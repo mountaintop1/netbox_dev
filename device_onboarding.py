@@ -8,6 +8,9 @@ from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interfac
 from ipam.models import IPAddress, VLAN, VLANGroup 
 from extras.models import ConfigTemplate
 
+def to_one_ended(new_int: str) -> str:
+    return new_int[:-1] + "1"
+
 
 def replace_slot(interface: str, new_slot: int) -> str:
     """
@@ -713,8 +716,8 @@ class DeviceOnboardingVersioning(Script):
 
         if data['is_stack_switch'] and (stack_count > 1):
             new_int = replace_slot(data["uplink_2"], len(devices))
-            #uplink_new = lambda new_int: new_int[:-1] + "1"
-            self.log_success(f"Update uplink 2: {lambda new_int: new_int[:-1] + '1'}")
+            uplink_new = to_one_ended(new_int)
+            self.log_success(f"Update uplink 2: {uplink_new}")
             
             uplink2_int = devices[-1].interfaces.get(name=uplink_new)
             self.log_success(f"Update uplink 2: {uplink2_int.name}")
