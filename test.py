@@ -19,9 +19,10 @@ class MyCustomScript(Script):
         self.log_info(f"Selected site: {site_choices}")
         
         data['my_dynamic_choice'] = site_choices
+        self.log_info(f"Selected site: {data['my_dynamic_choice']}")
         
-        selected_site_slug = data['my_dynamic_choice']
-        selected_site = Site.objects.get(slug=selected_site_slug)
+        #selected_site_slug = data['my_dynamic_choice']
+        #selected_site = Site.objects.get(slug=selected_site_slug)
         
         self.log_info(f"Selected site: {selected_site.name}")
 
