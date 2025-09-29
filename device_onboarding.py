@@ -509,7 +509,7 @@ class DeviceOnboardingVersioning(Script):
         stack_count = data.get("stack_member_count") if data.get("is_stack_switch") else 1
         
         # Ensure stack_count is at least 1
-        stack_count = max(1, int(data.get("stack_member_count", 1)))
+        #stack_count = max(1, int(data.get("stack_member_count", 1)))
 
         devices = []
         for i in range(1, stack_count + 1):
