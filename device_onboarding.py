@@ -386,10 +386,9 @@ class DeviceOnboarding(Script):
 
 
 class DeviceOnboardingVersioning(Script):
-
     class Meta:
-        name = "Device Onboarding and Versioning"
-        description = "Assign uplink choice based on model, supports stack switches"
+        name = "Device Onboarding Autopilot"
+        description = "Automatically selects the optimal uplink for each device model, with full support for stacked switches"
         commit_default = False
         fieldsets = (
             ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch', 'stack_member_count')),
