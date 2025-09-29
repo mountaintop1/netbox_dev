@@ -15,7 +15,7 @@ class MyCustomScript(Script):
 
     def run(self, data, commit):
         site_choices = [(site.slug, site.name) for site in Site.objects.all()]
-        self.my_dynamic_choice.choices = site_choices
+        my_dynamic_choice.choices = site_choices
         
         selected_site_slug = data['my_dynamic_choice']
         selected_site = Site.objects.get(slug=selected_site_slug)
