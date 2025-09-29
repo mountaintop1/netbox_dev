@@ -14,7 +14,9 @@ class MyCustomScript(Script):
         commit_default = False
 
     def run(self, data, commit):
-        site_choices = ((site.slug, site.name) for site in Site.objects.all())
+        self.log_info(f"Selected site: {data}")
+        
+        site_choices = [(site.slug, site.name) for site in Site.objects.all()]
         self.log_info(f"Selected site: {site_choices}")
         
         data['my_dynamic_choice'] = site_choices
