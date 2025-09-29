@@ -1,4 +1,4 @@
-from netbox.scripts import Script, ChoiceVar
+from extras.scripts import *
 from dcim.models import Site
 
 my_dynamic_choice = ChoiceVar(
