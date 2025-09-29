@@ -431,9 +431,9 @@ class DeviceOnboardingVersioning(Script):
     stack_member_count = IntegerVar(
         description="Number of stack members (ignored if not a stack switch)",
         label='Stack Member Count',
-        default=0,
+        default=1,
         required=False,
-        min_value=0,
+        min_value=1,
         max_value=5,
     )
     mgmt_vlan = IntegerVar(
