@@ -10,7 +10,6 @@ class MyCustomScript(Script):
     my_dynamic_choice = ChoiceVar(
         description="Select a Site:",
         choices=[],
-        required=True
     )
 
     def run(self, data, commit):
