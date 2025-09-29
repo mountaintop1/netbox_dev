@@ -9,7 +9,6 @@ class MyCustomScript(Script):
     )
 
     def run(self, data, commit):
-        # Populate choices dynamically based on existing Sites
         site_choices = [(site.slug, site.name) for site in Site.objects.all()]
         self.my_dynamic_choice.choices = site_choices
 
@@ -18,5 +17,3 @@ class MyCustomScript(Script):
         selected_site = Site.objects.get(slug=selected_site_slug)
 
         self.log_info(f"Selected site: {selected_site.name}")
-        # ... further script logic using the selected_site ...
-        return "Script executed successfully."
