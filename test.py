@@ -1,16 +1,17 @@
 from netbox.scripts import Script, ChoiceVar
 from dcim.models import Site
 
+my_dynamic_choice = ChoiceVar(
+    choices=[],
+    description="Select a Site:",
+    )
+
+
 class MyCustomScript(Script):
     class Meta:
         name = "test 1"
         description = "Test dynamic var"
         commit_default = False
-    
-    my_dynamic_choice = ChoiceVar(
-        choices=[],
-        description="Select a Site:",
-    )
 
     def run(self, data, commit):
         site_choices = [(site.slug, site.name) for site in Site.objects.all()]
