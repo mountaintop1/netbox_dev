@@ -110,11 +110,6 @@ class DeviceDynamic(Script):
         label='Device Model',
         required=True
     )
-    
-    uplink_1 = DynamicChoiceVar(
-        description="Uplink Interface drop-down",
-        label='Uplink Interface',
-    )
 
     def run(self, data, commit):
         self.log_info(f"Selected switch model: {data['switch_model']}")
