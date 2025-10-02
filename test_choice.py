@@ -1,5 +1,5 @@
-from extras.scripts import *
-from django.utils.text import slugify
+from django import forms
+from extras.scripts import Script, ChoiceVar, ObjectVar
 from dcim.models import DeviceType
 
 
@@ -60,25 +60,65 @@ CHOICES_BY_MODEL = {
     "cisco-ie-4000-8gt8gp4g-e": choices4,
 }
 
+class DynamicChioce(ChoiceVar):
+    """
+    A dynamic choice field that changes based on the selected switch model.
+    """
+    def __init__(self, *args, **kwargs):
+        # Remove the choices parameter as we'll set them dynamically
+        kwargs.pop('choices', None)
+        super().__init__(*args, **kwargs)
 
+    def prepare_kwargs(self, data, initial):
+        kwargs = super().prepare_kwargs(data, initial)
+        
+        # Get the selected switch model from the form data
+        switch_model = data.get('switch_model') if data else initial.get('switch_model')
+        
+        if switch_model:
+            # Get the device type slug from the selected model
+            if hasattr(switch_model, 'slug'):
+                model_slug = switch_model.slug
+            else:
+                # If it's just the initial value (ID), we might need to fetch the object
+                try:
+                    device_type = DeviceType.objects.get(pk=switch_model)
+                    model_slug = device_type.slug
+                except (DeviceType.DoesNotExist, ValueError):
+                    model_slug = None
+            
+            # Set the choices based on the model slug
+            if model_slug and model_slug in CHOICES_BY_MODEL:
+                kwargs['choices'] = CHOICES_BY_MODEL[model_slug]
+            else:
+                kwargs['choices'] = []  # Or provide a default empty choice
+        else:
+            kwargs['choices'] = []  # No model selected yet
+        
+        return kwargs
     
-class DeviceOnboarding(Script):
+class DeviceDynamic(Script):
 
     class Meta:
         name = "Dynamic Choice Fields"
         description = "Testing Dynamic chioce f"
         commit_default = False
 
-    uplink_1 = DynamicChioce(
-        choices=CHOICES,
+    switch_model = ObjectVar(
+        description="Access switch model",
+        model=DeviceType,
+        label='Device Model',
+        required=True
+    )
+    
+    uplink_1 = DynamicChoiceVar(
         description="Uplink Interface drop-down",
         label='Uplink Interface',
     )
-    uplink_desc_a = StringVar(
-        description="Uplink Port 1 Interface Description",
-        label='Uplink Interface Description',
-        default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
-    )
 
     def run(self, data, commit):
-      pass
+        self.log_info(f"Selected switch model: {data['switch_model']}")
+        self.log_info(f"Selected uplink: {data['uplink_1']}")
+        
+        # Your script logic here
+        return "Script completed successfully"
