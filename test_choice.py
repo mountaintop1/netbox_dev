@@ -53,41 +53,37 @@ class DeviceDynamic(Script):
     )
     
     uplink_1 = ChoiceVar(
-        choices=[],  # Start with empty choices
+        choices=[],  # Will be populated dynamically
         description="Uplink Interface drop-down",
         label='Uplink Interface',
         required=False
     )
 
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Initialize the form with dynamic choices
-        self.fields['uplink_1'].choices = self.get_uplink_choices()
-
-    def get_uplink_choices(self):
+    def prepare_ui_form(self, form):
         """
-        Dynamically get choices based on the selected switch model
+        This method is called when preparing the form for display in the UI
         """
-        # Check if we have form data (when form is submitted)
-        if hasattr(self, 'data') and self.data:
-            switch_model_id = self.data.get('switch_model')
-            if switch_model_id:
+        # Get the current value of switch_model from the form
+        switch_model = form.initial.get('switch_model')
+        
+        if switch_model:
+            # Get the device type slug
+            if hasattr(switch_model, 'slug'):
+                model_slug = switch_model.slug
+            else:
                 try:
-                    device_type = DeviceType.objects.get(pk=switch_model_id)
-                    if device_type.slug in CHOICES_BY_MODEL:
-                        return CHOICES_BY_MODEL[device_type.slug]
+                    device_type = DeviceType.objects.get(pk=switch_model)
+                    model_slug = device_type.slug
                 except (DeviceType.DoesNotExist, ValueError):
-                    pass
+                    model_slug = None
+            
+            # Update the choices for uplink_1 based on the model
+            if model_slug and model_slug in CHOICES_BY_MODEL:
+                form.fields['uplink_1'].choices = CHOICES_BY_MODEL[model_slug]
+            else:
+                form.fields['uplink_1'].choices = []
         
-        # Check if we have initial data (when form is first loaded)
-        elif hasattr(self, 'initial') and self.initial:
-            switch_model = self.initial.get('switch_model')
-            if switch_model and hasattr(switch_model, 'slug'):
-                if switch_model.slug in CHOICES_BY_MODEL:
-                    return CHOICES_BY_MODEL[switch_model.slug]
-        
-        # Default empty choices
-        return []
+        return form
 
     def run(self, data, commit):
         self.log_info(f"Selected switch model: {data['switch_model']}")
