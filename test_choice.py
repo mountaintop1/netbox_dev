@@ -68,7 +68,7 @@ class DeviceOnboarding(Script):
         description = "Testing Dynamic chioce f"
         commit_default = False
 
-    uplink_1 = ChoiceVar(
+    uplink_1 = DynamicChioce(
         choices=CHOICES,
         description="Uplink Interface drop-down",
         label='Uplink Interface',
