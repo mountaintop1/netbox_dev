@@ -2,7 +2,7 @@ from django import forms
 from extras.scripts import Script, ChoiceVar, ObjectVar
 from dcim.models import DeviceType
 
-# Your choices definitions (same as above)
+# Define your choices
 choices1 = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
     ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
@@ -53,30 +53,41 @@ class DeviceDynamic(Script):
     )
     
     uplink_1 = ChoiceVar(
-        choices=[],  # Will be populated dynamically
+        choices=[],  # Start with empty choices
         description="Uplink Interface drop-down",
         label='Uplink Interface',
         required=False
     )
 
-    def clean(self):
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Initialize the form with dynamic choices
+        self.fields['uplink_1'].choices = self.get_uplink_choices()
+
+    def get_uplink_choices(self):
         """
-        Custom clean method to dynamically update choices based on switch model selection
+        Dynamically get choices based on the selected switch model
         """
-        cleaned_data = super().clean()
-        self.log_info(f"Selected switch clean: {cleaned_data}")
+        # Check if we have form data (when form is submitted)
+        if hasattr(self, 'data') and self.data:
+            switch_model_id = self.data.get('switch_model')
+            if switch_model_id:
+                try:
+                    device_type = DeviceType.objects.get(pk=switch_model_id)
+                    if device_type.slug in CHOICES_BY_MODEL:
+                        return CHOICES_BY_MODEL[device_type.slug]
+                except (DeviceType.DoesNotExist, ValueError):
+                    pass
         
-        switch_model = cleaned_data.get('switch_model')
-        self.log_info(f"Selected switch slug: {switch_model.slug}")
+        # Check if we have initial data (when form is first loaded)
+        elif hasattr(self, 'initial') and self.initial:
+            switch_model = self.initial.get('switch_model')
+            if switch_model and hasattr(switch_model, 'slug'):
+                if switch_model.slug in CHOICES_BY_MODEL:
+                    return CHOICES_BY_MODEL[switch_model.slug]
         
-        if switch_model:
-            # Update the uplink_1 choices based on the selected model
-            if hasattr(switch_model, 'slug') and switch_model.slug in CHOICES_BY_MODEL:
-                self.fields['uplink_1'].choices = CHOICES_BY_MODEL[switch_model.slug]
-            else:
-                self.fields['uplink_1'].choices = []
-        
-        return cleaned_data
+        # Default empty choices
+        return []
 
     def run(self, data, commit):
         self.log_info(f"Selected switch model: {data['switch_model']}")
