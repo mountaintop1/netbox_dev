@@ -2,10 +2,7 @@ from django import forms
 from extras.scripts import Script, ChoiceVar, ObjectVar
 from dcim.models import DeviceType
 
-
-class DynamicChioce(ChoiceVar):
-  pass
-
+# Your choices definitions (same as above)
 choices1 = (
     ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
     ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
@@ -42,48 +39,10 @@ CHOICES_BY_MODEL = {
     "cisco-ie-4000-8gt8gp4g-e": choices4,
 }
 
-class DynamicChioce(ChoiceVar):
-    """
-    A dynamic choice field that changes based on the selected switch model.
-    """
-    def __init__(self, *args, **kwargs):
-        # Remove the choices parameter as we'll set them dynamically
-        kwargs.pop('choices', None)
-        super().__init__(*args, **kwargs)
-
-    def prepare_kwargs(self, data, initial):
-        kwargs = super().prepare_kwargs(data, initial)
-        
-        # Get the selected switch model from the form data
-        switch_model = data.get('switch_model') if data else initial.get('switch_model')
-        
-        if switch_model:
-            # Get the device type slug from the selected model
-            if hasattr(switch_model, 'slug'):
-                model_slug = switch_model.slug
-            else:
-                # If it's just the initial value (ID), we might need to fetch the object
-                try:
-                    device_type = DeviceType.objects.get(pk=switch_model)
-                    model_slug = device_type.slug
-                except (DeviceType.DoesNotExist, ValueError):
-                    model_slug = None
-            
-            # Set the choices based on the model slug
-            if model_slug and model_slug in CHOICES_BY_MODEL:
-                kwargs['choices'] = CHOICES_BY_MODEL[model_slug]
-            else:
-                kwargs['choices'] = []  # Or provide a default empty choice
-        else:
-            kwargs['choices'] = []  # No model selected yet
-        
-        return kwargs
-    
 class DeviceDynamic(Script):
-
     class Meta:
         name = "Dynamic Choice Fields"
-        description = "Testing Dynamic chioce f"
+        description = "Testing Dynamic choice fields"
         commit_default = False
 
     switch_model = ObjectVar(
@@ -92,10 +51,36 @@ class DeviceDynamic(Script):
         label='Device Model',
         required=True
     )
+    
+    uplink_1 = ChoiceVar(
+        choices=[],  # Will be populated dynamically
+        description="Uplink Interface drop-down",
+        label='Uplink Interface',
+        required=False
+    )
+
+    def clean(self):
+        """
+        Custom clean method to dynamically update choices based on switch model selection
+        """
+        cleaned_data = super().clean()
+        
+        switch_model = cleaned_data.get('switch_model')
+        if switch_model:
+            # Update the uplink_1 choices based on the selected model
+            if hasattr(switch_model, 'slug') and switch_model.slug in CHOICES_BY_MODEL:
+                self.fields['uplink_1'].choices = CHOICES_BY_MODEL[switch_model.slug]
+            else:
+                self.fields['uplink_1'].choices = []
+        
+        return cleaned_data
 
     def run(self, data, commit):
         self.log_info(f"Selected switch model: {data['switch_model']}")
-        self.log_info(f"Selected uplink: {data['uplink_1']}")
         
-        # Your script logic here
+        if data.get('uplink_1'):
+            self.log_info(f"Selected uplink: {data['uplink_1']}")
+        else:
+            self.log_warning("No uplink interface selected")
+        
         return "Script completed successfully"
