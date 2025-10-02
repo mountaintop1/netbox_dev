@@ -67,7 +67,7 @@ class DeviceDynamic(Script):
         self.log_info(f"Selected switch clean: {cleaned_data}")
         
         switch_model = cleaned_data.get('switch_model')
-        self.log_info(f"Selected switch slug: {switch_model.slug")
+        self.log_info(f"Selected switch slug: {switch_model.slug}")
         
         if switch_model:
             # Update the uplink_1 choices based on the selected model
