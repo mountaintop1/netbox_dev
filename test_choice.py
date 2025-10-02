@@ -1,5 +1,6 @@
 from extras.scripts import *
 from django.utils.text import slugify
+from dcim.models import DeviceType
 
 
 class DynamicChioce(ChoiceVar):
