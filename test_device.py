@@ -28,6 +28,10 @@ class DeviceOnboarding(Script):
         model=Site,
         label='Site Name'
     )
+    gateway_address = StringVar(
+        description="Default Gateway. example: 10.10.10.1",
+        label='Default Gateway',
+    )
 
     def run(self, data, commit):
 
