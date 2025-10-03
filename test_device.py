@@ -5,6 +5,7 @@ from typing import Tuple
 
 from dcim.choices import DeviceStatusChoices
 from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface
+from extras.models import ConfigTemplate
 
 class DeviceOnboarding(Script):
 
