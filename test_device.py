@@ -8,99 +8,6 @@ from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interfac
 from extras.models import ConfigTemplate
 
 
-def instantiate_device_components_from_templates(device):
-    dt = device.device_type
-
-    # Console Ports
-    for t in dt.consoleporttemplates.all():
-        device.consoleports.get_or_create(
-            name=t.name,
-            defaults={
-                "type": t.type,
-                "label": t.label,
-                "description": t.description,
-            },
-        )
-
-    # Power Ports
-    for t in dt.powerporttemplates.all():
-        device.powerports.get_or_create(
-            name=t.name,
-            defaults={
-                "type": t.type,
-                "label": t.label,
-                "maximum_draw": t.maximum_draw,
-                "allocated_draw": t.allocated_draw,
-                "description": t.description,
-            },
-        )
-
-    # Interfaces (no mac_address on InterfaceTemplate in 4.4)
-    for t in dt.interfacetemplates.all():
-        device.interfaces.get_or_create(
-            name=t.name,
-            defaults={
-                "type": t.type,
-                "label": t.label,
-                "mgmt_only": t.mgmt_only,
-                "enabled": True,
-                "description": t.description,
-            },
-        )
-
-    # Rear Ports
-    rear_map = {}
-    for t in dt.rearporttemplates.all():
-        rp, _ = device.rearports.get_or_create(
-            name=t.name,
-            defaults={
-                "type": t.type,
-                "label": t.label,
-                "positions": t.positions,
-                "description": t.description,
-            },
-        )
-        rear_map[t.pk] = rp
-
-    # Front Ports (link to rear)
-    for t in dt.frontporttemplates.all():
-        defaults = {
-            "type": t.type,
-            "label": t.label,
-            "rear_port_position": t.rear_port_position,
-            "description": t.description,
-        }
-        if getattr(t, "rear_port_id", None):
-            defaults["rear_port"] = rear_map.get(t.rear_port_id)
-        device.frontports.get_or_create(name=t.name, defaults=defaults)
-
-    # Module Bays
-    for t in dt.modulebaytemplates.all():
-        device.modulebays.get_or_create(
-            name=t.name,
-            defaults={
-                "label": t.label,
-                "position": t.position,
-                "description": t.description,
-            },
-        )
-
-    # Power Outlets (link to power ports)
-    pp_map = {
-        ppt.pk: device.powerports.get(name=ppt.name)
-        for ppt in dt.powerporttemplates.all()
-        if device.powerports.filter(name=ppt.name).exists()
-    }
-    for t in dt.poweroutlettemplates.all():
-        defaults = {
-            "type": t.type,
-            "label": t.label,
-            "feed_leg": t.feed_leg,
-            "description": t.description,
-        }
-        if getattr(t, "power_port_id", None):
-            defaults["power_port"] = pp_map.get(t.power_port_id)
-        device.poweroutlets.get_or_create(name=t.name, defaults=defaults)
 
 
 class DeviceOnboarding(Script):
@@ -147,6 +54,6 @@ class DeviceOnboarding(Script):
         switch.custom_field_data["gateway"] = data["gateway_address"]
         switch.full_clean()
         switch.save()
-        instantiate_device_components_from_templates(switch)
+
         switch.refresh_from_db()
         self.log_success(f"Created new switch: {switch} with {switch.interfaces.all().count()} interfaces")
