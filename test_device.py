@@ -13,41 +13,62 @@ def instantiate_device_components_from_templates(device):
 
     # Console Ports
     for t in dt.consoleporttemplates.all():
-        device.consoleports.get_or_create(name=t.name, defaults={
-            "type": t.type, "label": t.label, "description": t.description
-        })
+        device.consoleports.get_or_create(
+            name=t.name,
+            defaults={
+                "type": t.type,
+                "label": t.label,
+                "description": t.description,
+            },
+        )
 
     # Power Ports
     for t in dt.powerporttemplates.all():
-        device.powerports.get_or_create(name=t.name, defaults={
-            "type": t.type, "label": t.label,
-            "maximum_draw": t.maximum_draw, "allocated_draw": t.allocated_draw,
-            "description": t.description
-        })
+        device.powerports.get_or_create(
+            name=t.name,
+            defaults={
+                "type": t.type,
+                "label": t.label,
+                "maximum_draw": t.maximum_draw,
+                "allocated_draw": t.allocated_draw,
+                "description": t.description,
+            },
+        )
 
-    # Interfaces
+    # Interfaces (no mac_address on InterfaceTemplate in 4.4)
     for t in dt.interfacetemplates.all():
-        device.interfaces.get_or_create(name=t.name, defaults={
-            "type": t.type, "label": t.label, "mac_address": t.mac_address,
-            "mgmt_only": t.mgmt_only, "enabled": True,
-            "description": t.description
-        })
+        device.interfaces.get_or_create(
+            name=t.name,
+            defaults={
+                "type": t.type,
+                "label": t.label,
+                "mgmt_only": t.mgmt_only,
+                "enabled": True,
+                "description": t.description,
+            },
+        )
 
     # Rear Ports
     rear_map = {}
     for t in dt.rearporttemplates.all():
-        rp, _ = device.rearports.get_or_create(name=t.name, defaults={
-            "type": t.type, "label": t.label, "positions": t.positions,
-            "description": t.description
-        })
+        rp, _ = device.rearports.get_or_create(
+            name=t.name,
+            defaults={
+                "type": t.type,
+                "label": t.label,
+                "positions": t.positions,
+                "description": t.description,
+            },
+        )
         rear_map[t.pk] = rp
 
     # Front Ports (link to rear)
     for t in dt.frontporttemplates.all():
         defaults = {
-            "type": t.type, "label": t.label,
+            "type": t.type,
+            "label": t.label,
             "rear_port_position": t.rear_port_position,
-            "description": t.description
+            "description": t.description,
         }
         if getattr(t, "rear_port_id", None):
             defaults["rear_port"] = rear_map.get(t.rear_port_id)
@@ -55,22 +76,32 @@ def instantiate_device_components_from_templates(device):
 
     # Module Bays
     for t in dt.modulebaytemplates.all():
-        device.modulebays.get_or_create(name=t.name, defaults={
-            "label": t.label, "position": t.position, "description": t.description
-        })
+        device.modulebays.get_or_create(
+            name=t.name,
+            defaults={
+                "label": t.label,
+                "position": t.position,
+                "description": t.description,
+            },
+        )
 
     # Power Outlets (link to power ports)
-    pp_map = {ppt.pk: device.powerports.get(name=ppt.name)
-              for ppt in dt.powerporttemplates.all()
-              if device.powerports.filter(name=ppt.name).exists()}
+    pp_map = {
+        ppt.pk: device.powerports.get(name=ppt.name)
+        for ppt in dt.powerporttemplates.all()
+        if device.powerports.filter(name=ppt.name).exists()
+    }
     for t in dt.poweroutlettemplates.all():
         defaults = {
-            "type": t.type, "label": t.label,
-            "feed_leg": t.feed_leg, "description": t.description
+            "type": t.type,
+            "label": t.label,
+            "feed_leg": t.feed_leg,
+            "description": t.description,
         }
         if getattr(t, "power_port_id", None):
             defaults["power_port"] = pp_map.get(t.power_port_id)
         device.poweroutlets.get_or_create(name=t.name, defaults=defaults)
+
 
 class DeviceOnboarding(Script):
 
