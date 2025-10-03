@@ -51,8 +51,6 @@ class DeviceOnboarding(Script):
         switch.custom_field_data["gateway"] = data["gateway_address"]
         switch.full_clean()
         switch.save()
-        # Instantiate all component templates into this device
-        switch.instantiate_components_from_templates()
         
         switch.refresh_from_db()
         self.log_success(f"Created new switch: {switch} with {switch.interfaces.all().count()} interfaces")
