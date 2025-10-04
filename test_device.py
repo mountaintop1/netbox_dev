@@ -46,7 +46,7 @@ class DeviceOnboarding(Script):
         model=Interface,
         label="Uplink Switch A Interface",
         query_params={
-            "cable_id__isnull": True,
+            "cable_id__isnull": False,
             "device_id": "$uplink_sw_a",
         }
     )
