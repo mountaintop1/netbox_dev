@@ -42,13 +42,13 @@ class DeviceOnboarding(Script):
         label='Uplink Dis/Leaf Switch A'
     )
     uplink_intf_sw_a = ObjectVar(
-        description="All interfaces not connected",
+        description="Select an unconnected interface on Switch A",
         model=Interface,
-        label='Uplink Switch A Interfaces',
+        label="Uplink Switch A Interface",
         query_params={
-            'device_id': '$uplink_sw_a',
-            'cable__isnull': True,
-        }
+            "device_id": "$uplink_sw_a",
+            "cable__isnull": True,
+        },
     )
     def run(self, data, commit):
 
