@@ -46,8 +46,8 @@ class DeviceOnboarding(Script):
         model=Interface,
         label="Uplink Switch A Interface",
         query_params={
+            "cable__isnull": True,
             "device_id": "$uplink_sw_a",
-            "cable_isnull": True,
         },
     )
     def run(self, data, commit):
