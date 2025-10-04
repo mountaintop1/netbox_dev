@@ -46,12 +46,10 @@ class DeviceOnboarding(Script):
         model=Interface,
         label='Uplink Switch A Interfaces',
         query_params={
-            'device': '$uplink_sw_a'
+            'device': '$uplink_sw_a',
+            'cable__isnull': True,
         }
     )
-
-    for iface in Interface.objects.filter(device=device, cable__isnull=True).order_by("name"):
-
     def run(self, data, commit):
 
         # Create access switches
