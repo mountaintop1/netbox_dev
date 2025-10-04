@@ -36,6 +36,22 @@ class DeviceOnboarding(Script):
         label='Default Gateway',
     )
 
+    uplink_sw_a = ObjectVar(
+        description="First Uplink Dis/Leaf SW",
+        model=Device,
+        label='Uplink Dis/Leaf Switch A'
+    )
+    uplink_intf_sw_a = ObjectVar(
+        description="All interfaces not connected",
+        model=Interface,
+        label='Uplink Switch A Interfaces',
+        query_params={
+            'device': '$uplink_sw_a'
+        }
+    )
+
+    for iface in Interface.objects.filter(device=device, cable__isnull=True).order_by("name"):
+
     def run(self, data, commit):
 
         # Create access switches
