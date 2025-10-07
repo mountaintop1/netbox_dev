@@ -47,7 +47,8 @@ class DeviceOnboarding(Script):
         label="Uplink Switch A Interface",
         query_params={
             "device_id": "$uplink_sw_a",
-             "occupied": False
+             "occupied": False,
+             "type": ['1000base-t', '10gbase-x-sfpp', '10gbase-t'],
         }
     )
     def run(self, data, commit):
