@@ -85,6 +85,7 @@ class DeviceOnboardingVersioning(Script):
             ('Uplink Port 1', ('uplink_1', 'uplink_desc_a',)),
             ('Uplink Port 2', ('uplink_2', 'uplink_desc_b',)),
             ('Lag Interface', ('lag_name', 'lag_desc')),
+            ('Distribution/Leaf Device', ('uplink_sw_a', 'uplink_intf_sw_a', 'uplink_sw_b', 'uplink_intf_sw_b')),
         )
 
     device_name = StringVar(
