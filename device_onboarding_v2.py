@@ -169,6 +169,21 @@ class DeviceOnboardingVersioning(Script):
         label='Uplink Interface Description',
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
+    uplink_sw_a = ObjectVar(
+        description="First Uplink Dis/Leaf SW",
+        model=Device,
+        label='Uplink Dis/Leaf Switch A'
+    )
+    uplink_intf_sw_a = ObjectVar(
+        description="Choose an unused interface on Switch A",
+        model=Interface,
+        label="Uplink Switch A Interface",
+        query_params={
+            "device_id": "$uplink_sw_a",
+             "occupied": False,
+             "type": ['1000base-t', '10gbase-x-sfpp', '10gbase-t', '25gbase-x-sfp28'],
+        }
+    )
     uplink_2 = ObjectVar(
         model= InterfaceTemplate,
         query_params={
@@ -182,6 +197,21 @@ class DeviceOnboardingVersioning(Script):
         description="Uplink Port 2 Interface Description",
         label='Uplink Interface Description',
         default='remotehost=os-z07-41ra0043-01-sw-lef-b; port=xe-0/0/18'
+    )
+    uplink_sw_b = ObjectVar(
+        description="First Uplink Dis/Leaf SW",
+        model=Device,
+        label='Uplink Dis/Leaf Switch B'
+    )
+    uplink_intf_sw_b = ObjectVar(
+        description="Choose an unused interface on Switch B",
+        model=Interface,
+        label="Uplink Switch B Interface",
+        query_params={
+            "device_id": "$uplink_sw_a",
+             "occupied": False,
+             "type": ['1000base-t', '10gbase-x-sfpp', '10gbase-t', '25gbase-x-sfp28'],
+        }
     )
     lag_name  = ChoiceVar(
         choices=LAG_CHOICES,
