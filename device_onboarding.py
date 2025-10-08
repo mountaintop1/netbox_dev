@@ -4,13 +4,28 @@ from django.contrib.contenttypes.models import ContentType
 from typing import Tuple
 
 from dcim.choices import DeviceStatusChoices
-from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer, VirtualChassis
+from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer, VirtualChassis, InterfaceTemplate
 from ipam.models import IPAddress, VLAN, VLANGroup 
 from extras.models import ConfigTemplate
 
 def to_one_ended(new_int: str) -> str:
     return new_int[:-1] + "1"
 
+def replace_slot_(int_name: str | InterfaceTemplate , new_slot: int):
+    """Replace the slot number in an interface name with a new slot number.
+    Args:
+        int_name (str | InterfaceTemplate): The original interface name or template.
+        new_slot (int): The new slot number to replace the old one.
+    Returns:
+        str: The modified interface name with the new slot number.
+    """
+    if isinstance(int_name, InterfaceTemplate):
+        int_name = int_name.name
+    int_name_list = int_name.split('/')
+    new_int = int_name_list[0][:-1]
+    module_num = str(new_slot)
+    int_name_list[0] = new_int + module_num
+    return '/'.join(int_name_list)
 
 def replace_slot(interface: str, new_slot: int) -> str:
     """
