@@ -568,7 +568,7 @@ class DeviceOnboardingVersioning(Script):
         for idx, device in enumerate(devices, start=1):
             if idx > 1:
                 for intf in device.interfaces.all():
-                    intf.name = replace_slot(intf.name, idx)
+                    intf.name = replace_slot_(intf.name, idx)
                     intf.save()
                 
                 device.refresh_from_db()
