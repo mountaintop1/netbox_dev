@@ -104,8 +104,8 @@ LAG_CHOICES = (
 
 class DeviceOnboardingVersioning(Script):
     class Meta:
-        name = "Device Onboarding Autopilot"
-        description = "Automatically selects the optimal uplink for each device model, with full support for stacked switches"
+        name = "Device Onboarding Autopilot Version 2"
+        description = "Automatically selects uplink for each device model, with full support for stacked switches"
         commit_default = False
         fieldsets = (
             ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch', 'stack_member_count')),
