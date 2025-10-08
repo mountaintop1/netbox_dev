@@ -658,8 +658,10 @@ class DeviceOnboardingVersioning(Script):
         ap_port = []
         
         if data['is_stack_switch'] and (stack_count > 1):
-            ap_count = per_switch_with_adding(data["ap_count"], len(devices))[0]
-            guest_count = per_switch_with_adding(data["guest_count"], len(devices))[0]
+            if data["ap_count"]:
+                ap_count = per_switch_with_adding(data["ap_count"], len(devices))[0]
+            if data["guest_count"]:
+                guest_count = per_switch_with_adding(data["guest_count"], len(devices))[0]
         else:
             ap_count = data["ap_count"]
             guest_count = data["guest_count"]
