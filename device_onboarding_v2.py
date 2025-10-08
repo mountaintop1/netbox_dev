@@ -27,25 +27,6 @@ def replace_slot_(int_name: str | InterfaceTemplate , new_slot: int):
     int_name_list[0] = new_int + module_num
     return '/'.join(int_name_list)
 
-def replace_slot(interface: str, new_slot: int) -> str:
-    """
-    Replace the first number after the interface type with the given integer.
-    Example: "GigabitEthernet1/0/1", 2 -> "GigabitEthernet2/0/1"
-    """
-    # Find where the digits start
-    i = 0
-    while i < len(interface) and not interface[i].isdigit():
-        i += 1
-    if i == len(interface):
-        raise ValueError("No numeric part found in the interface string.")
-
-    # Find the end of the first numeric segment
-    j = i
-    while j < len(interface) and interface[j].isdigit():
-        j += 1
-
-    return interface[:i] + str(new_slot) + interface[j:]
-
 def per_switch_with_adding(ap_count: int, num_switches: int) -> Tuple[int,int,int]:
     if num_switches < 1:
         raise ValueError("num_switches must be >= 1")
@@ -84,17 +65,6 @@ def distribute_items(main_list, ap_count=None, guest_count=None):
         main_list = main_list[take_guest:]
 
     return main_list, ap_list, guest_list
-
-CHOICES = (
-    ('TenGigabitEthernet1/1/1', 'Te1/1/1'),
-    ('TenGigabitEthernet1/1/2', 'Te1/1/2'),
-    ('TenGigabitEthernet1/1/3', 'Te1/1/3'),
-    ('TenGigabitEthernet1/1/4', 'Te1/1/4'),
-    ('TwentyFiveGigabitEthernet1/1/1', 'Twe1/1/1'),
-    ('TwentyFiveGigabitEthernet1/1/2', 'Twe1/1/2'),
-    ('GigabitEthernet1/1', 'Gi1/1'),
-    ('GigabitEthernet1/2', 'Gi1/2'),
-)
 
 LAG_CHOICES = (
     ('Po1', 'Po1'),
