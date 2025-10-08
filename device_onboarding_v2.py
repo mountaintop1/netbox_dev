@@ -102,18 +102,6 @@ LAG_CHOICES = (
     ('Po3', 'Po3'),
 )
 
-    
-def uplink_choices(data=None):
-    # NetBox may call with no args or with a dict of current form values
-    if not isinstance(data, dict):
-        return ()
-    dt = data.get("switch_model")  # DeviceType instance or None
-    if not dt:
-        return ()
-    slug = dt.slug  # ensure a string key
-    return CHOICES_BY_MODEL.get(slug, ())
-
-
 class DeviceOnboardingVersioning(Script):
     class Meta:
         name = "Device Onboarding Autopilot"
@@ -197,8 +185,12 @@ class DeviceOnboardingVersioning(Script):
         min_value=1,
         max_value=10,
     )
-    uplink_1 = ChoiceVar(
-        choices=CHOICES,
+    uplink_1 = ObjectVar(
+        model= InterfaceTemplate,
+        query_params={
+            "device_type_id" : "$switch_model",
+            "type": ["10gbase-x-sfpp","1000base-x-sfp","25gbase-x-sfp28"]
+        },
         description="Uplink Interface drop-down",
         label='Uplink Interface',
     )
@@ -207,8 +199,12 @@ class DeviceOnboardingVersioning(Script):
         label='Uplink Interface Description',
         default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
     )
-    uplink_2 = ChoiceVar(
-        choices=CHOICES,
+    uplink_2 = ObjectVar(
+        model= InterfaceTemplate,
+        query_params={
+            "device_type_id" : "$switch_model",
+            "type": ["10gbase-x-sfpp","1000base-x-sfp","25gbase-x-sfp28"]
+        },
         description="Uplink Interface drop-down",
         label='Uplink Interface',
     )
