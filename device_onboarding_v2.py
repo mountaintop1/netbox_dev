@@ -200,7 +200,7 @@ class DeviceOnboardingVersioning(Script):
         default='remotehost=os-z07-41ra0043-01-sw-lef-b; port=xe-0/0/18'
     )
     uplink_sw_b = ObjectVar(
-        description="First Uplink Dis/Leaf SW",
+        description="Second Uplink Dis/Leaf SW",
         model=Device,
         label='Uplink Dis/Leaf Switch B'
     )
