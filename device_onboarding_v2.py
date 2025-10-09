@@ -500,7 +500,7 @@ class DeviceOnboardingVersioning(Script):
                 cable=cable,
                 cable_end='A',
                 termination_type=ContentType.objects.get_for_model(Interface),
-                termination_id=connection[0],
+                termination_id=connection[0].id,
             )
             termination_a.save()
             
@@ -508,7 +508,7 @@ class DeviceOnboardingVersioning(Script):
                 cable=cable,
                 cable_end='B',
                 termination_type=ContentType.objects.get_for_model(Interface),
-                termination_id=connection[1],
+                termination_id=connection[1].id,
             )
             termination_b.save()
             cable.refresh_from_db()
