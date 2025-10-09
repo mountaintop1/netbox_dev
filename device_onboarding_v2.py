@@ -493,7 +493,7 @@ class DeviceOnboardingVersioning(Script):
                 status="connected",
                 color="blue",
                 description="Access SW to Dis/Leaf SW",
-            }
+            )
             cable.save()
     
             termination_a = CableTermination(
