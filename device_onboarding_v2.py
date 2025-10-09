@@ -506,7 +506,7 @@ class DeviceOnboardingVersioning(Script):
             termination_b = CableTermination(
                 cable=cable,
                 cable_end='B',
-                termination_id=connection[1],
+                termination=connection[1],
             )
             termination_b.save()
             cable.refresh_from_db()
