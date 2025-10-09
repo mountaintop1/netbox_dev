@@ -530,7 +530,7 @@ class DeviceOnboardingVersioning(Script):
                 type="smf",
                 label="Uplink to Dis/leaf",
                 status="connected",
-                color="#0000FF",
+                color="0000FF",
                 description="Access SW to Dis/Leaf SW",
             )
             cable.save()
