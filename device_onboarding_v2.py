@@ -476,16 +476,27 @@ class DeviceOnboardingVersioning(Script):
         else:
             self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
 
-        # Cable Connection
         connections = []
+        
+        # Cable Connection Side A
         uplink_1_id = get_interface_id(main_switch, data['uplink_1'])
         uplink_intf_sw_a_id = get_interface_id(data['uplink_sw_a'], data['uplink_intf_sw_a'])
-        
         interface_a = Interface.objects.get(id=uplink_1_id)
         interface_b = Interface.objects.get(id=uplink_intf_sw_a_id)
-        connect_interfaces = (interface_a, interface_b)
-        connections.append(connect_interfaces)
+        connect_interfaces_a = (interface_a, interface_b)
+        connections.append(connect_interfaces_a)
 
+        # Cable Connection Side B
+        if data['is_stack_switch'] and (stack_count > 1):
+            uplink_2_id = get_interface_id(devices[-1], uplink2_int)
+        else:
+            uplink_2_id = get_interface_id(main_switch, data['uplink_2'])
+        uplink_intf_sw_b_id = get_interface_id(data['uplink_sw_b'], data['uplink_intf_sw_b'])
+        interface_c = Interface.objects.get(id=uplink_2_id)
+        interface_d = Interface.objects.get(id=uplink_intf_sw_b_id)
+        connect_interfaces_b = (interface_c, interface_d)
+        connections.append(connect_interfaces_b)
+        
         for connection in connections:
             cable = Cable(
                 type="smf",
