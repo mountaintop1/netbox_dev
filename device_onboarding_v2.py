@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from typing import Tuple
 
 from dcim.choices import DeviceStatusChoices
-from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer, VirtualChassis, InterfaceTemplate
+from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer, VirtualChassis, InterfaceTemplate, Cable
 from ipam.models import IPAddress, VLAN, VLANGroup 
 from extras.models import ConfigTemplate
 
@@ -497,3 +497,6 @@ class DeviceOnboardingVersioning(Script):
             "status": "connected",
             "description": "Access SW to Dis/Leaf SW",
         }
+        cable = Cable.objects.create(cable_connect_a)
+        cable.refresh_from_db()
+        self.log_success(f"Created cable connection A: {cable.id}")
