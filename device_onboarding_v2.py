@@ -218,7 +218,7 @@ class DeviceOnboardingVersioning(Script):
         model=Interface,
         label="Uplink Switch B Interface",
         query_params={
-            "device_id": "$uplink_sw_a",
+            "device_id": "$uplink_sw_b",
              "occupied": False,
              "type": ['1000base-t', '10gbase-x-sfpp', '10gbase-t', '25gbase-x-sfp28'],
         }
@@ -491,7 +491,9 @@ class DeviceOnboardingVersioning(Script):
             uplink_2_id = get_interface_id(devices[-1], uplink2_int)
         else:
             uplink_2_id = get_interface_id(main_switch, data['uplink_2'])
+            
         uplink_intf_sw_b_id = get_interface_id(data['uplink_sw_b'], data['uplink_intf_sw_b'])
+        
         interface_c = Interface.objects.get(id=uplink_2_id)
         interface_d = Interface.objects.get(id=uplink_intf_sw_b_id)
         connect_interfaces_b = (interface_c, interface_d)
