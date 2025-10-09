@@ -1,3 +1,7 @@
+# pylint: cSpell:disable
+# pylint: disable=docstring,line-too-long
+
+
 from extras.scripts import *
 from django.utils.text import slugify
 from django.contrib.contenttypes.models import ContentType
@@ -14,10 +18,16 @@ def get_interface_id(device, int_name: str | InterfaceTemplate) -> int:
     if isinstance(int_name, InterfaceTemplate):
         int_name = int_name.name
     int_id  = Interface.objects.get(device=device, name=int_name)
-    
+
     return int_id.id
 
 def to_one_ended(new_int: str) -> str:
+    """Convert an interface name to a one-ended format by replacing the last character with '1'.
+    Args:
+        new_int (str): The original interface name.
+    Returns:
+        str: The modified interface name with the last character replaced by '1'.
+    """
     return new_int[:-1] + "1"
 
 def replace_slot_(int_name: str | InterfaceTemplate , new_slot: int):
@@ -37,6 +47,17 @@ def replace_slot_(int_name: str | InterfaceTemplate , new_slot: int):
     return '/'.join(int_name_list)
 
 def per_switch_with_adding(ap_count: int, num_switches: int) -> Tuple[int,int,int]:
+    """Calculate the number of access points (APs) to assign per switch, ensuring an even distribution.
+    If the total number of APs is not a multiple of the number of switches, additional APs are added to make it so.
+    Args:
+        ap_count (int): The total number of access points to be distributed.
+        num_switches (int): The number of switches among which to distribute the APs.
+    Returns:
+        Tuple[int, int, int]: A tuple containing:
+            - The number of APs assigned per switch.
+            - The total number of APs after adding any necessary extra APs.
+            - The number of additional APs added to achieve an even distribution.
+    """
     if num_switches < 1:
         raise ValueError("num_switches must be >= 1")
     # minimal total that is a multiple of num_switches and >= ap_count
@@ -47,6 +68,7 @@ def per_switch_with_adding(ap_count: int, num_switches: int) -> Tuple[int,int,in
     return per_switch, total, added
 
 def add_member_to_vc(device: Device, vc: VirtualChassis, position: int, priority: int):
+    """Add a device as a member to a virtual chassis with specified position and priority."""
     device.virtual_chassis = vc
     device.vc_priority = priority
     device.vc_position = position
@@ -79,9 +101,13 @@ LAG_CHOICES = (
     ('Po1', 'Po1'),
     ('Po2', 'Po2'),
     ('Po3', 'Po3'),
-)
+    )
 
 class DeviceOnboardingVersioning(Script):
+    """
+    Script for automated device onboarding in NetBox, supporting stacked switches and dynamic uplink selection.
+    Handles device creation, VLAN setup, interface configuration, and cable connections for access switches.
+    """
     class Meta:
         name = "Device Onboarding Autopilot Version 2"
         description = "Automatically selects uplink for each device model, with full support for stacked switches"
@@ -515,7 +541,6 @@ class DeviceOnboardingVersioning(Script):
                 termination=connection[0],
             )
             termination_a.save()
-            
             termination_b = CableTermination(
                 cable=cable,
                 cable_end='B',
