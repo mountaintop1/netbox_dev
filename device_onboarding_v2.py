@@ -4,7 +4,7 @@ from django.contrib.contenttypes.models import ContentType
 from typing import Tuple
 
 from dcim.choices import DeviceStatusChoices
-from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer, VirtualChassis, InterfaceTemplate, Cable
+from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interface, Manufacturer, VirtualChassis, InterfaceTemplate, Cable, CableTermination
 from ipam.models import IPAddress, VLAN, VLANGroup 
 from extras.models import ConfigTemplate
 
@@ -477,26 +477,40 @@ class DeviceOnboardingVersioning(Script):
             self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
 
         # Cable Connection
+        connections = []
         uplink_1_id = get_interface_id(main_switch, data['uplink_1'])
         uplink_intf_sw_a_id = get_interface_id(data['uplink_sw_a'], data['uplink_intf_sw_a'])
         
-        cable_connect_a = {
-            "type": "smf",
-            "a_terminations": [
-                {
-                    "object_type": "dcim.interface",
-                    "object_id": uplink_1_id
-                    }
-                ],
-            "b_terminations": [
-                {
-                    "object_type": "dcim.interface",
-                    "object_id": uplink_intf_sw_a_id
-                    }
-                ],
-            "status": "connected",
-            "description": "Access SW to Dis/Leaf SW",
-        }
-        cable = Cable.objects.create(cable_connect_a)
-        cable.refresh_from_db()
-        self.log_success(f"Created cable connection A: {cable.id}")
+        interface_a = Interface.objects.get(id=uplink_1_id)
+        interface_b = Interface.objects.get(id=uplink_intf_sw_a_id)
+        connect_interfaces = (interface_a, interface_b)
+        connections.append(connect_interfaces)
+
+        for connection in connections:
+            cable = Cable(
+                type="smf",
+                label="Uplink to Dis/leaf",
+                status="connected",
+                color="blue",
+                description="Access SW to Dis/Leaf SW",
+            }
+            cable.save()
+    
+            termination_a = CableTermination(
+                cable=cable,
+                cable_end='A',
+                termination_type=ContentType.objects.get_for_model(Interface),
+                termination_id=connection[0],
+            )
+            termination_a.save()
+            
+            termination_b = CableTermination(
+                cable=cable,
+                cable_end='B',
+                termination_type=ContentType.objects.get_for_model(Interface),
+                termination_id=connection[1],
+            )
+            termination_b.save()
+            cable.refresh_from_db()
+
+            self.log_success(f"Cable {cable.label} with id {cable.id} created and connected between {connection[0].display_name} and {connection[1].display_name}")
