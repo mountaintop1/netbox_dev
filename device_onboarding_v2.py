@@ -509,7 +509,8 @@ class DeviceOnboardingVersioning(Script):
                 termination=connection[1],
             )
             termination_b.save()
+            cable._terminations_modified = True
+            cable.full_clean()
             cable.save()
             cable.refresh_from_db()
-
             self.log_success(f"Cable {cable.label} with id {cable.id} created and connected between {connection[0].name} and {connection[1].name}")
