@@ -8,6 +8,15 @@ from dcim.models import Device, DeviceRole, DeviceType, Site, Platform, Interfac
 from ipam.models import IPAddress, VLAN, VLANGroup 
 from extras.models import ConfigTemplate
 
+
+def get_interface_id(device, int_name: str | InterfaceTemplate) -> int:
+    """ Get the ID of an interface on a device. """
+    if isinstance(int_name, InterfaceTemplate):
+        int_name = int_name.name
+    int_id  = Interface.objects.get(device=device, name=int_name)
+    
+    return int_id.id
+
 def to_one_ended(new_int: str) -> str:
     return new_int[:-1] + "1"
 
@@ -466,4 +475,25 @@ class DeviceOnboardingVersioning(Script):
             self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))} on stack member {len(devices)}")
         else:
             self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
-            
+
+        # Cable Connection
+        uplink_1_id = get_interface_id(main_switch, data['uplink_1'])
+        uplink_intf_sw_a_id = get_interface_id(data['uplink_sw_a'], data['uplink_intf_sw_a'])
+        
+        cable_connect_a = {
+            "type": "smf",
+            "a_terminations": [
+                {
+                    "object_type": "dcim.interface",
+                    "object_id": uplink_1_id
+                    }
+                ],
+            "b_terminations": [
+                {
+                    "object_type": "dcim.interface",
+                    "object_id": uplink_intf_sw_a_id
+                    }
+                ],
+            "status": "connected",
+            "description": "Access SW to Dis/Leaf SW",
+        }
