@@ -499,16 +499,14 @@ class DeviceOnboardingVersioning(Script):
             termination_a = CableTermination(
                 cable=cable,
                 cable_end='A',
-                termination_type=ContentType.objects.get_for_model(Interface),
-                termination_id=connection[0].id,
+                termination=connection[0],
             )
             termination_a.save()
             
             termination_b = CableTermination(
                 cable=cable,
                 cable_end='B',
-                termination_type=ContentType.objects.get_for_model(Interface),
-                termination_id=connection[1].id,
+                termination_id=connection[1],
             )
             termination_b.save()
             cable.refresh_from_db()
