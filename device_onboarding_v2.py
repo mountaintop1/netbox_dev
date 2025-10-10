@@ -534,7 +534,6 @@ class DeviceOnboardingVersioning(Script):
                 description="Access SW to Dis/Leaf SW",
             )
             cable.save()
-    
             termination_a = CableTermination(
                 cable=cable,
                 cable_end='A',
