@@ -545,6 +545,7 @@ class DeviceOnboardingVersioning(Script):
                 type="smf",
                 label="Uplink to Dis/leaf",
                 status="connected",
+                tenant=tenant,
                 color="00ff00",
                 description="Access SW to Dis/Leaf SW",
             )
