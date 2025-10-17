@@ -5,6 +5,7 @@
 from typing import Tuple
 
 from dcim.choices import DeviceStatusChoices
+from tenancy.models import Tenant
 from dcim.models import (
     Cable,
     CableTermination,
@@ -277,6 +278,7 @@ class DeviceOnboardingVersioning(Script):
         switch_role = DeviceRole.objects.get(name='Access Switch')
         platform = Platform.objects.get(slug='ios')
         config_template = ConfigTemplate.objects.get(name='master_temp_acc_v1')
+        tenant = Tenant.objects.get(name="Consulting")
     
         # Determine stack count: 1 if not stack, or user-specified count if stack
         stack_count = data.get("stack_member_count") if data.get("is_stack_switch") else 1
@@ -299,6 +301,7 @@ class DeviceOnboardingVersioning(Script):
                 status=DeviceStatusChoices.STATUS_ACTIVE,
                 role=switch_role,
                 platform=platform,
+                tenant=tenant,
                 config_template=config_template,
             )
             switch.custom_field_data["gateway"] = data["gateway_address"]
