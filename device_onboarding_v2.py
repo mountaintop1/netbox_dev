@@ -573,6 +573,6 @@ class DeviceOnboardingVersioning(Script):
         device_url = f"http://localhost:9000/dcim/devices/{main_switch.id}/"
         self.log_success(mark_safe(
             f'Goto Device: <a href="{device_url}" target="_blank" '
-            f'style="background-color:#007bff; color:white; padding:6px 12px; border-radius:6px; '
+            f'style="background-color:#28a745; color:white; padding:6px 12px; border-radius:6px; text-decoration:none; font-weight:bold;" '
             f'text-decoration:none; font-weight:bold;">View Device</a>'
         ))
