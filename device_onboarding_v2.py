@@ -570,8 +570,15 @@ class DeviceOnboardingVersioning(Script):
             cable.refresh_from_db()
             self.log_success(f"Cable {cable.label} with id {cable.id} created and connected between {connection[0].name} and {connection[1].name}")
 
+        device_name = main_switch.name
         device_url = f"http://localhost:9000/dcim/devices/{main_switch.id}/"
         self.log_success(mark_safe(
-            f'Goto Device: <a href="{device_url}" target="_blank" '
-            f'class="btn btn-sm btn-primary" role="button">View Device</a>'
+            f'<div style="margin:6px 0;">'
+            f'  <strong>Device:</strong> {device_name} '
+            f'  <a href="{device_url}" target="_blank" '
+            f'     class="btn btn-sm btn-primary" role="button" '
+            f'     style="margin-left:8px;">'
+            f'     🔗 View Device'
+            f'  </a>'
+            f'</div>'
         ))
