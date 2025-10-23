@@ -19,6 +19,7 @@ from dcim.models import (
     Site,
     VirtualChassis,
 )
+from django.utils.safestring import mark_safe
 from django.contrib.contenttypes.models import ContentType
 from django.utils.text import slugify
 from extras.models import ConfigTemplate
@@ -568,3 +569,8 @@ class DeviceOnboardingVersioning(Script):
             cable.save()
             cable.refresh_from_db()
             self.log_success(f"Cable {cable.label} with id {cable.id} created and connected between {connection[0].name} and {connection[1].name}")
+
+        self.log_success(mark_safe(
+            f'Goto Device URL: <a href="http://localhost:8000/dcim/devices/{main_switch.id}/" target="_blank">'
+            f'http://localhost:8000/dcim/devices/{main_switch.id}/</a>'
+        ))
