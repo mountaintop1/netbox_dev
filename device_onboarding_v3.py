@@ -131,8 +131,7 @@ class DeviceOnboardingVersioning(Script):
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
             ('Connected Access Point', ('ap_count',)),
             ('Wired Guest', ('guest_count',)),
-            ('Uplink Port 1', ('uplink_1', 'uplink_desc_a',)),
-            ('Uplink Port 2', ('uplink_2', 'uplink_desc_b',)),
+            ('Uplink Ports', ('uplink_1', 'uplink_2')),
             ('Lag Interface', ('lag_name', 'lag_desc')),
             ('Distribution/Leaf Device', ('uplink_sw_a', 'uplink_intf_sw_a', 'uplink_sw_b', 'uplink_intf_sw_b')),
         )
@@ -212,12 +211,7 @@ class DeviceOnboardingVersioning(Script):
             "type": ["10gbase-x-sfpp","1000base-x-sfp","25gbase-x-sfp28"]
         },
         description="Uplink Interface drop-down",
-        label='Uplink Interface',
-    )
-    uplink_desc_a = StringVar(
-        description="Uplink Port 1 Interface Description",
-        label='Uplink Interface Description',
-        default='remotehost=os-z07-41ra0043-01-sw-lef-a; port=xe-0/0/18',
+        label='Uplink Interface 1',
     )
     uplink_sw_a = ObjectVar(
         description="First Uplink Dis/Leaf SW",
@@ -241,12 +235,7 @@ class DeviceOnboardingVersioning(Script):
             "type": ["10gbase-x-sfpp","1000base-x-sfp","25gbase-x-sfp28"]
         },
         description="Uplink Interface drop-down",
-        label='Uplink Interface',
-    )
-    uplink_desc_b = StringVar(
-        description="Uplink Port 2 Interface Description",
-        label='Uplink Interface Description',
-        default='remotehost=os-z07-41ra0043-01-sw-lef-b; port=xe-0/0/18'
+        label='Uplink Interface 2',
     )
     uplink_sw_b = ObjectVar(
         description="Second Uplink Dis/Leaf SW",
@@ -488,7 +477,7 @@ class DeviceOnboardingVersioning(Script):
 
         uplink1_int = main_switch.interfaces.get(name=data["uplink_1"])
         uplink1_int.mode = "tagged"
-        uplink1_int.description = f"<<{data['uplink_desc_a']}>>"
+        uplink1_int.description = f"<<remotehost={data[uplink_sw_a].name}; port={data[uplink_intf_sw_a].name}>>"
         uplink1_int.lag = main_switch.interfaces.get(name=data["lag_name"])
         uplink1_int.full_clean()
         uplink1_int.save()
@@ -510,7 +499,7 @@ class DeviceOnboardingVersioning(Script):
             uplink2_int = devices[-1].interfaces.get(name=data["uplink_2"])
 
         uplink2_int.mode = "tagged"
-        uplink2_int.description = f"<<{data['uplink_desc_b']}>>"
+        uplink2_int.description = f"<<remotehost={data[uplink_sw_b].name}; port={data[uplink_intf_sw_b].name}>>"
         uplink2_int.lag = devices[-1].interfaces.get(name=data["lag_name"])
         uplink2_int.full_clean()
         uplink2_int.save()
