@@ -499,7 +499,7 @@ class DeviceOnboardingVersioning(Script):
             uplink2_int = devices[-1].interfaces.get(name=data["uplink_2"])
 
         uplink2_int.mode = "tagged"
-        uplink2_int.description = f"<<remotehost={data['uplink_sw_b'].name}; port={'data[uplink_intf_sw_b'].name}>>"
+        uplink2_int.description = f"<<remotehost={data['uplink_sw_b'].name}; port={data['uplink_intf_sw_b'].name}>>"
         uplink2_int.lag = devices[-1].interfaces.get(name=data["lag_name"])
         uplink2_int.full_clean()
         uplink2_int.save()
