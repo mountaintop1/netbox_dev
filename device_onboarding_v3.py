@@ -127,7 +127,7 @@ class DeviceOnboardingVersioning(Script):
         description = "Automatically selects uplink for each device model, with full support for stacked switches"
         commit_default = False
         fieldsets = (
-            ('Device Object', ('device_name', 'switch_model', 'mgmt_address', 'gateway_address', 'is_stack_switch', 'stack_member_count')),
+            ('Device Object', ('device_name', 'switch_model', 'platform', 'mgmt_address', 'gateway_address', 'is_stack_switch', 'stack_member_count')),
             ('Site Object', ('site', 'mgmt_vlan', 'blan_vlan', 'guest_vlan')),
             ('Connected Access Point', ('ap_count',)),
             ('Wired Guest', ('guest_count',)),
@@ -144,6 +144,11 @@ class DeviceOnboardingVersioning(Script):
         description="Access switch model",
         model=DeviceType,
         label='Device Model'
+    )
+    platform = ObjectVar(
+        description="Select Device Image",
+        model=Platform,
+        label='Device Image'
     )
     site = ObjectVar(
         description="Choose Site name from drop-down",
@@ -264,7 +269,6 @@ class DeviceOnboardingVersioning(Script):
     
     def run(self, data, commit):
         switch_role = DeviceRole.objects.get(name='Access Switch')
-        platform = Platform.objects.get(slug='ios')
         config_template = ConfigTemplate.objects.get(name='master_temp_acc_v1')
         tenant = Tenant.objects.get(name="Consulting")
     
@@ -288,7 +292,7 @@ class DeviceOnboardingVersioning(Script):
                 site=data['site'],
                 status=DeviceStatusChoices.STATUS_ACTIVE,
                 role=switch_role,
-                platform=platform,
+                platform=data['platform'],
                 tenant=tenant,
                 config_template=config_template,
             )
