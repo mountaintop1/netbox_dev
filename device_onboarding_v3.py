@@ -208,7 +208,6 @@ class DeviceOnboardingVersioning(Script):
         model= InterfaceTemplate,
         query_params={
             "device_type_id" : "$switch_model",
-            "type": ["10gbase-x-sfpp","1000base-x-sfp","25gbase-x-sfp28"]
         },
         description="Uplink Interface drop-down",
         label='Uplink Interface 1',
@@ -232,7 +231,6 @@ class DeviceOnboardingVersioning(Script):
         model= InterfaceTemplate,
         query_params={
             "device_type_id" : "$switch_model",
-            "type": ["10gbase-x-sfpp","1000base-x-sfp","25gbase-x-sfp28"]
         },
         description="Uplink Interface drop-down",
         label='Uplink Interface 2',
