@@ -372,7 +372,12 @@ class DeviceOnboardingVersioning(Script):
         
         main_switch = devices[0]
         
-        for idx, device in enumerate(devices, start=1): 
+        for idx, device in enumerate(devices, start=1):
+            device.custom_field_data["vlan_group"] = vlan_group.id
+            device.full_clean()
+            device.save()
+            device.refresh_from_db()
+            
             if idx == 1:
                 interface_portc = Interface.objects.create(
                     device=device, 
@@ -387,6 +392,7 @@ class DeviceOnboardingVersioning(Script):
                     type="virtual", 
                     description="mgmt interface",
                 )
+                
                 if data['is_stack_switch'] and (stack_count > 1):
                     self.log_success(f"Created new Po1 and mgmt int vlan: {interface_mgmt}, Portchannel:{interface_portc} on member {idx}")
                 else:
