@@ -749,25 +749,6 @@ interface {{ int.name }}
  device-tracking attach-policy trusted_policy
 !
 {% endfor %}
-{%- for int in device_interfaces.filter(type='lag') -%}
-{%- set vlan_ids = [] -%}
-{%- for v in int.tagged_vlans.all() -%}
-{%- set _ = vlan_ids.append(v.vid) -%}
-{%- endfor -%}
-!
-interface {{ int.name }}
- description "{{ int.description }}"
- switchport trunk allowed vlan {{ vlan_ids | join(',') }}
- switchport mode trunk
- spanning-tree portfast disable
- spanning-tree bpduguard disable
- logging event link-status
- logging event trunk-status
- ip dhcp snooping trust
- load-interval 30
- speed nonegotiate
- device-tracking attach-policy trusted_policy
-{% endfor %}
 {% endif %}
 !
 !
