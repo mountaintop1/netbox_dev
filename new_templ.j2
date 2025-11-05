@@ -738,7 +738,7 @@ interface {{ int.name }}
  {%- if int.lag %}
  channel-group {{ int.lag.name[-1] }} mode active
  channel-protocol lacp
- {%- endif -%}
+ {%- endif %}
  switchport trunk allowed vlan {{ vlan_ids | join(',') }}
  switchport mode trunk
  spanning-tree portfast disable
