@@ -647,6 +647,7 @@ interface {{ int.name }}
 {% endif %}
 {% endif -%}
 {% endfor %}
+
 {%- for int in device_interfaces.filter(lag__isnull=False) -%}
 {%- set vlan_ids = [] -%}
 {%- for v in int.tagged_vlans.all() -%}
@@ -726,7 +727,7 @@ interface {{ int.name }}
 !
 {%- endif -%}
 {% endfor %}
-{%- for int in device_interfaces.filter(lag__isnull=False) -%}
+{%- for int in device_interfaces.filter(mode="tagged", description__icontains="port" -%}
 {%- set vlan_ids = [] -%}
 {%- for v in int.tagged_vlans.all() -%}
 {%- set _ = vlan_ids.append(v.vid) -%}
@@ -735,8 +736,10 @@ interface {{ int.name }}
  description "{{ int.description }}"
  speed nonegotiate
  service-policy output policy-q-intf
+{%- if int.lag -%}
  channel-group {{ int.lag.name[-1] }} mode active
  channel-protocol lacp
+{%- endif -%}
  switchport trunk allowed vlan {{ vlan_ids | join(',') }}
  switchport mode trunk
  spanning-tree portfast disable
@@ -744,6 +747,7 @@ interface {{ int.name }}
  logging event link-status
  ip dhcp snooping trust
  load-interval 30
+ device-tracking attach-policy trusted_policy
 !
 {% endfor %}
 {%- for int in device_interfaces.filter(type='lag') -%}
@@ -922,9 +926,4 @@ exec-timeout 15 0
 privilege level 15
 password 7 0705344dddddd
 transport input ssh
-transport output ssh
 transport output none
-!
-!
-!
-!--------Thank You-------
