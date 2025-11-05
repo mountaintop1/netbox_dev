@@ -1,4 +1,4 @@
-{%- set vlan_group = device.site.vlan_groups.get(name=device.name) if device.site and device.site.vlan_groups else None -%}
+{%- set vlan_group = device.cf["vlan_group"] -%}
 {%- set vlans = vlan_group.vlans.all() -%}
 {%- set mgmt_vlan = vlan_group.vlans.get(name='mgmt') if vlan_group and vlan_group.vlans else None -%}
 {%- set mgmt_vid = mgmt_vlan.vid if mgmt_vlan else None -%}
