@@ -736,7 +736,7 @@ interface {{ int.name }}
  description "{{ int.description }}"
  speed nonegotiate
  service-policy output policy-q-intf
-{%- if int.lag -%}
+{%- if int.lag is not none -%}
  channel-group {{ int.lag.name[-1] }} mode active
  channel-protocol lacp
 {%- endif -%}
