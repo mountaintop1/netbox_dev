@@ -496,7 +496,7 @@ class DeviceOnboardingVersioning(Script):
         else:
             self.log_success(f"Update uplink 1: {uplink1_int} tagged={list(uplink1_int.tagged_vlans.values_list('vid', flat=True))}")
 
-        if uplink_2 and uplink_intf_sw_b:
+        if data["uplink_2"] and data[uplink_intf_sw_b]":
             if data['is_stack_switch'] and (stack_count > 1):
                 new_int = replace_slot_(data["uplink_2"], len(devices))
                 uplink_new = to_one_ended(new_int)
@@ -530,7 +530,7 @@ class DeviceOnboardingVersioning(Script):
         connections.append(connect_interfaces_a)
 
         # Cable Connection Side B
-        if uplink_2 and uplink_intf_sw_b:
+        if data["uplink_2"] and data[uplink_intf_sw_b]":
             if data['is_stack_switch'] and (stack_count > 1):
                 uplink_2_id = get_interface_id(devices[-1], uplink2_int)
             else:
