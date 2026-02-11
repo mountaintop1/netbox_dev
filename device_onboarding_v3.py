@@ -238,17 +238,20 @@ class DeviceOnboardingVersioning(Script):
             "device_type_id" : "$switch_model",
         },
         description="Uplink Interface drop-down",
+        required=False,
         label='Uplink Interface 2',
     )
     uplink_sw_b = ObjectVar(
         description="Second Uplink Dis/Leaf SW",
         model=Device,
+        required=False,
         label='Uplink Dis/Leaf Switch B'
     )
     uplink_intf_sw_b = ObjectVar(
         description="Choose an unused interface on Switch B",
         model=Interface,
         label="Uplink Switch B Interface",
+        required=False,
         query_params={
             "device_id": "$uplink_sw_b",
              "occupied": False,
@@ -493,27 +496,28 @@ class DeviceOnboardingVersioning(Script):
         else:
             self.log_success(f"Update uplink 1: {uplink1_int} tagged={list(uplink1_int.tagged_vlans.values_list('vid', flat=True))}")
 
-        if data['is_stack_switch'] and (stack_count > 1):
-            new_int = replace_slot_(data["uplink_2"], len(devices))
-            uplink_new = to_one_ended(new_int)
-            uplink2_int = devices[-1].interfaces.get(name=uplink_new)
-        else:
-            uplink2_int = devices[-1].interfaces.get(name=data["uplink_2"])
-
-        uplink2_int.mode = "tagged"
-        uplink2_int.description = f"<<remotehost={data['uplink_sw_b'].name}; port={data['uplink_intf_sw_b'].name}>>"
-        uplink2_int.lag = devices[-1].interfaces.get(name=data["lag_name"])
-        uplink2_int.full_clean()
-        uplink2_int.save()
-        
-        uplink2_int.tagged_vlans.set([blan, mgmt, guest])
-        uplink2_int.save()
-        uplink2_int.refresh_from_db()
-        
-        if data['is_stack_switch'] and (stack_count > 1):
-            self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))} on stack member {len(devices)}")
-        else:
-            self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
+        if uplink_2 and uplink_intf_sw_b:
+            if data['is_stack_switch'] and (stack_count > 1):
+                new_int = replace_slot_(data["uplink_2"], len(devices))
+                uplink_new = to_one_ended(new_int)
+                uplink2_int = devices[-1].interfaces.get(name=uplink_new)
+            else:
+                uplink2_int = devices[-1].interfaces.get(name=data["uplink_2"])
+    
+            uplink2_int.mode = "tagged"
+            uplink2_int.description = f"<<remotehost={data['uplink_sw_b'].name}; port={data['uplink_intf_sw_b'].name}>>"
+            uplink2_int.lag = devices[-1].interfaces.get(name=data["lag_name"])
+            uplink2_int.full_clean()
+            uplink2_int.save()
+            
+            uplink2_int.tagged_vlans.set([blan, mgmt, guest])
+            uplink2_int.save()
+            uplink2_int.refresh_from_db()
+            
+            if data['is_stack_switch'] and (stack_count > 1):
+                self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))} on stack member {len(devices)}")
+            else:
+                self.log_success(f"Update uplink 2: {uplink2_int} tagged={list(uplink2_int.tagged_vlans.values_list('vid', flat=True))}")
 
         connections = []
         
@@ -526,17 +530,18 @@ class DeviceOnboardingVersioning(Script):
         connections.append(connect_interfaces_a)
 
         # Cable Connection Side B
-        if data['is_stack_switch'] and (stack_count > 1):
-            uplink_2_id = get_interface_id(devices[-1], uplink2_int)
-        else:
-            uplink_2_id = get_interface_id(main_switch, data['uplink_2'])
+        if uplink_2 and uplink_intf_sw_b:
+            if data['is_stack_switch'] and (stack_count > 1):
+                uplink_2_id = get_interface_id(devices[-1], uplink2_int)
+            else:
+                uplink_2_id = get_interface_id(main_switch, data['uplink_2'])
+                
+            uplink_intf_sw_b_id = get_interface_id(data['uplink_sw_b'], data['uplink_intf_sw_b'])
             
-        uplink_intf_sw_b_id = get_interface_id(data['uplink_sw_b'], data['uplink_intf_sw_b'])
-        
-        interface_c = Interface.objects.get(id=uplink_2_id)
-        interface_d = Interface.objects.get(id=uplink_intf_sw_b_id)
-        connect_interfaces_b = (interface_c, interface_d)
-        connections.append(connect_interfaces_b)
+            interface_c = Interface.objects.get(id=uplink_2_id)
+            interface_d = Interface.objects.get(id=uplink_intf_sw_b_id)
+            connect_interfaces_b = (interface_c, interface_d)
+            connections.append(connect_interfaces_b)
         
         for connection in connections:
             cable = Cable(
