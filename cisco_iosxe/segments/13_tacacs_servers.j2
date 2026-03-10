@@ -1,0 +1,19 @@
+{#
+  13_tacacs_servers.j2 — TACACS server definitions
+  Static server addresses and pre-shared keys.
+  Reusable: any Suncor IOS-XE template using centralised TACACS.
+  To change TACACS servers, edit only this file — all templates update together.
+#}
+tacacs-server directed-request restricted
+tacacs server WesternTacacsServers
+ address ipv4 10.146.119.221
+ key 7 044B0E121D71585C581809
+ timeout 30
+tacacs server EasternTacacsServers
+ address ipv4 10.22.128.221
+ key 7 044B0E121D71585C581809
+ timeout 30
+!	
+!	
+!
+!
