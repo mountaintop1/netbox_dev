@@ -28,7 +28,7 @@
   Between consecutive interfaces: !\ninterface  (single newline, no blank line)
   This is identical to the original {%- set vlan_ids %} / {%- if %} pattern.
 #}
-{%- from 'macros/interface_macros.j2' import
+{%- from 'cisco_iosxe/macros/interface_macros.j2' import
     trunk_uplink_vc, trunk_uplink_standalone,
     access_port, lag_member_vc, lag_member_standalone,
     ap_trunk, mgmt_oob, unconfigured_port with context -%}
