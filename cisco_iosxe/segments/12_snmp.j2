@@ -1,0 +1,77 @@
+{#
+  segments/12_snmp.j2 — SNMP community, trap-source, traps, hosts
+  Depends on: mgmt_vid (from 00_context_vars.j2), snmp context variable
+  Reusable: any Suncor IOS-XE switch template with standard SNMP policy.
+  To add/remove SNMP hosts or trap types, edit only this file.
+#}
+logging history size 50
+logging trap notifications
+logging facility local5
+logging source-interface Vlan60
+logging host 10.157.1.196
+logging host 10.159.1.196
+logging host 10.145.88.29
+logging host 10.146.88.29
+logging host 10.22.120.57
+logging host 10.146.78.4
+ip access-list standard 5
+ 10 permit 10.8.60.47
+ 20 permit 10.8.60.44
+ 30 permit 10.22.131.253
+ip access-list standard 6
+ 10 deny any
+snmp-server community {{ snmp.community[0].name }} RO acl-snmp-read-only
+snmp-server trap-source Vlan{{ mgmt_vid }}
+snmp-server contact IFNSSDAT
+snmp-server enable traps snmp authentication linkdown linkup coldstart warmstart
+snmp-server enable traps flowmon
+snmp-server enable traps call-home message-send-fail server-fail
+snmp-server enable traps tty
+snmp-server enable traps auth-framework sec-violation
+snmp-server enable traps rep
+snmp-server enable traps memory bufferpeak
+snmp-server enable traps config-copy
+snmp-server enable traps config
+snmp-server enable traps config-ctid
+snmp-server enable traps energywise
+snmp-server enable traps fru-ctrl
+snmp-server enable traps entity
+snmp-server enable traps flash insertion
+snmp-server enable traps flash removal
+snmp-server enable traps power-ethernet police
+snmp-server enable traps cpu threshold
+snmp-server enable traps syslog
+snmp-server enable traps vtp
+snmp-server enable traps vlancreate
+snmp-server enable traps vlandelete
+snmp-server enable traps port-security
+snmp-server enable traps envmon fan shutdown supply temperature status
+snmp-server enable traps ipsla
+snmp-server enable traps event-manager
+snmp-server enable traps ike policy add
+snmp-server enable traps ike policy delete
+snmp-server enable traps ike tunnel start
+snmp-server enable traps ike tunnel stop
+snmp-server enable traps ipsec cryptomap add
+snmp-server enable traps ipsec cryptomap delete
+snmp-server enable traps ipsec cryptomap attach
+snmp-server enable traps ipsec cryptomap detach
+snmp-server enable traps ipsec tunnel start
+snmp-server enable traps ipsec tunnel stop
+snmp-server enable traps ipsec too-many-sas
+snmp-server enable traps bridge newroot topologychange
+snmp-server enable traps stpx inconsistency root-inconsistency loop-inconsistency
+snmp-server enable traps bulkstat collection transfer
+snmp-server enable traps mac-notification change move threshold
+snmp-server enable traps errdisable
+snmp-server enable traps vlan-membership
+snmp-server enable traps transceiver all
+snmp-server enable traps vrfmib vrf-up vrf-down vnet-trunk-up vnet-trunk-down
+snmp-server enable traps rf
+snmp-server host 10.145.88.29 {{ snmp.community[0].name }}
+snmp-server host 10.146.88.29 {{ snmp.community[0].name }}
+snmp-server host 10.157.1.196 {{ snmp.community[0].name }}
+snmp-server host 10.159.1.196 {{ snmp.community[0].name }}
+snmp-server host 10.22.120.57 {{ snmp.community[0].name }}
+snmp-server file-transfer access-group 7 protocol tftp
+snmp ifmib ifindex persist

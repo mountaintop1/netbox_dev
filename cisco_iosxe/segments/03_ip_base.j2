@@ -1,0 +1,39 @@
+{#
+  segments/03_ip_base.j2 — IP global, DHCP snooping, QoS, UDLD, VTP, device-tracking
+  Reusable: any IOS-XE switch template.
+#}
+no ip domain lookup
+ip domain name network.lan
+ip dhcp bootp ignore
+!
+!
+!
+ip dhcp snooping vlan 1-4094
+no ip dhcp snooping information option
+ip dhcp snooping
+login on-success log
+no qos rewrite ip dscp
+qos queue-softmax-multiplier 1200
+udld aggressive
+
+vtp mode off
+!
+!
+!
+!
+!
+!
+!
+device-tracking policy trusted_policy
+ trusted-port
+ device-role switch
+!
+password encryption aes
+!
+!
+!
+license boot level network-advantage addon dna-advantage
+
+!
+diagnostic bootup level minimal
+!

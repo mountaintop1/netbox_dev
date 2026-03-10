@@ -1,0 +1,35 @@
+{#
+  segments/02_aaa.j2 — AAA model, groups, authentication, authorization, accounting
+  Reusable: any IOS-XE template targeting Suncor's TACACS infrastructure.
+  Depends on: mgmt_vid (set in 00_context_vars.j2)
+#}
+aaa new-model
+!
+!
+aaa group server tacacs+ SuncorTacacsServers
+ server name WesternTacacsServers
+ server name EasternTacacsServers
+ ip tacacs source-interface Vlan{{ mgmt_vid }}
+!
+aaa authentication login default group SuncorTacacsServers local
+aaa authentication login no_tacacs local enable
+aaa authorization config-commands
+aaa authorization exec default group SuncorTacacsServers local
+aaa authorization commands 1 default group SuncorTacacsServers none
+aaa authorization commands 15 default group SuncorTacacsServers none
+aaa accounting exec default start-stop group SuncorTacacsServers
+aaa accounting commands 1 default start-stop group SuncorTacacsServers
+aaa accounting commands 15 default start-stop group SuncorTacacsServers
+aaa accounting network default start-stop group SuncorTacacsServers
+!
+!
+aaa session-id common
+!
+!
+!
+!
+!
+!
+!
+!
+!

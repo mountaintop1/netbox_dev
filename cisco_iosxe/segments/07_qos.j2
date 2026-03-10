@@ -1,0 +1,226 @@
+{#
+  segments/07_qos.j2 — QoS class-maps and policy-maps
+  Static definitions — no dynamic variables.
+  Reusable: any Suncor IOS-XE switch template requiring standard QoS policy.
+  To customise queue ratios or DSCP markings, edit only this file.
+#}
+class-map match-any system-cpp-police-ewlc-control
+ description EWLC Control
+class-map match-any class-qos-intf-realtime-interact-cs4
+ match access-group name acl-realtime-interact-cs4
+ match ip dscp cs4
+class-map match-any system-cpp-police-topology-control
+ description Topology control
+class-map match-any class-qos-intf-network-control-cs6
+ match access-group name acl-network-control-cs6
+ match ip dscp cs6
+class-map match-any system-cpp-police-sw-forward
+ description Sw forwarding, L2 LVX data packets, LOGGING, Transit Traffic
+class-map match-any system-cpp-default
+ description EWLC Data, Inter FED Traffic
+class-map match-any class-qos-intf-high-rate-data-af11
+ match access-group name acl-high-rate-data-af11
+ match ip dscp af11
+class-map match-any class-qos-intf-high-rate-data-af12
+ match access-group name acl-high-rate-data-af12
+ match ip dscp af12
+class-map match-any class-qos-intf-high-rate-data-af13
+ match access-group name acl-high-rate-data-af13
+ match ip dscp af13
+class-map match-any system-cpp-police-sys-data
+ description Openflow, Exception, EGR Exception, NFL Sampled Data, RPF Failed
+class-map match-any class-qos-intf-broadcast-video-cs3
+ match access-group name acl-broadcast-video-cs3
+ match ip dscp cs3
+class-map match-any class-qos-intf-low-latency-data-af23
+ match access-group name acl-low-latency-data-af23
+ match ip dscp af23
+class-map match-any system-cpp-police-punt-webauth
+ description Punt Webauth
+class-map match-any class-qos-intf-low-latency-data-af22
+ match access-group name acl-low-latency-data-af22
+ match ip dscp af22
+class-map match-any class-qos-intf-low-latency-data-af21
+ match access-group name acl-low-latency-data-af21
+ match ip dscp af21
+class-map match-any system-cpp-police-l2lvx-control
+ description L2 LVX control packets
+class-map match-any class-qos-intf-multimedia-confer-af42
+ match access-group name acl-multimedia-confer-af42
+ match ip dscp af42
+class-map match-any class-qos-intf-multimedia-confer-af43
+ match access-group name acl-multimedia-confer-af43
+ match ip dscp af43
+class-map match-any class-qos-intf-multimedia-confer-af41
+ match access-group name acl-multimedia-confer-af41
+ match ip dscp af41
+class-map match-any system-cpp-police-forus
+ description Forus traffic
+class-map match-any class-qos-intf-multimedia-stream-af32
+ match access-group name acl-multimedia-stream-af32
+ match ip dscp af32
+class-map match-any class-qos-intf-multimedia-stream-af33
+ match access-group name acl-multimedia-stream-af33
+ match ip dscp af33
+class-map match-any system-cpp-police-multicast-end-station
+ description MCAST END STATION
+class-map match-any class-qos-intf-multimedia-stream-af31
+ match access-group name acl-multimedia-stream-af31
+ match ip dscp af31
+class-map match-any system-cpp-police-forus-addr-resolution
+ description Forus address resolution
+class-map match-any system-cpp-police-high-rate-app
+ description High Rate Applications
+class-map match-any system-cpp-police-multicast
+ description MCAST Data
+class-map match-any class-q-intf-q6-stnd
+ match dscp af11
+ match dscp af12
+ match dscp af13
+class-map match-any class-qos-intf-low-priority-data-cs1
+ match access-group name acl-low-priority-data-cs1
+ match ip dscp cs1
+class-map match-any class-q-intf-q7-stnd
+ match dscp cs1
+class-map match-any system-cpp-police-meraki-next-tunnel
+ description Meraki Next tunnel
+class-map match-any class-q-intf-q4-stnd
+ match dscp cs3
+ match dscp af31
+ match dscp af32
+ match dscp af33
+class-map match-any system-cpp-police-l2-control
+ description L2 control
+class-map match-any class-q-intf-q5-stnd
+ match dscp cs2
+ match dscp af21
+ match dscp af22
+ match dscp af23
+class-map match-any system-cpp-police-dot1x-auth
+ description DOT1X Auth
+class-map match-any class-q-intf-q3-stnd
+ match dscp cs4
+ match dscp af41
+ match dscp af42
+ match dscp af43
+class-map match-any system-cpp-police-data
+ description ICMP redirect, ICMP_GEN and BROADCAST
+class-map match-any class-q-intf-q2-pq
+ match ip dscp cs5
+ match ip dscp ef
+class-map match-any class-q-intf-q1-pq
+ match ip dscp cs6
+ match ip dscp cs7
+class-map match-any class-qos-intf-signaling-cs5
+ match access-group name acl-signaling-cs5
+ match ip dscp cs5
+class-map match-any system-cpp-police-stackwise-virt-control
+ description Stackwise Virtual OOB
+class-map match-any system-cpp-police-control-low-priority
+ description General punt
+class-map match-any class-qos-intf-oam-cs2
+ match access-group name acl-oam-cs2
+ match ip dscp cs2
+class-map match-any non-client-nrt-class
+class-map match-any system-cpp-police-routing-control
+ description Routing control and Low Latency
+class-map match-any system-cpp-police-protocol-snooping
+ description Protocol snooping
+class-map match-any system-cpp-police-dhcp-snooping
+ description DHCP snooping
+class-map match-any class-qos-intf-telephony-ef
+ match access-group name acl-telephony-ef
+ match ip dscp ef
+class-map match-any system-cpp-police-ios-routing
+ description L2 control, Topology control, Routing control, Low Latency
+class-map match-any system-cpp-police-system-critical
+ description System Critical and Gold Pkt
+class-map match-any system-cpp-police-ios-feature
+ description ICMPGEN,BROADCAST,ICMP,L2LVXCntrl,ProtoSnoop,PuntWebauth,MCASTData,Transit,DOT1XAuth,Swfwd,LOGGING,L2LVXData,ForusTraffic,ForusARP,McastEndStn,Openflow,Exception,EGRExcption,NflSampled,RpfFailed
+!
+policy-map system-cpp-policy
+policy-map policy-qos-intf-tl3
+ class class-qos-intf-network-control-cs6
+  set dscp cs6
+ class class-qos-intf-telephony-ef
+  set dscp ef
+ class class-qos-intf-signaling-cs5
+  set dscp cs5
+ class class-qos-intf-multimedia-confer-af43
+  set dscp af43
+ class class-qos-intf-multimedia-confer-af42
+  set dscp af42
+ class class-qos-intf-multimedia-confer-af41
+  set dscp af41
+ class class-qos-intf-realtime-interact-cs4
+  set dscp cs4
+ class class-qos-intf-multimedia-stream-af33
+  set dscp af33
+ class class-qos-intf-multimedia-stream-af32
+  set dscp af32
+ class class-qos-intf-multimedia-stream-af31
+  set dscp af31
+ class class-qos-intf-broadcast-video-cs3
+  set dscp cs3
+ class class-qos-intf-low-latency-data-af23
+  set dscp af23
+ class class-qos-intf-low-latency-data-af22
+  set dscp af22
+ class class-qos-intf-low-latency-data-af21
+  set dscp af21
+ class class-qos-intf-oam-cs2
+  set dscp cs2
+ class class-qos-intf-high-rate-data-af13
+  set dscp af13
+ class class-qos-intf-high-rate-data-af12
+  set dscp af12
+ class class-qos-intf-high-rate-data-af11
+  set dscp af11
+ class class-qos-intf-low-priority-data-cs1
+  set dscp cs1
+ class class-default
+  set dscp default
+policy-map policy-q-intf
+ class class-q-intf-q1-pq
+  priority level 1 percent 5
+  queue-buffers ratio 2
+ class class-q-intf-q2-pq
+  priority level 2 percent 10
+  set cos 5
+  queue-buffers ratio 3
+ class class-q-intf-q3-stnd
+  bandwidth remaining percent 20
+  set cos 4
+  queue-buffers ratio 15
+ class class-q-intf-q4-stnd
+  bandwidth remaining percent 15
+  set cos 3
+  queue-buffers ratio 15
+ class class-q-intf-q5-stnd
+  bandwidth remaining percent 15
+  set cos 2
+  queue-buffers ratio 15
+ class class-q-intf-q6-stnd
+  bandwidth remaining percent 10
+  set cos 1
+  queue-buffers ratio 15
+ class class-q-intf-q7-stnd
+  bandwidth remaining percent 5
+  set cos 1
+  queue-buffers ratio 5
+ class class-default
+  bandwidth remaining percent 35
+  set cos 0
+  queue-buffers ratio 30
+!
+! 
+!
+!
+!
+!
+!
+!
+!
+!
+!
+!

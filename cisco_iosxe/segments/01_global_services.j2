@@ -1,0 +1,27 @@
+{# segments/01_global_services.j2 — service statements, hostname, VRF, logging #}
+!
+service tcp-keepalives-in
+service tcp-keepalives-out
+service timestamps debug datetime msec show-timezone
+service timestamps log datetime msec show-timezone
+service password-encryption
+no service dhcp
+service unsupported-transceiver
+no platform punt-keepalive disable-kernel-core
+!
+hostname {{ device.name }}
+!
+!
+vrf definition Mgmt-vrf
+ !
+ address-family ipv4
+ exit-address-family
+ !
+ address-family ipv6
+ exit-address-family
+!
+logging discriminator HIDE_LOG severity drops 4 facility drops PLATFORM mnemonics drops ELEMENT_WARNING
+logging count
+logging buffered discriminator HIDE_LOG 1000000
+logging console discriminator HIDE_LOG critical
+logging monitor discriminator HIDE_LOG
