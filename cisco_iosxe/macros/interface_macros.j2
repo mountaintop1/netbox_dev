@@ -3,39 +3,6 @@
   ══════════════════════════════════════════════════════════════════════
   Reusable interface macros for Cisco IOS-XE switches.
 
-  WHITESPACE CONTRACT
-  ───────────────────
-  Opening tag:  {%- macro name(args) -%}   ← BOTH dashes
-    • {%-  strips whitespace before the macro definition (no-op at define time)
-    • -%}  strips the \n immediately after the opening tag
-    → macro body starts at "interface", no leading \n
-
-  Closing tag:  {%- endmacro -%}
-    • {%-  strips the \n after the last "!" in the body
-    • -%}  strips whitespace after the endmacro tag
-    → macro returns:  interface X\n <commands>\n!
-                      (no leading \n, no trailing \n)
-
-  CALL SITE CONTRACT  (enforced in 08_interfaces.j2)
-  ────────────────────
-  Caller provides the \n before each interface block by using tags
-  WITHOUT a trailing dash (%} not -%}):
-    Trunk / GE0/0 loops:
-      {%- for int in ... %}    ← %} keeps \n → caller output = \n + macro
-      {{ macro(int) }}
-      {%- endfor -%}
-    Main interface loop uses {%- for -%} but each branch tag has no -%}:
-      {%- if int.mode == 'access' %}   ← keeps \n
-      {{ access_port(int) }}
-
-  OUTPUT ALIGNMENT GUARANTEE
-  ───────────────────────────
-  Every macro renders with:
-    "interface X"  at column 0
-    sub-commands   indented with exactly one space
-    "!"            at column 0  (final line)
-  This is byte-for-byte identical to the original ios_switch.j2 output.
-
   IMPORT SYNTAX
   ─────────────
   {% from 'cisco_iosxe/macros/interface_macros.j2' import
