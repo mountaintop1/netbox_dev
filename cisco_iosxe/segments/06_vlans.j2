@@ -1,0 +1,12 @@
+{#
+  06_vlans.j2 — VLAN database from NetBox vlan_group
+  Depends on: vlans (set in 00_context_vars.j2)
+  Reusable: any IOS-XE switch template that assigns a vlan_group CF field.
+#}
+{%- for vlan_id in vlans %}
+vlan {{ vlan_id.vid }}
+ name {{ vlan_id.name }}
+!
+{%- endfor %}
+lldp run
+!

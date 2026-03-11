@@ -1,0 +1,28 @@
+{#
+  17_ntp.j2 — NTP authentication, source, and server list
+  Depends on: mgmt_vid (from 00_context_vars.j2)
+  NTP server IPs are resolved dynamically from IPAM Service objects
+  named 'NTP' — no hardcoded addresses in this segment.
+
+  | first replaces [0] subscript — idiomatic Jinja2 filter syntax.
+  split('/') | first strips the prefix length from the IP/prefix string.
+#}
+ntp authentication-key 5 md5 11281D081E1C5A5E57 7
+ntp authenticate
+ntp trusted-key 5
+ntp source Vlan{{ mgmt_vid }}
+ntp access-group peer 5
+ntp access-group serve 6
+{%- set ntp_services = ipam.Service.objects.filter(name='NTP') -%}
+{%- for ntp_svc in ntp_services %}
+{%- set ntp_ip = ntp_svc.ipaddresses.all() | first | string %}
+ntp server {{ ntp_ip.split('/') | first }}
+{%- endfor %}
+!
+mac address-table notification change
+!
+!
+!
+!
+!
+end

@@ -1,0 +1,27 @@
+{#
+  16_lines.j2 — Console and VTY line configuration
+  Static definitions — no variables.
+  Reusable: any Suncor IOS-XE switch template with SSH-only access.
+  To change timeout or SSH ACL, edit only this file.
+#}
+line con 0
+ exec-timeout 15 0
+ login authentication no_tacacs
+ stopbits 1
+line vty 0 4
+ session-timeout 180
+ access-class acl-ssh-access in
+ exec-timeout 15 0
+ privilege level 15
+ password 7 0705344247191C1746
+ transport input ssh
+ transport output none
+line vty 5 31
+ session-timeout 180
+ access-class acl-ssh-access in
+ exec-timeout 15 0
+ privilege level 15
+ password 7 0705344247191C1746
+ transport input ssh
+ transport output none
+!
