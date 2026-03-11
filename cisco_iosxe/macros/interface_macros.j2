@@ -1,0 +1,208 @@
+{#
+  interface_macros.j2
+  ══════════════════════════════════════════════════════════════════════
+  Reusable interface macros for Cisco IOS-XE switches.
+
+  WHITESPACE CONTRACT
+  ───────────────────
+  Opening tag:  {%- macro name(args) -%}   ← BOTH dashes
+    • {%-  strips whitespace before the macro definition (no-op at define time)
+    • -%}  strips the \n immediately after the opening tag
+    → macro body starts at "interface", no leading \n
+
+  Closing tag:  {%- endmacro -%}
+    • {%-  strips the \n after the last "!" in the body
+    • -%}  strips whitespace after the endmacro tag
+    → macro returns:  interface X\n <commands>\n!
+                      (no leading \n, no trailing \n)
+
+  CALL SITE CONTRACT  (enforced in 08_interfaces.j2)
+  ────────────────────
+  Caller provides the \n before each interface block by using tags
+  WITHOUT a trailing dash (%} not -%}):
+    Trunk / GE0/0 loops:
+      {%- for int in ... %}    ← %} keeps \n → caller output = \n + macro
+      {{ macro(int) }}
+      {%- endfor -%}
+    Main interface loop uses {%- for -%} but each branch tag has no -%}:
+      {%- if int.mode == 'access' %}   ← keeps \n
+      {{ access_port(int) }}
+
+  OUTPUT ALIGNMENT GUARANTEE
+  ───────────────────────────
+  Every macro renders with:
+    "interface X"  at column 0
+    sub-commands   indented with exactly one space
+    "!"            at column 0  (final line)
+  This is byte-for-byte identical to the original ios_switch.j2 output.
+
+  IMPORT SYNTAX
+  ─────────────
+  {% from 'cisco_iosxe/macros/interface_macros.j2' import
+       trunk_uplink_vc, trunk_uplink_standalone,
+       access_port, lag_member_vc, lag_member_standalone,
+       ap_trunk, mgmt_oob, unconfigured_port with context %}
+#}
+
+
+{# ── trunk_uplink_vc ─────────────────────────────────────────────────
+   LAG/port-channel uplink on a Virtual Chassis member.
+   • logging event trunk-status  BEFORE  load-interval
+   • no service-policy output line
+   • no logging event link-status
+#}
+{%- macro trunk_uplink_vc(int) -%}
+{%- set vlan_ids = [] -%}
+{%- for v in int.tagged_vlans.all() -%}{%- set _ = vlan_ids.append(v.vid) -%}{%- endfor -%}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+ switchport mode trunk
+ device-tracking attach-policy trusted_policy
+ logging event trunk-status
+ load-interval 30
+ speed nonegotiate
+ spanning-tree portfast disable
+ spanning-tree bpduguard disable
+ ip dhcp snooping trust
+!
+{%- endmacro -%}
+
+
+{# ── trunk_uplink_standalone ─────────────────────────────────────────
+   LAG/port-channel uplink on a standalone (non-VC) device.
+   • load-interval  BEFORE  logging
+   • adds logging event link-status + trunk-status
+   • adds service-policy output policy-q-intf
+#}
+{%- macro trunk_uplink_standalone(int) -%}
+{%- set vlan_ids = [] -%}
+{%- for v in int.tagged_vlans.all() -%}{%- set _ = vlan_ids.append(v.vid) -%}{%- endfor -%}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+ switchport mode trunk
+ device-tracking attach-policy trusted_policy
+ load-interval 30
+ speed nonegotiate
+ spanning-tree portfast disable
+ spanning-tree bpduguard disable
+ logging event link-status
+ logging event trunk-status
+ service-policy output policy-q-intf
+ ip dhcp snooping trust
+!
+{%- endmacro -%}
+
+
+{# ── access_port ──────────────────────────────────────────────────────
+   Standard user-facing access port.  Identical for VC and standalone.
+#}
+{%- macro access_port(int) -%}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ switchport access vlan {{ int.untagged_vlan.vid }}
+ switchport mode access
+ switchport port-security maximum 3
+ switchport port-security violation restrict
+ switchport port-security aging time 5
+ switchport port-security aging type inactivity
+ switchport port-security
+ no snmp trap link-status
+ storm-control broadcast level 2.00
+ storm-control action shutdown
+ service-policy input policy-qos-intf-tl3
+ service-policy output policy-q-intf
+!
+{%- endmacro -%}
+
+
+{# ── lag_member_vc ────────────────────────────────────────────────────
+   Physical interface bound to a port-channel — Virtual Chassis.
+   Includes:  logging event link-status  (before service-policy)
+#}
+{%- macro lag_member_vc(int) -%}
+{%- set vlan_ids = [] -%}
+{%- for v in int.tagged_vlans.all() -%}{%- set _ = vlan_ids.append(v.vid) -%}{%- endfor -%}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+ switchport mode trunk
+ load-interval 30
+ speed nonegotiate
+ channel-protocol lacp
+ channel-group {{ int.lag.name[-1] }} mode active
+ spanning-tree portfast disable
+ spanning-tree bpduguard disable
+ logging event link-status
+ service-policy output policy-q-intf
+ ip dhcp snooping trust
+!
+{%- endmacro -%}
+
+
+{# ── lag_member_standalone ────────────────────────────────────────────
+   Physical interface bound to a port-channel — standalone device.
+   Omits:  logging event link-status
+#}
+{%- macro lag_member_standalone(int) -%}
+{%- set vlan_ids = [] -%}
+{%- for v in int.tagged_vlans.all() -%}{%- set _ = vlan_ids.append(v.vid) -%}{%- endfor -%}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+ switchport mode trunk
+ load-interval 30
+ speed nonegotiate
+ channel-protocol lacp
+ channel-group {{ int.lag.name[-1] }} mode active
+ spanning-tree portfast disable
+ spanning-tree bpduguard disable
+ service-policy output policy-q-intf
+ ip dhcp snooping trust
+!
+{%- endmacro -%}
+
+
+{# ── ap_trunk ─────────────────────────────────────────────────────────
+   Trunk port facing a wireless AP / RAP.
+   Identified by description keywords: lap, wif, ap, rap.
+   Identical for VC and standalone.
+#}
+{%- macro ap_trunk(int) -%}
+{%- set vlan_ids = [] -%}
+{%- for v in int.tagged_vlans.all() -%}{%- set _ = vlan_ids.append(v.vid) -%}{%- endfor -%}
+interface {{ int.name }}
+ description "{{ int.description }}"
+ switchport trunk native vlan {{ int.untagged_vlan.vid }}
+ switchport trunk allowed vlan {{ vlan_ids | join(',') }}
+ switchport mode trunk
+ storm-control broadcast level 2.00
+ storm-control action shutdown
+!
+{%- endmacro -%}
+
+
+{# ── mgmt_oob ─────────────────────────────────────────────────────────
+   Out-of-band management port (GigabitEthernet0/0).
+   Always shut down and placed in Mgmt-vrf.
+   Identical for VC and standalone.
+#}
+{%- macro mgmt_oob() -%}
+interface GigabitEthernet0/0
+ vrf forwarding Mgmt-vrf
+ no ip address
+ shutdown
+ negotiation auto
+!
+{%- endmacro -%}
+
+
+{# ── unconfigured_port ────────────────────────────────────────────────
+   Placeholder stanza for unassigned ports.
+   Condition: not int.mode, not lag, not virtual, not GigabitEthernet0/0
+#}
+{%- macro unconfigured_port(int) -%}
+interface {{ int.name }}
+!
+{%- endmacro -%}
