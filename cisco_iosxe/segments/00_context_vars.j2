@@ -6,19 +6,6 @@
   parent scope or to sibling includes. Putting set statements here and
   including this file does not work — vlans, mgmt_vid etc. would all
   be undefined in every other segment.
-
-  The actual set statements live directly in main.j2 before the includes.
-  If you add or change a variable, edit main.j2 (and any other entrypoint
-  templates that reuse these segments).
-
-  Variables provided (set in main.j2):
-    vlan_group    device.cf["vlan_group"] custom field object
-    vlans         QuerySet of all VLANs in vlan_group
-    mgmt_vlan     VLAN object with name='mgmt', or None
-    mgmt_vid      management VLAN ID integer, or None
-    mgmt_net      IP address object from management SVI interface
-    mgmt_ip       management IP address (without prefix length)
-    mgmt_netmask  management subnet mask
 #}
 {%- set vlan_group = device.cf["vlan_group"] -%}
 {%- set vlans = vlan_group.vlans.all() -%}
