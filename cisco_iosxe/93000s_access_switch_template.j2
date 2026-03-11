@@ -1,45 +1,8 @@
 {#
-  cisco_iosxe/main.j2  —  ENTRYPOINT
+  cisco_iosxe/93000s_access_switch_template.j2  —  ENTRYPOINT
   ══════════════════════════════════════════════════════════════════════
-  Cisco IOS-XE Access / Distribution Switch Configuration
+  Cisco IOS-XE Access Switch Configuration
   NetBox Config Context Template
-
-  VARIABLE SCOPE — IMPORTANT
-  ──────────────────────────
-  All {%- set -%} statements live directly in this file, BEFORE the
-  includes. Variables set inside an included file do NOT propagate back
-  to the parent scope or to sibling includes — this is standard Jinja2
-  include behaviour. Reading variables from the parent scope IS allowed.
-
-  HOW INCLUDES WORK
-  ─────────────────
-  {% include 'file.j2' %} renders the target file inline at that exact
-  position in the output — identical to pasting the file contents here.
-  Included files can READ all variables set here.
-
-  {%- include ... -%}  strips all whitespace before and after the tag.
-  Each segment file is therefore responsible for its own leading and
-  trailing newlines.
-
-  HOW MACROS WORK (interfaces)
-  ────────────────────────────
-  Interface rendering uses macros defined in macros/interface_macros.j2.
-  08_interfaces.j2 imports them with:
-    {% from 'cisco_iosxe/macros/interface_macros.j2' import ... with context %}
-  The 'with context' clause passes all variables set so far into the
-  macro scope — macros otherwise have an isolated scope.
-
-  TO REUSE A SEGMENT IN ANOTHER TEMPLATE
-  ───────────────────────────────────────
-  Copy the {%- set -%} block below into the other template's entrypoint,
-  then include only the segments you need. Example — router template:
-    {%- set vlan_group = device.cf["vlan_group"] -%}
-    ... (all set lines) ...
-    {%- include 'cisco_iosxe/segments/02_aaa.j2' -%}
-    {%- include 'cisco_iosxe/segments/12_snmp.j2' -%}
-    {%- include 'cisco_iosxe/segments/15_banner.j2' -%}
-    {%- include 'cisco_iosxe/segments/16_lines.j2' -%}
-    {%- include 'cisco_iosxe/segments/17_ntp.j2' -%}
 
   SEGMENT MAP
   ───────────
